@@ -1,6 +1,6 @@
 {
-  "name": "Loteria Fácil",
-  "short_name": "Loteria",
+  "name": "Bom de Sorte",
+  "short_name": "Bom de Sorte",
   "description": "Resultados, estatísticas e simulador de loterias da Caixa",
   "start_url": "./index.html",
   "display": "standalone",
