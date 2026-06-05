@@ -1,0 +1,265 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Loteria Fácil — resultados, estatísticas, simulador de apostas e conferência para Mega-Sena, Lotofácil, Quina e Lotomania.">
+  <meta name="theme-color" content="#0f172a">
+  <meta property="og:title" content="Loteria Fácil">
+  <meta property="og:description" content="Resultados, estatísticas e simulador de apostas das loterias da Caixa.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Loteria Fácil">
+  <meta name="twitter:description" content="Simule apostas e acompanhe resultados das loterias.">
+  <title>Loteria Fácil</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
+
+  <header class="container topbar">
+    <a class="logo" href="#">Loteria Fácil</a>
+    <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menu">☰</button>
+    <nav id="mainNav" aria-label="Principal">
+      <a href="#como">Como funciona</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#estatisticas">Estatísticas</a>
+      <a href="#simulador">Simulador</a>
+      <a href="#bolao">Bolão</a>
+      <a href="#favoritos">Favoritos</a>
+      <a href="#como-jogar">Como jogar</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Ativar modo claro">◐</button>
+  </header>
+
+  <main class="container" id="main-content">
+    <section class="hero">
+      <h1>Loteria e apostas com transparência e praticidade</h1>
+      <p>Crie sua aposta, veja resultados atualizados, estatísticas e confira acertos — Mega-Sena, Lotofácil, Quina e Lotomania.</p>
+      <div class="hero-actions">
+        <a class="primary" href="#simulador">Simular aposta</a>
+        <a class="secondary" href="#resultados">Ver resultados</a>
+      </div>
+      <p class="disclaimer-inline">Site informativo. Não vende bilhetes. Resultados oficiais: <a href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">loterias.caixa.gov.br</a>.</p>
+    </section>
+
+    <section id="como">
+      <h2>Como funciona</h2>
+      <div class="grid grid-3">
+        <article class="feature-card">
+          <h3>Resultados e estatísticas</h3>
+          <p>Últimos concursos via API da Caixa (com fallback local), dezenas frequentes e atraso.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Simulador de aposta</h3>
+          <p>Escolha números, gere surpresinha com filtros, copie, compartilhe link e imprima.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Conferência e favoritos</h3>
+          <p>Compare sua aposta com o último sorteio e salve combinações favoritas.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="resultados">
+      <div class="section-head">
+        <h2>Últimos resultados</h2>
+        <div class="section-actions">
+          <label class="modality-label" for="modalitySelect">Jogo</label>
+          <select id="modalitySelect" aria-label="Modalidade da loteria"></select>
+          <button type="button" class="btn-secondary" id="btnRefreshResults">Atualizar</button>
+        </div>
+      </div>
+      <p class="badge-source" id="dataSourceBadge"></p>
+      <div class="next-draw" id="nextDrawInfo" aria-live="polite"></div>
+      <div class="cards" id="resultsCards" aria-live="polite"></div>
+      <div class="section-actions">
+        <button type="button" id="loadMoreResults">Carregar mais concursos</button>
+      </div>
+    </section>
+
+    <section id="estatisticas">
+      <h2>Estatísticas</h2>
+      <p class="muted">Com base nos concursos carregados acima.</p>
+      <div id="statsPanel"></div>
+    </section>
+
+    <section class="compare-section">
+      <h2>Comparar concursos</h2>
+      <div class="compare-controls">
+        <select id="compareA" aria-label="Primeiro concurso"></select>
+        <select id="compareB" aria-label="Segundo concurso"></select>
+        <button type="button" id="btnCompare">Comparar</button>
+      </div>
+      <div id="compareResult" aria-live="polite"></div>
+    </section>
+
+    <section id="simulador" class="simulador">
+      <h2>Simulador de aposta</h2>
+      <p id="simulatorDesc"></p>
+
+      <div class="selection-status">
+        <span id="selectionCounter">0 / 6</span>
+        <div class="progress-track" role="progressbar" aria-label="Progresso da seleção">
+          <div class="progress-fill" id="selectionProgress" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="filters" aria-label="Filtros da surpresinha">
+        <label><input type="checkbox" id="filterEven"> Apenas pares</label>
+        <label><input type="checkbox" id="filterOdd"> Apenas ímpares</label>
+        <label><input type="checkbox" id="filterLow"> Apenas 1ª metade</label>
+      </div>
+
+      <div class="numbers" id="numberGrid"></div>
+
+      <div class="actions">
+        <button type="button" id="btnQuickPick">Gerar aposta</button>
+        <button type="button" class="clear" id="btnClear">Limpar</button>
+        <button type="button" class="btn-secondary" id="btnConference">Conferir aposta</button>
+        <button type="button" class="btn-secondary" id="btnCopy">Copiar</button>
+        <button type="button" class="btn-secondary" id="btnShare">Compartilhar link</button>
+        <button type="button" class="btn-secondary" id="btnPrint">Imprimir / PDF</button>
+        <button type="button" class="btn-secondary" id="btnAddToPool">Incluir no bolão</button>
+      </div>
+
+      <div class="selected">
+        <strong>Números selecionados:</strong>
+        <span id="selectedNumbers" aria-live="polite">Nenhum</span>
+      </div>
+
+      <div class="conference-box" id="conferenceResult" hidden aria-live="polite"></div>
+    </section>
+
+    <section id="bolao" class="pool-section">
+      <h2>Gerenciador de Bolão</h2>
+      <p class="muted">Crie e organize seu bolão — adicione apostas, cadastre participantes e gere comprovantes.</p>
+
+      <div class="pool-config">
+        <div class="pool-config-grid">
+          <label class="field-label">
+            Nome do bolão
+            <input type="text" id="poolName" placeholder="Ex.: Bolão do trabalho" maxlength="60">
+          </label>
+          <label class="field-label">
+            Organizador
+            <input type="text" id="poolOrganizer" placeholder="Seu nome" maxlength="40">
+          </label>
+          <label class="field-label">
+            Concurso nº
+            <input type="text" id="poolContest" placeholder="Ex.: 2820" maxlength="10">
+          </label>
+          <label class="field-label">
+            Valor por aposta (R$)
+            <input type="number" id="poolPrice" value="5" min="0" step="0.5">
+          </label>
+        </div>
+      </div>
+
+      <div class="pool-gen-bar">
+        <div class="pool-gen-row">
+          <span>Gerar</span>
+          <input type="number" id="poolGenCount" value="5" min="1" max="30"
+            class="gen-count-input" aria-label="Quantidade de surpresinhas">
+          <span>surpresinha(s)</span>
+          <button type="button" id="btnGenPoolBets">Gerar apostas</button>
+        </div>
+        <button type="button" class="btn-secondary" id="btnClearPool">Limpar apostas</button>
+      </div>
+
+      <div id="poolBetsList"></div>
+
+      <div class="pool-participants-block">
+        <h3>Participantes e Cotas</h3>
+        <div class="participant-form">
+          <input type="text" id="participantName" placeholder="Nome do participante"
+            maxlength="40" aria-label="Nome do participante">
+          <input type="number" id="participantCotas" value="1" min="1"
+            class="cotas-input" aria-label="Número de cotas" title="Número de cotas">
+          <button type="button" id="btnAddParticipant">Adicionar</button>
+        </div>
+        <div id="participantsList"></div>
+      </div>
+
+      <div id="poolSummary" class="pool-summary" aria-live="polite"></div>
+
+      <div class="pool-footer-actions">
+        <button type="button" id="btnConferPool">Conferir bolão</button>
+        <button type="button" class="btn-secondary" id="btnPrintPool">Imprimir</button>
+        <button type="button" class="btn-secondary" id="btnSharePool">WhatsApp</button>
+        <button type="button" class="btn-secondary" id="btnCopyPool">Copiar lista</button>
+      </div>
+
+      <div id="poolConference" class="pool-conference" hidden aria-live="polite"></div>
+    </section>
+
+    <section id="favoritos" class="favorites-section">
+      <h2>Apostas favoritas</h2>
+      <div class="favorite-form">
+        <label for="favoriteName">Nome da aposta</label>
+        <input type="text" id="favoriteName" placeholder="Ex.: Aposta da família" maxlength="40">
+        <button type="button" id="saveFavorite">Salvar favorito</button>
+      </div>
+      <div id="favoritesList"></div>
+    </section>
+
+    <section id="como-jogar" class="rules-section">
+      <h2>Como jogar</h2>
+      <div id="rulesContent"></div>
+    </section>
+
+    <section id="faq" class="faq">
+      <h2>Perguntas frequentes</h2>
+      <details class="faq-item">
+        <summary>Posso usar o site para conferir resultados?</summary>
+        <p>Sim. Os resultados vêm da API pública da Caixa quando disponível, com backup local. Sempre confira no site oficial antes de qualquer decisão.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Como criar confiança com os visitantes?</summary>
+        <p>Informações claras sobre regras, aviso de que não vendemos bilhetes e links para a Caixa. Dados atualizados e conferência transparente.</p>
+      </details>
+      <details class="faq-item">
+        <summary>O site funciona offline?</summary>
+        <p>Com o PWA instalado, páginas e dados já visitados podem ser consultados offline. Novos resultados exigem conexão.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Como compartilhar minha aposta?</summary>
+        <p>Use &quot;Compartilhar link&quot; no simulador. O link inclui jogo e números para quem abrir carregar a mesma combinação.</p>
+      </details>
+    </section>
+
+    <section id="privacidade" class="privacy-section">
+      <h2>Privacidade</h2>
+      <p>Seleções e favoritos ficam apenas no seu navegador (localStorage). Não coletamos dados pessoais nem enviamos apostas a servidores próprios. Ao usar a API da Caixa, aplicam-se as políticas do site oficial.</p>
+    </section>
+  </main>
+
+  <footer class="container site-footer">
+    <p><strong>Aviso legal:</strong> Loteria Fácil é um projeto informativo e educacional. Não realiza vendas de bilhetes nem garante prêmios. Jogue com responsabilidade (+18). Resultados oficiais: Caixa Econômica Federal.</p>
+    <p class="muted">© 2026 Loteria Fácil — modelo com API Caixa e recursos avançados.</p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <section class="print-slip" aria-hidden="true">
+    <h2>Comprovante de aposta (simulação)</h2>
+    <p id="printModality"></p>
+    <p id="printNumbers"></p>
+    <p class="muted">Não válido como bilhete oficial.</p>
+  </section>
+
+  <script type="module" src="js/app.js"></script>
+  <script>
+    document.getElementById('btnPrint')?.addEventListener('click', () => {
+      const mod = document.getElementById('modalitySelect');
+      const nums = document.getElementById('selectedNumbers');
+      document.getElementById('printModality').textContent = mod?.selectedOptions?.[0]?.text || '';
+      document.getElementById('printNumbers').textContent = nums?.textContent || '';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+[
+  {"contest":3013,"date":"30/05/2026","balls":[2,14,21,22,34,44],"accumulated":true,"nextContest":3014,"nextDate":"02/06/2026","nextPrize":16000000,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3012,"date":"28/05/2026","balls":[3,11,19,27,38,52],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3011,"date":"24/05/2026","balls":[7,15,24,33,41,58],"accumulated":true,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3010,"date":"21/05/2026","balls":[1,18,26,35,47,60],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3009,"date":"17/05/2026","balls":[5,12,23,34,45,56],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3008,"date":"14/05/2026","balls":[3,14,22,28,41,59],"accumulated":true,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3007,"date":"10/05/2026","balls":[1,16,25,33,37,50],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3006,"date":"07/05/2026","balls":[8,17,29,36,44,55],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3005,"date":"03/05/2026","balls":[4,13,20,31,42,57],"accumulated":true,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3004,"date":"30/04/2026","balls":[6,14,22,30,48,59],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3003,"date":"26/04/2026","balls":[2,9,18,27,39,51],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3002,"date":"23/04/2026","balls":[10,19,28,37,46,54],"accumulated":true,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3001,"date":"19/04/2026","balls":[5,11,21,32,43,60],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":3000,"date":"16/04/2026","balls":[7,16,24,35,49,58],"accumulated":false,"locality":"SÃO PAULO, SP","modalityId":"megasena"},
+  {"contest":2999,"date":"12/04/2026","balls":[3,12,25,34,45,53],"accumulated":true,"locality":"SÃO PAULO, SP","modalityId":"megasena"}
+]
