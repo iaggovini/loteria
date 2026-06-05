@@ -2,6 +2,15 @@ import { formatNumber, getPrizeLabel } from './config.js';
 import { showToast } from './ui.js';
 import { getLatestResult } from './results.js';
 
+const TEMPLATES = {
+  casal:    { name: 'Bolão Casal',        bets: 2  },
+  familia:  { name: 'Bolão Família',      bets: 5  },
+  trabalho: { name: 'Bolão do Trabalho',  bets: 10 },
+  turma:    { name: 'Bolão da Turma',     bets: 15 },
+  premium:  { name: 'Bolão Premium',      bets: 20 },
+  grande:   { name: 'Bolão Grande',       bets: 30 },
+};
+
 let modality = null;
 
 const state = {
@@ -56,6 +65,30 @@ function bindInputs() {
 }
 
 function bindActions() {
+  document.querySelectorAll('.pool-template-card').forEach((card) => {
+    card.addEventListener('click', () => {
+      const tpl = TEMPLATES[card.dataset.template];
+      if (!tpl) return;
+      if (
+        state.bets.length > 0 &&
+        !confirm(`Aplicar modelo "${tpl.name}"? As apostas atuais serão substituídas.`)
+      ) return;
+
+      state.bets = [];
+      if (!state.name) {
+        state.name = tpl.name;
+        const nameEl = document.getElementById('poolName');
+        if (nameEl) nameEl.value = tpl.name;
+      }
+      for (let i = 0; i < tpl.bets; i++) {
+        state.bets.push({ id: crypto.randomUUID(), numbers: randomPick() });
+      }
+      saveToStorage();
+      render();
+      showToast(`Modelo "${tpl.name}" aplicado — ${tpl.bets} apostas geradas.`, 'success');
+    });
+  });
+
   document.getElementById('btnClearPool')?.addEventListener('click', () => {
     if (!state.bets.length) return;
     if (confirm('Limpar todas as apostas do bolão?')) {

@@ -589,6 +589,62 @@ select {
 
 /* ── Bolão ─────────────────────────────────── */
 
+.pool-templates {
+  margin-bottom: 24px;
+}
+
+.pool-templates-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+
+.pool-template-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pool-template-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 16px 8px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  text-align: center;
+  color: var(--text);
+}
+
+.pool-template-card:hover {
+  border-color: var(--primary);
+  background: rgba(56, 189, 248, 0.1);
+  transform: translateY(-2px);
+}
+
+[data-theme="light"] .pool-template-card {
+  background: var(--surface);
+}
+
+.template-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.template-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.template-desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
 .pool-config {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
@@ -1174,6 +1230,10 @@ select {
   .pool-config-grid,
   .summary-grid {
     grid-template-columns: 1fr;
+  }
+
+  .pool-template-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .pool-bet-item,

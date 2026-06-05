@@ -93,7 +93,6 @@ function renderCards(container) {
           )
           .join('')}
       </div>
-      ${result.locality ? `<p class="result-local">${result.locality}</p>` : ''}
     `;
     container.appendChild(card);
   });
