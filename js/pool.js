@@ -1,5 +1,5 @@
 import { formatNumber, getPrizeLabel } from './config.js';
-import { showToast } from './ui.js';
+import { showToast, showConfirm } from './ui.js';
 import { getLatestResult } from './results.js';
 
 const TEMPLATES = {
@@ -66,13 +66,18 @@ function bindInputs() {
 
 function bindActions() {
   document.querySelectorAll('.pool-template-card').forEach((card) => {
-    card.addEventListener('click', () => {
+    card.addEventListener('click', async () => {
       const tpl = TEMPLATES[card.dataset.template];
       if (!tpl) return;
-      if (
-        state.bets.length > 0 &&
-        !confirm(`Aplicar modelo "${tpl.name}"? As apostas atuais serão substituídas.`)
-      ) return;
+
+      if (state.bets.length > 0) {
+        const ok = await showConfirm(`As ${state.bets.length} apostas atuais serão substituídas pelo modelo <strong>${tpl.name}</strong>.`, {
+          title: 'Aplicar modelo?',
+          confirmText: 'Aplicar',
+          cancelText: 'Cancelar',
+        });
+        if (!ok) return;
+      }
 
       state.bets = [];
       if (!state.name) {
@@ -89,9 +94,15 @@ function bindActions() {
     });
   });
 
-  document.getElementById('btnClearPool')?.addEventListener('click', () => {
+  document.getElementById('btnClearPool')?.addEventListener('click', async () => {
     if (!state.bets.length) return;
-    if (confirm('Limpar todas as apostas do bolão?')) {
+    const ok = await showConfirm(`Remover todas as <strong>${state.bets.length} apostas</strong> do bolão?`, {
+      title: 'Limpar bolão',
+      confirmText: 'Limpar',
+      cancelText: 'Cancelar',
+      danger: true,
+    });
+    if (ok) {
       state.bets = [];
       saveToStorage();
       render();

@@ -86,3 +86,47 @@ export function registerServiceWorker() {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }
+
+export function showConfirm(message, {
+  title = 'Confirmar',
+  confirmText = 'Confirmar',
+  cancelText = 'Cancelar',
+  danger = false
+} = {}) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <h3 class="modal-title" id="modal-title">${title}</h3>
+        <p class="modal-message">${message}</p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn modal-cancel">${cancelText}</button>
+          <button type="button" class="modal-btn modal-confirm${danger ? ' modal-confirm-danger' : ''}">${confirmText}</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('modal-visible'));
+
+    const close = (result) => {
+      overlay.classList.remove('modal-visible');
+      overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
+      document.removeEventListener('keydown', onKey);
+      resolve(result);
+    };
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') close(false);
+      if (e.key === 'Enter') close(true);
+    };
+
+    overlay.querySelector('.modal-confirm').addEventListener('click', () => close(true));
+    overlay.querySelector('.modal-cancel').addEventListener('click', () => close(false));
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(false); });
+    document.addEventListener('keydown', onKey);
+
+    overlay.querySelector('.modal-confirm').focus();
+  });
+}
