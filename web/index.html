@@ -21,7 +21,11 @@
   <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
 
   <header class="container topbar">
-<button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menu">☰</button>
+    <a class="brand" href="#main-content" aria-label="Bom de Sorte — início">
+      <span class="brand-mark" aria-hidden="true">●</span>
+      <span>Bom de Sorte</span>
+    </a>
+    <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menu">☰</button>
     <nav id="mainNav" aria-label="Principal">
       <a href="#como">Como funciona</a>
       <a href="#resultados">Resultados</a>
@@ -32,6 +36,10 @@
       <a href="#como-jogar">Como jogar</a>
       <a href="#faq">FAQ</a>
     </nav>
+    <div class="auth-area" id="authArea" aria-live="polite">
+      <button type="button" class="btn-auth" id="openAuthDialog">Entrar</button>
+    </div>
+    <a class="btn-cta" href="#simulador">Simular aposta</a>
     <button type="button" class="theme-toggle" id="themeToggle" aria-label="Ativar modo claro">◐</button>
   </header>
 
@@ -40,15 +48,23 @@
       <h1>Loteria e apostas com transparência e praticidade</h1>
       <p>Crie sua aposta, veja resultados atualizados, estatísticas e confira acertos — Mega-Sena, Lotofácil, Quina e Lotomania.</p>
       <div class="hero-actions">
-        <a class="primary" href="#simulador">Simular aposta</a>
+        <a class="primary" href="#simulador">Simular aposta agora</a>
         <a class="secondary" href="#resultados">Ver resultados</a>
+      </div>
+      <div class="modality-pills" aria-label="Escolha uma modalidade">
+        <button type="button" class="modality-pill" style="--accent: var(--mod-megasena)" data-select-modality="megasena"><span class="pill-dot"></span>Mega-Sena</button>
+        <button type="button" class="modality-pill" style="--accent: var(--mod-lotofacil)" data-select-modality="lotofacil"><span class="pill-dot"></span>Lotofácil</button>
+        <button type="button" class="modality-pill" style="--accent: var(--mod-quina)" data-select-modality="quina"><span class="pill-dot"></span>Quina</button>
+        <button type="button" class="modality-pill" style="--accent: var(--mod-lotomania)" data-select-modality="lotomania"><span class="pill-dot"></span>Lotomania</button>
+        <button type="button" class="modality-pill" style="--accent: var(--mod-duplasena)" data-select-modality="duplasena"><span class="pill-dot"></span>Dupla Sena</button>
+        <button type="button" class="modality-pill" style="--accent: var(--mod-maismilionaria)" data-select-modality="maismilionaria"><span class="pill-dot"></span>+Milionária</button>
       </div>
       <p class="disclaimer-inline">Site informativo. Não vende bilhetes. Resultados oficiais: <a href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">loterias.caixa.gov.br</a>.</p>
     </section>
 
     <section id="como">
       <h2>Como funciona</h2>
-      <div class="grid grid-3">
+      <div class="grid grid-3 steps">
         <article class="feature-card">
           <h3>Resultados e estatísticas</h3>
           <p>Últimos concursos via API da Caixa (com fallback local), dezenas frequentes e atraso.</p>
@@ -60,6 +76,60 @@
         <article class="feature-card">
           <h3>Conferência e favoritos</h3>
           <p>Compare sua aposta com o último sorteio e salve combinações favoritas.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="modalidades">
+      <h2>Modalidades disponíveis</h2>
+      <div class="grid grid-3 modality-cards">
+        <article class="modality-card" style="--accent: var(--mod-megasena)">
+          <div class="modality-card-head">Mega-Sena</div>
+          <div class="modality-card-body">
+            <p>Escolha 6 números de 01 a 60.</p>
+            <p class="muted">Sorteios: quartas e sábados.</p>
+            <button type="button" class="btn-secondary" data-select-modality="megasena">Simular Mega-Sena</button>
+          </div>
+        </article>
+        <article class="modality-card" style="--accent: var(--mod-lotofacil)">
+          <div class="modality-card-head">Lotofácil</div>
+          <div class="modality-card-body">
+            <p>Escolha 15 números de 01 a 25.</p>
+            <p class="muted">Sorteios: segunda a sábado.</p>
+            <button type="button" class="btn-secondary" data-select-modality="lotofacil">Simular Lotofácil</button>
+          </div>
+        </article>
+        <article class="modality-card" style="--accent: var(--mod-quina)">
+          <div class="modality-card-head">Quina</div>
+          <div class="modality-card-body">
+            <p>Escolha 5 números de 01 a 80.</p>
+            <p class="muted">Sorteios: segunda a sábado.</p>
+            <button type="button" class="btn-secondary" data-select-modality="quina">Simular Quina</button>
+          </div>
+        </article>
+        <article class="modality-card" style="--accent: var(--mod-lotomania)">
+          <div class="modality-card-head">Lotomania</div>
+          <div class="modality-card-body">
+            <p>Escolha 20 números de 00 a 99.</p>
+            <p class="muted">Sorteios: segundas, quartas e sextas.</p>
+            <button type="button" class="btn-secondary" data-select-modality="lotomania">Simular Lotomania</button>
+          </div>
+        </article>
+        <article class="modality-card" style="--accent: var(--mod-duplasena)">
+          <div class="modality-card-head">Dupla Sena</div>
+          <div class="modality-card-body">
+            <p>Escolha 6 números de 01 a 50. Dois sorteios por concurso.</p>
+            <p class="muted">Sorteios: segundas, quartas e sábados.</p>
+            <button type="button" class="btn-secondary" data-select-modality="duplasena">Simular Dupla Sena</button>
+          </div>
+        </article>
+        <article class="modality-card" style="--accent: var(--mod-maismilionaria)">
+          <div class="modality-card-head">+Milionária</div>
+          <div class="modality-card-body">
+            <p>Escolha 6 números de 01 a 50 e 2 trevos de 1 a 6.</p>
+            <p class="muted">Sorteios: sábados.</p>
+            <button type="button" class="btn-secondary" data-select-modality="maismilionaria">Simular +Milionária</button>
+          </div>
         </article>
       </div>
     </section>
@@ -115,6 +185,8 @@
       </div>
 
       <div class="numbers" id="numberGrid"></div>
+
+      <div class="extra-grid-wrap" id="extraGrid" hidden></div>
 
       <div class="actions">
         <button type="button" id="btnQuickPick">Gerar aposta</button>
@@ -247,6 +319,42 @@
       <div id="rulesContent"></div>
     </section>
 
+    <section id="confianca" class="trust-section">
+      <h2>Por que usar o Bom de Sorte</h2>
+      <div class="grid grid-3">
+        <article class="feature-card">
+          <h3>Dados oficiais</h3>
+          <p>Resultados direto da API pública da Caixa, com aviso claro sempre que usamos o backup local.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Privacidade por padrão</h3>
+          <p>Seleções e favoritos ficam só no seu navegador — não coletamos nem vendemos seus dados.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Sem venda de bilhetes</h3>
+          <p>Somos um simulador e organizador de bolões informativo. Bilhetes reais só na Caixa.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="dicas" class="tips-section">
+      <h2>Dicas de jogo responsável</h2>
+      <div class="grid grid-3">
+        <article class="feature-card">
+          <h3>Não existe fórmula garantida</h3>
+          <p>Estatísticas mostram a frequência passada das dezenas, não uma previsão de sorteios futuros.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Defina um orçamento</h3>
+          <p>Jogue somente o que você pode perder sem comprometer despesas essenciais.</p>
+        </article>
+        <article class="feature-card">
+          <h3>Simule antes de apostar de verdade</h3>
+          <p>Use o simulador para testar combinações e conferir contra sorteios reais sem gastar nada.</p>
+        </article>
+      </div>
+    </section>
+
     <section id="faq" class="faq">
       <h2>Perguntas frequentes</h2>
       <details class="faq-item">
@@ -279,6 +387,27 @@
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
+    <button type="button" class="auth-close" id="closeAuthDialog" aria-label="Fechar">×</button>
+    <form id="authForm" novalidate>
+      <h2 id="authDialogTitle">Entrar</h2>
+      <p class="muted" id="authDescription">Acesse sua conta com segurança.</p>
+      <label class="field-label" for="authEmail">E-mail
+        <input id="authEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required>
+      </label>
+      <label class="field-label" for="authPassword">Senha
+        <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="12" maxlength="128" required>
+      </label>
+      <p class="auth-hint" id="authPasswordHint" hidden>Use ao menos 12 caracteres, incluindo letras maiúsculas, minúsculas, número e símbolo.</p>
+      <p class="auth-error" id="authError" role="alert" hidden></p>
+      <button type="submit" id="authSubmit">Entrar</button>
+      <div class="auth-links">
+        <button type="button" class="link-button" id="authModeToggle">Criar conta</button>
+        <button type="button" class="link-button" id="authReset">Esqueci minha senha</button>
+      </div>
+    </form>
+  </dialog>
 
   <section class="print-slip" aria-hidden="true">
     <h2>Comprovante de aposta (simulação)</h2>

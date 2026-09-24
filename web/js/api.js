@@ -7,12 +7,26 @@ function parseBalls(data) {
   return raw.map((d) => Number(d)).sort((a, b) => a - b);
 }
 
+function parseSecondDraw(data) {
+  const raw = data.listaDezenasSegundoSorteio;
+  if (!Array.isArray(raw) || !raw.length) return null;
+  return raw.map((d) => Number(d)).sort((a, b) => a - b);
+}
+
+function parseTrevos(data) {
+  const raw = data.trevosSorteados;
+  if (!Array.isArray(raw) || !raw.length) return null;
+  return raw.map((d) => Number(d)).sort((a, b) => a - b);
+}
+
 export function normalizeContest(data, modalityId) {
   const balls = parseBalls(data);
   return {
     contest: data.numero,
     date: data.dataApuracao || '',
     balls,
+    balls2: parseSecondDraw(data),
+    trevos: parseTrevos(data),
     accumulated: Boolean(data.acumulado),
     nextContest: data.numeroConcursoProximo,
     nextDate: data.dataProximoConcurso || '',

@@ -1,4 +1,4 @@
-import { formatNumber, getPrizeLabel } from './config.js';
+import { formatNumber, getPrizeLabel, getExtraPrizeLabel } from './config.js';
 import { showToast, showConfirm } from './ui.js';
 import { getLatestResult } from './results.js';
 
@@ -41,9 +41,11 @@ export function switchPoolModality(mod) {
   render();
 }
 
-export function addBetToPool(numbers) {
+export function addBetToPool(numbers, extra) {
   if (!numbers.length) return false;
-  state.bets.push({ id: crypto.randomUUID(), numbers: [...numbers] });
+  const bet = { id: crypto.randomUUID(), numbers: [...numbers] };
+  if (extra && extra.length) bet.extra = [...extra];
+  state.bets.push(bet);
   saveToStorage();
   render();
   showToast('Aposta incluída no bolão.', 'success');
@@ -86,7 +88,7 @@ function bindActions() {
         if (nameEl) nameEl.value = tpl.name;
       }
       for (let i = 0; i < tpl.bets; i++) {
-        state.bets.push({ id: crypto.randomUUID(), numbers: randomPick() });
+        state.bets.push(randomBet());
       }
       saveToStorage();
       render();
@@ -114,7 +116,7 @@ function bindActions() {
     const countEl = document.getElementById('poolGenCount');
     const count = Math.min(30, Math.max(1, Number(countEl?.value) || 5));
     for (let i = 0; i < count; i++) {
-      state.bets.push({ id: crypto.randomUUID(), numbers: randomPick() });
+      state.bets.push(randomBet());
     }
     saveToStorage();
     render();
@@ -175,6 +177,26 @@ function randomPick() {
   return result.sort((a, b) => a - b);
 }
 
+function randomExtraPick() {
+  if (!modality.extra) return undefined;
+  const { min, max, pick } = modality.extra;
+  const working = [];
+  for (let i = min; i <= max; i++) working.push(i);
+  const result = [];
+  while (result.length < pick) {
+    const idx = Math.floor(Math.random() * working.length);
+    result.push(working.splice(idx, 1)[0]);
+  }
+  return result.sort((a, b) => a - b);
+}
+
+function randomBet() {
+  const bet = { id: crypto.randomUUID(), numbers: randomPick() };
+  const extra = randomExtraPick();
+  if (extra) bet.extra = extra;
+  return bet;
+}
+
 function ballsHtml(numbers, hitSet) {
   return numbers
     .map((n) => {
@@ -182,6 +204,17 @@ function ballsHtml(numbers, hitSet) {
       let cls = 'ball';
       if (hitSet) cls += hitSet.has(n) ? ' ball-hit' : ' ball-miss';
       return `<span class="${cls}">${fmt}</span>`;
+    })
+    .join('');
+}
+
+function extraHtml(numbers, hitSet) {
+  if (!numbers || !numbers.length) return '';
+  return numbers
+    .map((n) => {
+      let cls = 'ball ball-trevo';
+      if (hitSet) cls += hitSet.has(n) ? ' ball-hit' : ' ball-miss';
+      return `<span class="${cls}">${n}</span>`;
     })
     .join('');
 }
@@ -210,7 +243,7 @@ function renderBets() {
         (bet, i) => `
       <article class="pool-bet-item">
         <span class="pool-bet-num">Aposta ${i + 1}</span>
-        <div class="balls pool-bet-balls">${ballsHtml(bet.numbers)}</div>
+        <div class="balls pool-bet-balls">${ballsHtml(bet.numbers)}${extraHtml(bet.extra)}</div>
         <button type="button" class="btn-sm btn-danger" data-bet-id="${bet.id}"
           aria-label="Remover aposta ${i + 1}">✕</button>
       </article>`
@@ -325,21 +358,34 @@ function conferPool() {
     return;
   }
 
-  const drawn = new Set(latest.balls);
+  const draws = modality.multiDraw && latest.balls2 ? [latest.balls, latest.balls2] : [latest.balls];
+  const drawnSets = draws.map((b) => new Set(b));
+  const extraDrawnSet = modality.extra && latest.trevos ? new Set(latest.trevos) : null;
+
   let bestHits = 0;
 
   const rows = state.bets.map((bet, i) => {
-    const hits = bet.numbers.filter((n) => drawn.has(n));
+    const hitsPerDraw = drawnSets.map((s) => bet.numbers.filter((n) => s.has(n)));
+    const bestIdx = hitsPerDraw[0].length >= (hitsPerDraw[1]?.length ?? -1) ? 0 : 1;
+    const hits = hitsPerDraw[bestIdx];
+    const drawnSet = drawnSets[bestIdx];
     if (hits.length > bestHits) bestHits = hits.length;
-    const label = getPrizeLabel(modality, hits.length);
+
+    const extraHits = modality.extra && bet.extra && extraDrawnSet
+      ? bet.extra.filter((n) => extraDrawnSet.has(n))
+      : [];
+
+    const label = modality.extra
+      ? getExtraPrizeLabel(modality, hits.length, extraHits.length)
+      : getPrizeLabel(modality, hits.length);
     const minPrizeTier = modality.prizeTiers[modality.prizeTiers.length - 1]?.hits ?? 0;
     const isWinner = hits.length > 0 && hits.length >= minPrizeTier;
 
     return `
       <div class="confer-row${isWinner ? ' confer-winner' : ''}">
         <span class="confer-row-num">Aposta ${i + 1}</span>
-        <div class="balls confer-balls">${ballsHtml(bet.numbers, drawn)}</div>
-        <span class="confer-hits-label">${hits.length} acerto(s) — ${label}</span>
+        <div class="balls confer-balls">${ballsHtml(bet.numbers, drawnSet)}${extraHtml(bet.extra, extraDrawnSet)}</div>
+        <span class="confer-hits-label">${hits.length} acerto(s)${modality.extra ? ` + ${extraHits.length} trevo(s)` : ''} — ${label}</span>
       </div>`;
   });
 
@@ -353,6 +399,16 @@ function conferPool() {
           .map((n) => `<span class="ball">${formatNumber(n, modality)}</span>`)
           .join('')}
       </div>
+      ${
+        latest.balls2
+          ? `<div class="balls">${latest.balls2.map((n) => `<span class="ball">${formatNumber(n, modality)}</span>`).join('')}</div>`
+          : ''
+      }
+      ${
+        latest.trevos
+          ? `<div class="balls">${latest.trevos.map((n) => `<span class="ball ball-trevo">${n}</span>`).join('')}</div>`
+          : ''
+      }
     </div>
     ${
       bestHits > 0
@@ -383,8 +439,9 @@ function buildPoolText() {
   ].filter(Boolean);
 
   state.bets.forEach((bet, i) => {
+    const trevoText = bet.extra?.length ? ` + trevos ${bet.extra.join(' - ')}` : '';
     lines.push(
-      `Aposta ${i + 1}: ${bet.numbers.map((n) => formatNumber(n, modality)).join(' - ')}`
+      `Aposta ${i + 1}: ${bet.numbers.map((n) => formatNumber(n, modality)).join(' - ')}${trevoText}`
     );
   });
 
@@ -439,10 +496,10 @@ function printPool() {
     state.participants.reduce((s, p) => s + p.shares, 0) || 1;
 
   const betsRows = state.bets
-    .map(
-      (bet, i) =>
-        `<tr><td>${i + 1}</td><td>${bet.numbers.map((n) => formatNumber(n, modality)).join(' - ')}</td></tr>`
-    )
+    .map((bet, i) => {
+      const trevoText = bet.extra?.length ? ` <em>+ trevos ${bet.extra.join(' - ')}</em>` : '';
+      return `<tr><td>${i + 1}</td><td>${bet.numbers.map((n) => formatNumber(n, modality)).join(' - ')}${trevoText}</td></tr>`;
+    })
     .join('');
 
   const participantsBlock = state.participants.length

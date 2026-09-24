@@ -1,4 +1,4 @@
-const CACHE = 'loteria-v2';
+const CACHE = 'loteria-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -13,6 +13,8 @@ const ASSETS = [
   './js/simulator.js',
   './js/favorites.js',
   './js/pool.js',
+  './js/auth.js',
+  './js/auth-config.js',
   './favicon.svg',
   './manifest.webmanifest',
   './data/history-megasena.json',

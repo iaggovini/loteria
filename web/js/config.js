@@ -72,12 +72,63 @@ export const MODALITIES = {
       { hits: 15, label: '15 acertos' },
       { hits: 0, label: '0 acertos (prêmio especial)' }
     ]
+  },
+  duplasena: {
+    id: 'duplasena',
+    name: 'Dupla Sena',
+    pick: 6,
+    min: 1,
+    max: 50,
+    gridCols: 10,
+    apiPath: 'duplasena',
+    drawDays: 'segundas, quartas e sábados',
+    description: 'Escolha 6 números de 01 a 50. Dois sorteios por concurso.',
+    multiDraw: true,
+    prizeTiers: [
+      { hits: 6, label: 'Sena (6 acertos)' },
+      { hits: 5, label: 'Quina (5 acertos)' },
+      { hits: 4, label: 'Quadra (4 acertos)' },
+      { hits: 3, label: 'Terno (3 acertos)' }
+    ]
+  },
+  maismilionaria: {
+    id: 'maismilionaria',
+    name: '+Milionária',
+    pick: 6,
+    min: 1,
+    max: 50,
+    gridCols: 10,
+    apiPath: 'maismilionaria',
+    drawDays: 'sábados',
+    description: 'Escolha 6 números de 01 a 50 e 2 trevos de 1 a 6.',
+    extra: { key: 'trevo', label: 'Trevo', min: 1, max: 6, pick: 2 },
+    prizeTiers: [
+      { hits: 6, extraHits: 2, label: '6 acertos + 2 trevos' },
+      { hits: 6, extraHits: 0, label: '6 acertos + 1 ou nenhum trevo' },
+      { hits: 5, extraHits: 2, label: '5 acertos + 2 trevos' },
+      { hits: 5, extraHits: 0, label: '5 acertos + 1 ou nenhum trevo' },
+      { hits: 4, extraHits: 2, label: '4 acertos + 2 trevos' },
+      { hits: 4, extraHits: 0, label: '4 acertos + 1 ou nenhum trevo' },
+      { hits: 3, extraHits: 2, label: '3 acertos + 2 trevos' },
+      { hits: 3, extraHits: 1, label: '3 acertos + 1 trevo' },
+      { hits: 2, extraHits: 2, label: '2 acertos + 2 trevos' },
+      { hits: 2, extraHits: 1, label: '2 acertos + 1 trevo' }
+    ]
   }
 };
 
 export const DEFAULT_MODALITY = 'megasena';
 export const HISTORY_PAGE_SIZE = 6;
 export const STATS_CONTESTS = 30;
+
+export const MODALITY_COLORS = {
+  megasena: '#0d9f4f',
+  lotofacil: '#9333c7',
+  quina: '#2563eb',
+  lotomania: '#f2761e',
+  duplasena: '#d6266b',
+  maismilionaria: '#1f8a5f'
+};
 
 export function formatNumber(value, modality) {
   const pad = modality.max > 60 || modality.id === 'lotomania' ? 2 : 2;
@@ -89,4 +140,12 @@ export function getPrizeLabel(modality, hits) {
   if (tier) return tier.label;
   if (hits >= 3 && modality.id === 'megasena') return `${hits} acertos`;
   return `${hits} acerto${hits === 1 ? '' : 's'}`;
+}
+
+export function getExtraPrizeLabel(modality, hits, extraHits) {
+  const tier = modality.prizeTiers.find(
+    (t) => t.hits === hits && extraHits >= (t.extraHits ?? 0)
+  );
+  if (tier) return tier.label;
+  return `${hits} acerto${hits === 1 ? '' : 's'} + ${extraHits} trevo${extraHits === 1 ? '' : 's'}`;
 }

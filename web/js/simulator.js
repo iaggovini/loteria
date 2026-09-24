@@ -1,10 +1,11 @@
-import { formatNumber, getPrizeLabel } from './config.js';
+import { formatNumber, getPrizeLabel, getExtraPrizeLabel } from './config.js';
 import { loadSelection, saveSelection } from './storage.js';
 import { showToast } from './ui.js';
 import { getLatestResult } from './results.js';
 
 let modality = null;
 const selected = new Set();
+const selectedExtra = new Set();
 let gridLocked = false;
 
 const els = {};
@@ -17,7 +18,8 @@ export function initSimulator(mod, callbacks) {
     counter: document.getElementById('selectionCounter'),
     progress: document.getElementById('selectionProgress'),
     conference: document.getElementById('conferenceResult'),
-    desc: document.getElementById('simulatorDesc')
+    desc: document.getElementById('simulatorDesc'),
+    extraWrap: document.getElementById('extraGrid')
   });
 
   if (els.desc) {
@@ -27,6 +29,7 @@ export function initSimulator(mod, callbacks) {
   bindActions(callbacks);
   restoreSelection();
   buildGrid();
+  buildExtraSection();
   updateUI();
 }
 
@@ -53,10 +56,12 @@ function bindActions(callbacks) {
 export function switchModality(mod) {
   modality = mod;
   selected.clear();
+  selectedExtra.clear();
   gridLocked = false;
   if (els.desc) els.desc.textContent = modality.description;
   restoreSelection();
   buildGrid();
+  buildExtraSection();
   updateUI();
   clearConference();
 }
@@ -109,6 +114,77 @@ function syncGridClasses() {
   });
 }
 
+function buildExtraSection() {
+  if (!els.extraWrap) return;
+
+  if (!modality.extra) {
+    els.extraWrap.hidden = true;
+    els.extraWrap.innerHTML = '';
+    els.extraGrid = null;
+    els.extraCounter = null;
+    return;
+  }
+
+  const { label, min, max, pick } = modality.extra;
+  els.extraWrap.hidden = false;
+  els.extraWrap.innerHTML = `
+    <div class="extra-head">
+      <strong>${label}s</strong>
+      <span id="extraCounter">0 / ${pick}</span>
+    </div>
+    <div class="numbers extra-numbers" id="extraNumberGrid"></div>
+  `;
+
+  els.extraGrid = document.getElementById('extraNumberGrid');
+  els.extraCounter = document.getElementById('extraCounter');
+  els.extraGrid.style.gridTemplateColumns = `repeat(${max - min + 1}, minmax(0, 1fr))`;
+
+  for (let i = min; i <= max; i += 1) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'number-btn extra-btn';
+    button.textContent = String(i);
+    button.setAttribute('aria-pressed', 'false');
+    button.setAttribute('aria-label', `${label} ${i}, não selecionado`);
+    button.addEventListener('click', () => toggleExtra(i, button));
+    els.extraGrid.appendChild(button);
+  }
+
+  syncExtraGridClasses();
+}
+
+function toggleExtra(value) {
+  const { pick, label } = modality.extra;
+  if (selectedExtra.has(value)) {
+    selectedExtra.delete(value);
+  } else if (selectedExtra.size < pick) {
+    selectedExtra.add(value);
+  } else {
+    showToast(`Selecione no máximo ${pick} ${label.toLowerCase()}s.`, 'warning');
+    return;
+  }
+  syncExtraGridClasses();
+  clearConference();
+}
+
+function syncExtraGridClasses() {
+  if (!els.extraGrid || !modality.extra) return;
+  const { pick, label } = modality.extra;
+  els.extraGrid.querySelectorAll('.extra-btn').forEach((button) => {
+    const value = Number(button.textContent);
+    const isSelected = selectedExtra.has(value);
+    button.classList.toggle('selected', isSelected);
+    button.setAttribute('aria-pressed', String(isSelected));
+    button.setAttribute('aria-label', `${label} ${value}, ${isSelected ? 'selecionado' : 'não selecionado'}`);
+    button.disabled = selectedExtra.size >= pick && !isSelected;
+  });
+  if (els.extraCounter) els.extraCounter.textContent = `${selectedExtra.size} / ${pick}`;
+}
+
+export function getSelectedExtra() {
+  return [...selectedExtra].sort((a, b) => a - b);
+}
+
 function updateUI() {
   const numbers = [...selected].sort((a, b) => a - b);
   const formatted = numbers.map((n) => formatNumber(n, modality));
@@ -154,11 +230,13 @@ function toggleNumber(value, button) {
 
 export function clearSelection() {
   selected.clear();
+  selectedExtra.clear();
   gridLocked = false;
   document.querySelectorAll('.number-btn').forEach((button) => {
     button.classList.remove('selected');
     button.disabled = false;
   });
+  syncExtraGridClasses();
   updateUI();
   clearConference();
 }
@@ -234,6 +312,19 @@ export async function generateQuickPick() {
   }
 
   applyNumbers(pick);
+
+  if (modality.extra) {
+    const { min, max, pick: extraPick } = modality.extra;
+    const extraPool = [];
+    for (let i = min; i <= max; i += 1) extraPool.push(i);
+    selectedExtra.clear();
+    while (selectedExtra.size < extraPick && extraPool.length) {
+      const idx = Math.floor(Math.random() * extraPool.length);
+      selectedExtra.add(extraPool.splice(idx, 1)[0]);
+    }
+    syncExtraGridClasses();
+  }
+
   showToast('Aposta gerada automaticamente.', 'success');
   clearConference();
 }
@@ -252,32 +343,80 @@ function runConference() {
     return;
   }
 
-  const drawn = new Set(latest.balls);
-  const hits = getSelectedNumbers().filter((n) => drawn.has(n));
-  const label = getPrizeLabel(modality, hits.length);
+  if (modality.extra && selectedExtra.size !== modality.extra.pick) {
+    showToast(
+      `Selecione exatamente ${modality.extra.pick} ${modality.extra.label.toLowerCase()}s para conferir.`,
+      'warning'
+    );
+    return;
+  }
+
+  const nums = getSelectedNumbers();
+  const draws =
+    modality.multiDraw && latest.balls2
+      ? [
+          { label: '1º sorteio', balls: latest.balls },
+          { label: '2º sorteio', balls: latest.balls2 }
+        ]
+      : [{ label: null, balls: latest.balls }];
+
+  const drawResults = draws.map((d) => {
+    const drawnSet = new Set(d.balls);
+    return { ...d, drawnSet, hits: nums.filter((n) => drawnSet.has(n)) };
+  });
+
+  const best = drawResults.reduce((a, b) => (b.hits.length > a.hits.length ? b : a));
+
+  let extraHitsCount = 0;
+  let extraDrawnSet = new Set();
+  if (modality.extra && latest.trevos) {
+    extraDrawnSet = new Set(latest.trevos);
+    extraHitsCount = getSelectedExtra().filter((n) => extraDrawnSet.has(n)).length;
+  }
+
+  const label = modality.extra
+    ? getExtraPrizeLabel(modality, best.hits.length, extraHitsCount)
+    : getPrizeLabel(modality, best.hits.length);
 
   if (box) {
     box.hidden = false;
     box.innerHTML = `
       <p><strong>Concurso ${latest.contest}</strong> (${latest.date})</p>
-      <p class="conference-hits">${hits.length} acerto(s): ${
-        hits.length
-          ? hits.map((n) => formatNumber(n, modality)).join(', ')
-          : 'nenhum'
-      }</p>
+      ${drawResults
+        .map(
+          (d) => `
+        <p class="conference-hits">${d.label ? `<strong>${d.label}:</strong> ` : ''}${d.hits.length} acerto(s): ${
+            d.hits.length ? d.hits.map((n) => formatNumber(n, modality)).join(', ') : 'nenhum'
+          }</p>
+        <div class="balls conference-balls">
+          ${nums
+            .map((n) => {
+              const hit = d.drawnSet.has(n);
+              return `<span class="ball ${hit ? 'ball-hit' : 'ball-miss'}">${formatNumber(n, modality)}</span>`;
+            })
+            .join('')}
+        </div>`
+        )
+        .join('')}
+      ${
+        modality.extra
+          ? `
+        <p class="conference-hits"><strong>${modality.extra.label}s:</strong> ${extraHitsCount} acerto(s)${latest.trevos ? '' : ' (sem dado de trevo neste concurso)'}</p>
+        <div class="balls conference-balls">
+          ${getSelectedExtra()
+            .map((n) => {
+              const hit = extraDrawnSet.has(n);
+              return `<span class="ball ball-trevo ${hit ? 'ball-hit' : 'ball-miss'}">${n}</span>`;
+            })
+            .join('')}
+        </div>`
+          : ''
+      }
       <p class="conference-tier">${label}</p>
-      <div class="balls conference-balls">
-        ${getSelectedNumbers()
-          .map((n) => {
-            const hit = drawn.has(n);
-            return `<span class="ball ${hit ? 'ball-hit' : 'ball-miss'}">${formatNumber(n, modality)}</span>`;
-          })
-          .join('')}
-      </div>
     `;
   }
 
-  showToast(`Conferência: ${hits.length} acerto(s).`, hits.length >= 4 ? 'success' : 'info');
+  showToast(`Conferência: ${best.hits.length} acerto(s).`, best.hits.length >= 4 ? 'success' : 'info');
 }
 
 function clearConference() {

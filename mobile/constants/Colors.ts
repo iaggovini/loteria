@@ -1,0 +1,36 @@
+// Paleta portada de web/css/style.css (:root e [data-theme="light"]) para manter
+// a mesma identidade visual do site "Bom de Sorte".
+export default {
+  dark: {
+    text: '#f8fafc',
+    background: '#0f172a',
+    surface: '#111827',
+    surface2: '#1f2937',
+    muted: '#94a3b8',
+    tint: '#38bdf8',
+    primary: '#38bdf8',
+    accent: '#7c3aed',
+    success: '#22c55e',
+    danger: '#f97316',
+    warning: '#fbbf24',
+    border: 'rgba(148, 163, 184, 0.15)',
+    tabIconDefault: '#64748b',
+    tabIconSelected: '#38bdf8',
+  },
+  light: {
+    text: '#0f172a',
+    background: '#f1f5f9',
+    surface: '#ffffff',
+    surface2: '#e2e8f0',
+    muted: '#475569',
+    tint: '#0284c7',
+    primary: '#0284c7',
+    accent: '#6d28d9',
+    success: '#16a34a',
+    danger: '#ea580c',
+    warning: '#d97706',
+    border: 'rgba(15, 23, 42, 0.12)',
+    tabIconDefault: '#94a3b8',
+    tabIconSelected: '#0284c7',
+  },
+};

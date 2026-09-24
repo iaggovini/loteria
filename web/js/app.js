@@ -23,6 +23,7 @@ import {
   switchModality,
   applyNumbers,
   getSelectedNumbers,
+  getSelectedExtra,
   parseUrlBet,
   clearSelection
 } from './simulator.js';
@@ -34,6 +35,7 @@ import {
   getFavorite
 } from './favorites.js';
 import { initPool, switchPoolModality, addBetToPool } from './pool.js';
+import { initAuth } from './auth.js';
 
 let currentModality = MODALITIES[getModality()] || MODALITIES[DEFAULT_MODALITY];
 
@@ -116,6 +118,25 @@ function handleFavoriteAction(action, idOrName) {
   }
 }
 
+function selectModality(id) {
+  if (!MODALITIES[id] || id === currentModality.id) {
+    document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+  const select = document.getElementById('modalitySelect');
+  if (select) select.value = id;
+  currentModality = MODALITIES[id];
+  setModality(id);
+  onModalityChange();
+  document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+function initModalityShortcuts() {
+  document.querySelectorAll('[data-select-modality]').forEach((el) => {
+    el.addEventListener('click', () => selectModality(el.dataset.selectModality));
+  });
+}
+
 function applyUrlParams() {
   const bet = parseUrlBet();
   if (!bet || !MODALITIES[bet.modalityId]) return;
@@ -178,8 +199,12 @@ function init() {
   initThemeToggle(setTheme);
   initScrollSpy();
   registerServiceWorker();
+  initAuth().catch(() => {
+    document.getElementById('authArea')?.replaceChildren();
+  });
 
   initModalitySelector();
+  initModalityShortcuts();
   renderRules(currentModality);
   initSimulator(currentModality);
   initResults(currentModality, () => populateCompareSelects());
@@ -193,7 +218,14 @@ function init() {
       showToast(`Selecione ${currentModality.pick} números para incluir no bolão.`, 'warning');
       return;
     }
-    addBetToPool(nums);
+    if (currentModality.extra && getSelectedExtra().length !== currentModality.extra.pick) {
+      showToast(
+        `Selecione ${currentModality.extra.pick} ${currentModality.extra.label.toLowerCase()}s para incluir no bolão.`,
+        'warning'
+      );
+      return;
+    }
+    addBetToPool(nums, currentModality.extra ? getSelectedExtra() : undefined);
     document.getElementById('bolao')?.scrollIntoView({ behavior: 'smooth' });
   });
 

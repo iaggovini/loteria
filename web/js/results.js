@@ -1,4 +1,4 @@
-import { formatNumber } from './config.js';
+import { formatNumber, MODALITY_COLORS } from './config.js';
 import { loadInitialHistory, loadMoreHistory } from './api.js';
 import { renderStats } from './stats.js';
 
@@ -79,12 +79,33 @@ function renderCards(container) {
     const card = document.createElement('article');
     card.className = 'card result-card';
     card.dataset.contest = result.contest;
+    card.style.setProperty('--accent', MODALITY_COLORS[modality.id] || 'var(--primary)');
+
+    const secondDraw = result.balls2
+      ? `
+      <p class="result-draw-label">2º sorteio</p>
+      <div class="balls" aria-label="Dezenas sorteadas no segundo sorteio">
+        ${result.balls2
+          .map((ball) => `<span class="ball">${formatNumber(ball, modality)}</span>`)
+          .join('')}
+      </div>`
+      : '';
+
+    const trevos = result.trevos
+      ? `
+      <p class="result-draw-label">Trevos</p>
+      <div class="balls" aria-label="Trevos sorteados">
+        ${result.trevos.map((t) => `<span class="ball ball-trevo">${t}</span>`).join('')}
+      </div>`
+      : '';
+
     card.innerHTML = `
       <div class="result-header">
         <strong>Concurso ${result.contest}</strong>
         <time datetime="${result.date}">${result.date}</time>
       </div>
       ${result.accumulated ? '<span class="badge badge-accumulated">Acumulou</span>' : ''}
+      ${result.balls2 ? '<p class="result-draw-label">1º sorteio</p>' : ''}
       <div class="balls" aria-label="Dezenas sorteadas">
         ${result.balls
           .map(
@@ -93,6 +114,8 @@ function renderCards(container) {
           )
           .join('')}
       </div>
+      ${secondDraw}
+      ${trevos}
     `;
     container.appendChild(card);
   });
