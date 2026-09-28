@@ -390,26 +390,84 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
-    <button type="button" class="auth-close" id="closeAuthDialog" aria-label="Fechar">×</button>
-    <form id="authForm" novalidate>
-      <h2 id="authDialogTitle">Entrar</h2>
-      <p class="muted" id="authDescription">Acesse sua conta com segurança.</p>
-      <label class="field-label" for="authEmail">E-mail
-        <input id="authEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" required>
-      </label>
-      <label class="field-label" for="authPassword">Senha
-        <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="12" maxlength="128" required>
-      </label>
-      <p class="auth-hint" id="authPasswordHint" hidden>Use ao menos 12 caracteres, incluindo letras maiúsculas, minúsculas, número e símbolo.</p>
-      <div class="auth-captcha" id="authCaptcha" hidden></div>
-      <p class="auth-error" id="authError" role="alert" hidden></p>
-      <p class="auth-success" id="authSuccess" role="status" hidden></p>
-      <button type="submit" id="authSubmit">Entrar</button>
-      <div class="auth-links">
-        <button type="button" class="link-button" id="authModeToggle">Criar conta</button>
-        <button type="button" class="link-button" id="authReset">Esqueci minha senha</button>
+    <div class="auth-brand">
+      <span class="auth-brand-name"><span class="brand-mark" aria-hidden="true">●</span>Bom de Sorte</span>
+      <button type="button" class="auth-close" id="closeAuthDialog" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div class="auth-body">
+      <div class="auth-tabs" id="authTabs" role="tablist" aria-label="Acesso à conta">
+        <button type="button" role="tab" class="auth-tab" data-auth-tab="signin" aria-selected="true">Entrar</button>
+        <button type="button" role="tab" class="auth-tab" data-auth-tab="signup" aria-selected="false">Criar conta</button>
       </div>
-    </form>
+
+      <button type="button" class="auth-back" id="authBack" hidden>
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Voltar para o login
+      </button>
+
+      <form id="authForm" class="auth-form" novalidate>
+        <header class="auth-heading">
+          <h2 id="authDialogTitle">Bem-vindo de volta</h2>
+          <p id="authDescription">Acesse sua conta Bom de Sorte.</p>
+        </header>
+
+        <div class="auth-field" id="authEmailField">
+          <label for="authEmail">E-mail</label>
+          <input id="authEmail" name="email" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="voce@exemplo.com" required>
+        </div>
+
+        <div class="auth-field" id="authPasswordField">
+          <div class="auth-field-head">
+            <label for="authPassword">Senha</label>
+            <button type="button" class="auth-link" id="authReset">Esqueceu a senha?</button>
+          </div>
+          <div class="auth-password">
+            <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="12" maxlength="128" required>
+            <button type="button" class="auth-reveal" id="authReveal" aria-label="Mostrar senha" aria-pressed="false">
+              <svg class="icon-show" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+              <svg class="icon-hide" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6A17.4 17.4 0 0 0 2 12s3.6 7 10 7a9.9 9.9 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+          <ul class="auth-rules" id="authPasswordHint" aria-label="Requisitos da senha" hidden>
+            <li data-rule="length">12 ou mais caracteres</li>
+            <li data-rule="upper">Letra maiúscula</li>
+            <li data-rule="lower">Letra minúscula</li>
+            <li data-rule="number">Número</li>
+            <li data-rule="symbol">Símbolo (ex.: ! @ # $)</li>
+          </ul>
+        </div>
+
+        <div class="auth-captcha" id="authCaptcha"></div>
+
+        <div class="auth-alert" id="authError" role="alert" hidden>
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5v5.5M12 16.5v.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span id="authErrorText"></span>
+        </div>
+
+        <button type="submit" class="auth-submit" id="authSubmit">
+          <span class="auth-spinner" aria-hidden="true"></span>
+          <span id="authSubmitLabel">Entrar</span>
+        </button>
+      </form>
+
+      <div class="auth-done" id="authDone" role="status" hidden>
+        <div class="auth-done-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28"><rect x="3" y="5" width="18" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 7l8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+        </div>
+        <h2 id="authDoneTitle">Verifique seu e-mail</h2>
+        <p id="authDoneText"></p>
+        <p class="auth-done-tip">Não encontrou? Confira as pastas de spam e promoções.</p>
+        <button type="button" class="auth-submit" id="authDoneBack">Voltar para o login</button>
+      </div>
+
+      <p class="auth-footnote">
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+        Conexão criptografada. Nunca pedimos sua senha por e-mail.
+      </p>
+    </div>
   </dialog>
 
   <section class="print-slip" aria-hidden="true">
