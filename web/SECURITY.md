@@ -15,3 +15,9 @@ O login usa Supabase Auth. O navegador recebe somente a chave **anon/publishable
 ## Limites importantes
 
 Nenhum login do lado do navegador, sozinho, torna dados invioláveis. A proteção depende de HTTPS, confirmação de e-mail, RLS em todo dado privado, chaves administrativas somente no servidor e atualização regular de dependências. Este site continua guardando favoritos e bolões apenas no `localStorage`; eles não são enviados para o Supabase.
+
+## Biblioteca do Supabase
+
+O cliente `@supabase/supabase-js` é servido localmente em `js/vendor/supabase.js` (build UMD convertido em ES module), sem depender de CDN em tempo de execução. Para atualizar: instale a nova versão via npm, copie `dist/umd/supabase.js`, mantenha as linhas `export` no final do arquivo e troque a versão do cache em `sw.js`.
+
+O CSP não permite scripts nem atributos `style` inline: coloque scripts em arquivos `.js` e aplique estilos por classe, atributo `data-*` ou via `element.style` no JavaScript.

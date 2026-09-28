@@ -51,7 +51,7 @@ export function renderStats(container, contests, modality) {
         <ul class="stat-list">${hot
           .map(
             ([n, c]) =>
-              `<li><span>${formatNumber(n, modality)}</span><div class="bar-wrap"><div class="bar" style="width:${(c / maxFreq) * 100}%"></div></div><em>${c}×</em></li>`
+              `<li><span>${formatNumber(n, modality)}</span><div class="bar-wrap"><div class="bar" data-width="${(c / maxFreq) * 100}"></div></div><em>${c}×</em></li>`
           )
           .join('')}</ul>
       </article>
@@ -60,7 +60,7 @@ export function renderStats(container, contests, modality) {
         <ul class="stat-list">${cold
           .map(
             ([n, c]) =>
-              `<li><span>${formatNumber(n, modality)}</span><div class="bar-wrap"><div class="bar bar-muted" style="width:${maxFreq ? (c / maxFreq) * 100 : 0}%"></div></div><em>${c}×</em></li>`
+              `<li><span>${formatNumber(n, modality)}</span><div class="bar-wrap"><div class="bar bar-muted" data-width="${maxFreq ? (c / maxFreq) * 100 : 0}"></div></div><em>${c}×</em></li>`
           )
           .join('')}</ul>
       </article>
@@ -75,4 +75,8 @@ export function renderStats(container, contests, modality) {
       </article>
     </div>
   `;
+
+  container.querySelectorAll('.bar[data-width]').forEach((bar) => {
+    bar.style.width = `${bar.dataset.width}%`;
+  });
 }

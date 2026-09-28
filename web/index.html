@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8">
@@ -52,12 +53,12 @@
         <a class="secondary" href="#resultados">Ver resultados</a>
       </div>
       <div class="modality-pills" aria-label="Escolha uma modalidade">
-        <button type="button" class="modality-pill" style="--accent: var(--mod-megasena)" data-select-modality="megasena"><span class="pill-dot"></span>Mega-Sena</button>
-        <button type="button" class="modality-pill" style="--accent: var(--mod-lotofacil)" data-select-modality="lotofacil"><span class="pill-dot"></span>Lotofácil</button>
-        <button type="button" class="modality-pill" style="--accent: var(--mod-quina)" data-select-modality="quina"><span class="pill-dot"></span>Quina</button>
-        <button type="button" class="modality-pill" style="--accent: var(--mod-lotomania)" data-select-modality="lotomania"><span class="pill-dot"></span>Lotomania</button>
-        <button type="button" class="modality-pill" style="--accent: var(--mod-duplasena)" data-select-modality="duplasena"><span class="pill-dot"></span>Dupla Sena</button>
-        <button type="button" class="modality-pill" style="--accent: var(--mod-maismilionaria)" data-select-modality="maismilionaria"><span class="pill-dot"></span>+Milionária</button>
+        <button type="button" class="modality-pill" data-accent="megasena" data-select-modality="megasena"><span class="pill-dot"></span>Mega-Sena</button>
+        <button type="button" class="modality-pill" data-accent="lotofacil" data-select-modality="lotofacil"><span class="pill-dot"></span>Lotofácil</button>
+        <button type="button" class="modality-pill" data-accent="quina" data-select-modality="quina"><span class="pill-dot"></span>Quina</button>
+        <button type="button" class="modality-pill" data-accent="lotomania" data-select-modality="lotomania"><span class="pill-dot"></span>Lotomania</button>
+        <button type="button" class="modality-pill" data-accent="duplasena" data-select-modality="duplasena"><span class="pill-dot"></span>Dupla Sena</button>
+        <button type="button" class="modality-pill" data-accent="maismilionaria" data-select-modality="maismilionaria"><span class="pill-dot"></span>+Milionária</button>
       </div>
       <p class="disclaimer-inline">Site informativo. Não vende bilhetes. Resultados oficiais: <a href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">loterias.caixa.gov.br</a>.</p>
     </section>
@@ -83,7 +84,7 @@
     <section id="modalidades">
       <h2>Modalidades disponíveis</h2>
       <div class="grid grid-3 modality-cards">
-        <article class="modality-card" style="--accent: var(--mod-megasena)">
+        <article class="modality-card" data-accent="megasena">
           <div class="modality-card-head">Mega-Sena</div>
           <div class="modality-card-body">
             <p>Escolha 6 números de 01 a 60.</p>
@@ -91,7 +92,7 @@
             <button type="button" class="btn-secondary" data-select-modality="megasena">Simular Mega-Sena</button>
           </div>
         </article>
-        <article class="modality-card" style="--accent: var(--mod-lotofacil)">
+        <article class="modality-card" data-accent="lotofacil">
           <div class="modality-card-head">Lotofácil</div>
           <div class="modality-card-body">
             <p>Escolha 15 números de 01 a 25.</p>
@@ -99,7 +100,7 @@
             <button type="button" class="btn-secondary" data-select-modality="lotofacil">Simular Lotofácil</button>
           </div>
         </article>
-        <article class="modality-card" style="--accent: var(--mod-quina)">
+        <article class="modality-card" data-accent="quina">
           <div class="modality-card-head">Quina</div>
           <div class="modality-card-body">
             <p>Escolha 5 números de 01 a 80.</p>
@@ -107,7 +108,7 @@
             <button type="button" class="btn-secondary" data-select-modality="quina">Simular Quina</button>
           </div>
         </article>
-        <article class="modality-card" style="--accent: var(--mod-lotomania)">
+        <article class="modality-card" data-accent="lotomania">
           <div class="modality-card-head">Lotomania</div>
           <div class="modality-card-body">
             <p>Escolha 20 números de 00 a 99.</p>
@@ -115,7 +116,7 @@
             <button type="button" class="btn-secondary" data-select-modality="lotomania">Simular Lotomania</button>
           </div>
         </article>
-        <article class="modality-card" style="--accent: var(--mod-duplasena)">
+        <article class="modality-card" data-accent="duplasena">
           <div class="modality-card-head">Dupla Sena</div>
           <div class="modality-card-body">
             <p>Escolha 6 números de 01 a 50. Dois sorteios por concurso.</p>
@@ -123,7 +124,7 @@
             <button type="button" class="btn-secondary" data-select-modality="duplasena">Simular Dupla Sena</button>
           </div>
         </article>
-        <article class="modality-card" style="--accent: var(--mod-maismilionaria)">
+        <article class="modality-card" data-accent="maismilionaria">
           <div class="modality-card-head">+Milionária</div>
           <div class="modality-card-body">
             <p>Escolha 6 números de 01 a 50 e 2 trevos de 1 a 6.</p>
@@ -174,7 +175,7 @@
       <div class="selection-status">
         <span id="selectionCounter">0 / 6</span>
         <div class="progress-track" role="progressbar" aria-label="Progresso da seleção">
-          <div class="progress-fill" id="selectionProgress" style="width: 0%"></div>
+          <div class="progress-fill" id="selectionProgress"></div>
         </div>
       </div>
 
@@ -400,6 +401,7 @@
         <input id="authPassword" name="password" type="password" autocomplete="current-password" minlength="12" maxlength="128" required>
       </label>
       <p class="auth-hint" id="authPasswordHint" hidden>Use ao menos 12 caracteres, incluindo letras maiúsculas, minúsculas, número e símbolo.</p>
+      <div class="auth-captcha" id="authCaptcha" hidden></div>
       <p class="auth-error" id="authError" role="alert" hidden></p>
       <button type="submit" id="authSubmit">Entrar</button>
       <div class="auth-links">
@@ -417,13 +419,6 @@
   </section>
 
   <script type="module" src="js/app.js"></script>
-  <script>
-    document.getElementById('btnPrint')?.addEventListener('click', () => {
-      const mod = document.getElementById('modalitySelect');
-      const nums = document.getElementById('selectedNumbers');
-      document.getElementById('printModality').textContent = mod?.selectedOptions?.[0]?.text || '';
-      document.getElementById('printNumbers').textContent = nums?.textContent || '';
-    });
-  </script>
+  <script type="module" src="js/print.js"></script>
 </body>
 </html>

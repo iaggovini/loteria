@@ -24,11 +24,54 @@ function getElements() {
 
 async function getClient() {
   if (client) return client;
-  const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2.49.1');
+  const { createClient } = await import('./vendor/supabase.js');
   client = createClient(AUTH_CONFIG.supabaseUrl, AUTH_CONFIG.supabaseAnonKey, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
   return client;
+}
+
+let captchaWidget;
+let captchaToken;
+
+function loadTurnstile() {
+  if (window.turnstile) return Promise.resolve(window.turnstile);
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.onload = () => resolve(window.turnstile);
+    script.onerror = () => reject(new Error('turnstile'));
+    document.head.append(script);
+  });
+}
+
+async function initCaptcha() {
+  if (!AUTH_CONFIG.turnstileSiteKey) return;
+  const container = document.getElementById('authCaptcha');
+  try {
+    const turnstile = await loadTurnstile();
+    container.hidden = false;
+    captchaWidget = turnstile.render(container, {
+      sitekey: AUTH_CONFIG.turnstileSiteKey,
+      language: 'pt-br',
+      callback: (token) => { captchaToken = token; },
+      'expired-callback': () => { captchaToken = undefined; },
+      'error-callback': () => { captchaToken = undefined; }
+    });
+  } catch {
+    setError('Não foi possível carregar a verificação de segurança. Recarregue a página.');
+  }
+}
+
+// Tokens do Turnstile valem para uma única requisição.
+function resetCaptcha() {
+  captchaToken = undefined;
+  if (captchaWidget !== undefined) window.turnstile?.reset(captchaWidget);
+}
+
+function captchaMissing() {
+  return Boolean(AUTH_CONFIG.turnstileSiteKey) && !captchaToken;
 }
 
 function setError(message = '') {
@@ -80,7 +123,12 @@ function renderUser(user) {
   area.append(label, logout);
 }
 
-function openDialog() { getElements().dialog.showModal(); }
+let captchaStarted = false;
+
+function openDialog() {
+  getElements().dialog.showModal();
+  if (!captchaStarted) { captchaStarted = true; initCaptcha(); }
+}
 
 export async function initAuth() {
   const els = getElements();
@@ -95,8 +143,10 @@ export async function initAuth() {
   els.reset?.addEventListener('click', async () => {
     const email = els.email.value.trim().toLowerCase();
     if (!emailPattern.test(email)) return setError('Informe seu e-mail para receber o link de redefinição.');
+    if (captchaMissing()) return setError('Conclua a verificação de segurança.');
     const supabase = await getClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}${location.pathname}` });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}${location.pathname}`, captchaToken });
+    resetCaptcha();
     if (error) return setError('Não foi possível solicitar a redefinição. Tente novamente.');
     setError(); showToast('Se existir uma conta, enviaremos instruções para o e-mail informado.', 'success');
   });
@@ -105,14 +155,16 @@ export async function initAuth() {
     const email = els.email.value.trim().toLowerCase(); const password = els.password.value;
     if (mode !== 'recovery' && !emailPattern.test(email)) return setError('Informe um e-mail válido.');
     if ((mode === 'signup' || mode === 'recovery') && !validPassword(password)) return setError('A senha não atende aos requisitos de segurança.');
+    if (mode !== 'recovery' && captchaMissing()) return setError('Conclua a verificação de segurança.');
     els.submit.disabled = true;
     try {
       const supabase = await getClient();
       const result = mode === 'signup'
-        ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${location.origin}${location.pathname}` } })
+        ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${location.origin}${location.pathname}`, captchaToken } })
         : mode === 'recovery'
           ? await supabase.auth.updateUser({ password })
-          : await supabase.auth.signInWithPassword({ email, password });
+          : await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });
+      if (mode !== 'recovery') resetCaptcha();
       if (result.error) {
         const message = mode === 'signin'
           ? 'E-mail ou senha inválidos.'

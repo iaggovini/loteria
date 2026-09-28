@@ -41,6 +41,13 @@
   --brand-grad: linear-gradient(120deg, #062a52, #0b4f8a 45%, #0ea5c4 100%);
 }
 
+[data-accent="megasena"] { --accent: var(--mod-megasena); }
+[data-accent="lotofacil"] { --accent: var(--mod-lotofacil); }
+[data-accent="quina"] { --accent: var(--mod-quina); }
+[data-accent="lotomania"] { --accent: var(--mod-lotomania); }
+[data-accent="duplasena"] { --accent: var(--mod-duplasena); }
+[data-accent="maismilionaria"] { --accent: var(--mod-maismilionaria); }
+
 * {
   box-sizing: border-box;
 }
@@ -234,6 +241,7 @@ nav a.active {
 .auth-links { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .link-button { border: 0; padding: 0; background: transparent; color: var(--primary); cursor: pointer; font: inherit; }
 .auth-error { margin: 0; color: var(--danger); }
+.auth-captcha { min-height: 65px; }
 .auth-hint { margin: -6px 0 0; color: var(--muted); font-size: .85rem; }
 
 .hero {
@@ -722,6 +730,7 @@ select {
 }
 
 .progress-fill {
+  width: 0;
   height: 100%;
   background: linear-gradient(90deg, var(--primary), var(--accent));
   border-radius: 999px;
