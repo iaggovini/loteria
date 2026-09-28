@@ -18,7 +18,8 @@ function getElements() {
     password: document.getElementById('authPassword'), title: document.getElementById('authDialogTitle'),
     description: document.getElementById('authDescription'), submit: document.getElementById('authSubmit'),
     toggle: document.getElementById('authModeToggle'), reset: document.getElementById('authReset'),
-    error: document.getElementById('authError'), hint: document.getElementById('authPasswordHint')
+    error: document.getElementById('authError'), hint: document.getElementById('authPasswordHint'),
+    success: document.getElementById('authSuccess')
   };
 }
 
@@ -75,25 +76,52 @@ function captchaMissing() {
 }
 
 function setError(message = '') {
-  const { error } = getElements();
+  const { error, success } = getElements();
   error.textContent = message;
   error.hidden = !message;
+  if (message) success.hidden = true;
 }
+
+// Mensagens de sucesso ficam dentro do diálogo: o toast fica atrás do modal.
+function setSuccess(message = '') {
+  const { error, success } = getElements();
+  success.textContent = message;
+  success.hidden = !message;
+  if (message) error.hidden = true;
+}
+
+function friendlyError(error, fallback) {
+  const code = error?.code || '';
+  if (error?.status === 429 || code.includes('rate_limit')) return 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.';
+  if (code === 'email_address_not_authorized') return 'O envio de e-mails ainda não está liberado para este endereço. Tente novamente mais tarde.';
+  if (code.includes('captcha')) return 'A verificação de segurança falhou. Tente novamente.';
+  return fallback;
+}
+
+const MODES = {
+  signin: { title: 'Entrar', description: 'Acesse sua conta com segurança.', submit: 'Entrar', toggle: 'Criar conta' },
+  signup: { title: 'Criar conta', description: 'Confirme seu e-mail para ativar a conta.', submit: 'Criar conta', toggle: 'Já tenho conta' },
+  forgot: { title: 'Recuperar senha', description: 'Informe o e-mail da sua conta e enviaremos um link para criar uma nova senha.', submit: 'Enviar link', toggle: 'Voltar para o login' },
+  recovery: { title: 'Definir nova senha', description: 'Escolha uma nova senha forte para sua conta.', submit: 'Salvar nova senha' }
+};
 
 function setMode(nextMode) {
   mode = nextMode;
-  const { title, description, submit, toggle, hint, password, email } = getElements();
-  const signup = mode === 'signup';
-  const recovery = mode === 'recovery';
-  title.textContent = recovery ? 'Definir nova senha' : (signup ? 'Criar conta' : 'Entrar');
-  description.textContent = recovery ? 'Escolha uma nova senha forte para sua conta.' : (signup ? 'Confirme seu e-mail para ativar a conta.' : 'Acesse sua conta com segurança.');
-  submit.textContent = recovery ? 'Salvar nova senha' : (signup ? 'Criar conta' : 'Entrar');
-  toggle.hidden = recovery;
-  hint.hidden = !(signup || recovery);
-  password.autocomplete = signup || recovery ? 'new-password' : 'current-password';
-  email.required = !recovery;
-  email.closest('label').hidden = recovery;
+  const { title, description, submit, toggle, reset, hint, password, email } = getElements();
+  const texts = MODES[mode];
+  const newPassword = mode === 'signup' || mode === 'recovery';
+  title.textContent = texts.title;
+  description.textContent = texts.description;
+  submit.textContent = texts.submit;
+  toggle.hidden = mode === 'recovery';
+  toggle.textContent = texts.toggle || '';
+  reset.hidden = mode !== 'signin';
+  hint.hidden = !newPassword;
+  password.autocomplete = newPassword ? 'new-password' : 'current-password';
+  password.closest('label').hidden = mode === 'forgot';
+  email.closest('label').hidden = mode === 'recovery';
   setError();
+  setSuccess();
 }
 
 function validPassword(value) {
@@ -138,18 +166,10 @@ export async function initAuth() {
   }
   els.open?.addEventListener('click', openDialog);
   els.close?.addEventListener('click', () => els.dialog.close());
+  els.dialog?.addEventListener('close', () => { if (mode !== 'signin') setMode('signin'); });
   els.dialog?.addEventListener('click', (event) => { if (event.target === els.dialog) els.dialog.close(); });
   els.toggle?.addEventListener('click', () => setMode(mode === 'signin' ? 'signup' : 'signin'));
-  els.reset?.addEventListener('click', async () => {
-    const email = els.email.value.trim().toLowerCase();
-    if (!emailPattern.test(email)) return setError('Informe seu e-mail para receber o link de redefinição.');
-    if (captchaMissing()) return setError('Conclua a verificação de segurança.');
-    const supabase = await getClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}${location.pathname}`, captchaToken });
-    resetCaptcha();
-    if (error) return setError('Não foi possível solicitar a redefinição. Tente novamente.');
-    setError(); showToast('Se existir uma conta, enviaremos instruções para o e-mail informado.', 'success');
-  });
+  els.reset?.addEventListener('click', () => { setMode('forgot'); els.email.focus(); });
   els.form?.addEventListener('submit', async (event) => {
     event.preventDefault(); setError();
     const email = els.email.value.trim().toLowerCase(); const password = els.password.value;
@@ -159,6 +179,12 @@ export async function initAuth() {
     els.submit.disabled = true;
     try {
       const supabase = await getClient();
+      if (mode === 'forgot') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}${location.pathname}`, captchaToken });
+        resetCaptcha();
+        if (error) return setError(friendlyError(error, 'Não foi possível enviar o link. Tente novamente.'));
+        return setSuccess('Se existir uma conta com esse e-mail, enviamos um link para criar uma nova senha. Confira também a caixa de spam.');
+      }
       const result = mode === 'signup'
         ? await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${location.origin}${location.pathname}`, captchaToken } })
         : mode === 'recovery'
@@ -171,11 +197,11 @@ export async function initAuth() {
           : mode === 'recovery'
             ? 'O link de recuperação expirou ou é inválido. Solicite um novo link.'
             : 'Não foi possível criar a conta. Tente outro e-mail.';
-        return setError(message);
+        return setError(friendlyError(result.error, message));
       }
       els.password.value = '';
-      if (mode === 'recovery') { els.dialog.close(); setMode('signin'); return showToast('Senha atualizada. Faça login com a nova senha.', 'success'); }
-      if (mode === 'signup' && !result.data.session) showToast('Confira seu e-mail para confirmar a conta.', 'success');
+      if (mode === 'recovery') { els.dialog.close(); setMode('signin'); return showToast('Senha atualizada com sucesso.', 'success'); }
+      if (mode === 'signup' && !result.data.session) setSuccess('Conta criada! Enviamos um link de confirmação para o seu e-mail. Confira também a caixa de spam.');
       else { els.dialog.close(); showToast('Login realizado com segurança.', 'success'); }
     } finally { els.submit.disabled = false; }
   });
