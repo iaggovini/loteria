@@ -18,6 +18,8 @@ const ASSETS = [
   './js/vendor/supabase.js',
   './js/print.js',
   './favicon.svg',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
   './manifest.webmanifest',
   './data/history-megasena.json',
   './data/history-lotofacil.json',
