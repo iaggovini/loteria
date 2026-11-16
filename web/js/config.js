@@ -56,13 +56,13 @@ export const MODALITIES = {
   lotomania: {
     id: 'lotomania',
     name: 'Lotomania',
-    pick: 20,
+    pick: 50,
     min: 0,
     max: 99,
     gridCols: 10,
     apiPath: 'lotomania',
     drawDays: 'segundas, quartas e sextas',
-    description: 'Escolha 20 números de 00 a 99.',
+    description: 'Escolha 50 números de 00 a 99. São sorteados 20.',
     prizeTiers: [
       { hits: 20, label: '20 acertos' },
       { hits: 19, label: '19 acertos' },
