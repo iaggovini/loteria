@@ -1,53 +1,64 @@
-﻿
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Bom de Sorte — resultados, estatísticas, simulador de apostas e conferência para Mega-Sena, Lotofácil, Quina e Lotomania.">
-  <meta name="theme-color" content="#0f172a">
-  <meta property="og:title" content="Bom de Sorte">
-  <meta property="og:description" content="Resultados, estatísticas e simulador de apostas das loterias da Caixa.">
+  <meta name="theme-color" content="#062a52">
+  <meta name="color-scheme" content="dark light">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Bom de Sorte — Resultados, estatísticas e simulador de loterias">
+  <meta property="og:description" content="Confira resultados, veja estatísticas, simule apostas e organize bolões da Mega-Sena, Lotofácil, Quina e mais.">
+  <meta property="og:site_name" content="Bom de Sorte">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pt_BR">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Bom de Sorte">
-  <meta name="twitter:description" content="Simule apostas e acompanhe resultados das loterias.">
-  <title>Bom de Sorte</title>
+  <meta name="twitter:description" content="Resultados, estatísticas, simulador e bolões das loterias da Caixa.">
+  <title>Bom de Sorte — Resultados, estatísticas e simulador de loterias</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="favicon.svg">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
 
-  <header class="container topbar">
-    <a class="brand" href="#main-content" aria-label="Bom de Sorte — início">
-      <span class="brand-mark" aria-hidden="true">●</span>
-      <span>Bom de Sorte</span>
-    </a>
-    <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menu">☰</button>
-    <nav id="mainNav" aria-label="Principal">
-      <a href="#como">Como funciona</a>
-      <a href="#resultados">Resultados</a>
-      <a href="#estatisticas">Estatísticas</a>
-      <a href="#simulador">Simulador</a>
-      <a href="#bolao">Bolão</a>
-      <a href="#favoritos">Favoritos</a>
-      <a href="#como-jogar">Como jogar</a>
-      <a href="#faq">FAQ</a>
-    </nav>
-    <div class="auth-area" id="authArea" aria-live="polite">
-      <button type="button" class="btn-auth" id="openAuthDialog">Entrar</button>
+  <header class="site-header">
+    <div class="container topbar">
+      <a class="brand" href="#main-content" aria-label="Bom de Sorte — início">
+        <svg class="brand-logo" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#ffffff"/><circle cx="11" cy="12" r="4.6" fill="#0d9f4f"/><circle cx="21" cy="12" r="4.6" fill="#2563eb"/><circle cx="16" cy="21.2" r="4.6" fill="#f2761e"/></svg>
+        <span>Bom de Sorte</span>
+      </a>
+      <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <nav id="mainNav" aria-label="Principal">
+        <a href="#resultados">Resultados</a>
+        <a href="#estatisticas">Estatísticas</a>
+        <a href="#simulador">Simulador</a>
+        <a href="#bolao">Bolão</a>
+        <a href="#favoritos">Favoritos</a>
+        <a href="#como-jogar">Como jogar</a>
+        <a href="#faq">Dúvidas</a>
+      </nav>
+      <div class="topbar-actions">
+        <div class="auth-area" id="authArea" aria-live="polite">
+          <button type="button" class="btn-auth" id="openAuthDialog">Entrar</button>
+        </div>
+        <a class="btn-cta" href="#simulador">Simular aposta</a>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Ativar modo claro">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg>
+        </button>
+      </div>
     </div>
-    <a class="btn-cta" href="#simulador">Simular aposta</a>
-    <button type="button" class="theme-toggle" id="themeToggle" aria-label="Ativar modo claro">◐</button>
   </header>
 
   <main class="container" id="main-content">
     <section class="hero">
-      <h1>Loteria e apostas com transparência e praticidade</h1>
-      <p>Crie sua aposta, veja resultados atualizados, estatísticas e confira acertos — Mega-Sena, Lotofácil, Quina e Lotomania.</p>
+      <p class="eyebrow">Resultados oficiais · Simulador · Bolões</p>
+      <h1>Acompanhe as loterias com <span class="text-grad">clareza e praticidade</span></h1>
+      <p class="hero-lead">Confira os últimos resultados, entenda as estatísticas, monte suas apostas e organize bolões em minutos — Mega-Sena, Lotofácil, Quina, Lotomania, Dupla Sena e +Milionária.</p>
       <div class="hero-actions">
         <a class="primary" href="#simulador">Simular aposta agora</a>
         <a class="secondary" href="#resultados">Ver resultados</a>
@@ -60,28 +71,35 @@
         <button type="button" class="modality-pill" data-accent="duplasena" data-select-modality="duplasena"><span class="pill-dot"></span>Dupla Sena</button>
         <button type="button" class="modality-pill" data-accent="maismilionaria" data-select-modality="maismilionaria"><span class="pill-dot"></span>+Milionária</button>
       </div>
-      <p class="disclaimer-inline">Site informativo. Não vende bilhetes. Resultados oficiais: <a href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">loterias.caixa.gov.br</a>.</p>
+      <ul class="hero-trust" aria-label="Destaques">
+        <li><strong>6</strong><span>modalidades</span></li>
+        <li><strong>100%</strong><span>gratuito</span></li>
+        <li><strong>Oficial</strong><span>dados da Caixa</span></li>
+      </ul>
+      <p class="disclaimer-inline">Site informativo — não vendemos bilhetes. Resultados oficiais em <a href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">loterias.caixa.gov.br</a>.</p>
     </section>
 
     <section id="como">
+      <p class="eyebrow">Passo a passo</p>
       <h2>Como funciona</h2>
       <div class="grid grid-3 steps">
         <article class="feature-card">
-          <h3>Resultados e estatísticas</h3>
-          <p>Últimos concursos via API da Caixa (com fallback local), dezenas frequentes e atraso.</p>
+          <h3>Acompanhe os resultados</h3>
+          <p>Veja os últimos concursos com dados oficiais da Caixa, as dezenas mais sorteadas e as que estão há mais tempo sem sair.</p>
         </article>
         <article class="feature-card">
-          <h3>Simulador de aposta</h3>
-          <p>Escolha números, gere surpresinha com filtros, copie, compartilhe link e imprima.</p>
+          <h3>Monte sua aposta</h3>
+          <p>Escolha seus números ou gere uma surpresinha com filtros. Depois é só copiar, compartilhar ou imprimir.</p>
         </article>
         <article class="feature-card">
-          <h3>Conferência e favoritos</h3>
-          <p>Compare sua aposta com o último sorteio e salve combinações favoritas.</p>
+          <h3>Confira e organize</h3>
+          <p>Compare sua aposta com o sorteio mais recente, salve combinações favoritas e gerencie bolões com amigos.</p>
         </article>
       </div>
     </section>
 
     <section id="modalidades">
+      <p class="eyebrow">Escolha seu jogo</p>
       <h2>Modalidades disponíveis</h2>
       <div class="grid grid-3 modality-cards">
         <article class="modality-card" data-accent="megasena">
@@ -154,12 +172,13 @@
 
     <section id="estatisticas">
       <h2>Estatísticas</h2>
-      <p class="muted">Com base nos concursos carregados acima.</p>
+      <p class="section-lead">Frequência e atraso das dezenas com base nos concursos carregados acima.</p>
       <div id="statsPanel"></div>
     </section>
 
     <section class="compare-section">
       <h2>Comparar concursos</h2>
+      <p class="section-lead">Selecione dois concursos para ver as dezenas que se repetiram.</p>
       <div class="compare-controls">
         <select id="compareA" aria-label="Primeiro concurso"></select>
         <select id="compareB" aria-label="Segundo concurso"></select>
@@ -209,38 +228,38 @@
 
     <section id="bolao" class="pool-section">
       <h2>Gerenciador de Bolão</h2>
-      <p class="muted">Crie e organize seu bolão — adicione apostas, cadastre participantes e gere comprovantes.</p>
+      <p class="section-lead">Monte o bolão, cadastre participantes e cotas e compartilhe a lista no WhatsApp.</p>
 
       <div class="pool-templates">
         <p class="pool-templates-label">Modelos prontos — clique para montar o bolão</p>
         <div class="pool-template-grid">
           <button type="button" class="pool-template-card" data-template="casal">
-            <span class="template-icon">👫</span>
+            <span class="template-icon" aria-hidden="true">2</span>
             <span class="template-name">Casal</span>
             <span class="template-desc">2 apostas</span>
           </button>
           <button type="button" class="pool-template-card" data-template="familia">
-            <span class="template-icon">🏠</span>
+            <span class="template-icon" aria-hidden="true">5</span>
             <span class="template-name">Família</span>
             <span class="template-desc">5 apostas</span>
           </button>
           <button type="button" class="pool-template-card" data-template="trabalho">
-            <span class="template-icon">💼</span>
+            <span class="template-icon" aria-hidden="true">10</span>
             <span class="template-name">Trabalho</span>
             <span class="template-desc">10 apostas</span>
           </button>
           <button type="button" class="pool-template-card" data-template="turma">
-            <span class="template-icon">🎓</span>
+            <span class="template-icon" aria-hidden="true">15</span>
             <span class="template-name">Turma</span>
             <span class="template-desc">15 apostas</span>
           </button>
           <button type="button" class="pool-template-card" data-template="premium">
-            <span class="template-icon">⭐</span>
+            <span class="template-icon" aria-hidden="true">20</span>
             <span class="template-name">Premium</span>
             <span class="template-desc">20 apostas</span>
           </button>
           <button type="button" class="pool-template-card" data-template="grande">
-            <span class="template-icon">🏆</span>
+            <span class="template-icon" aria-hidden="true">30</span>
             <span class="template-name">Grande</span>
             <span class="template-desc">30 apostas</span>
           </button>
@@ -307,6 +326,7 @@
 
     <section id="favoritos" class="favorites-section">
       <h2>Apostas favoritas</h2>
+      <p class="section-lead">Salve as combinações que você mais joga para reutilizar depois.</p>
       <div class="favorite-form">
         <label for="favoriteName">Nome da aposta</label>
         <input type="text" id="favoriteName" placeholder="Ex.: Aposta da família" maxlength="40">
@@ -325,15 +345,15 @@
       <div class="grid grid-3">
         <article class="feature-card">
           <h3>Dados oficiais</h3>
-          <p>Resultados direto da API pública da Caixa, com aviso claro sempre que usamos o backup local.</p>
+          <p>Resultados obtidos diretamente da Caixa. Se o serviço oficial estiver fora do ar, avisamos claramente quando exibimos dados salvos.</p>
         </article>
         <article class="feature-card">
           <h3>Privacidade por padrão</h3>
-          <p>Seleções e favoritos ficam só no seu navegador — não coletamos nem vendemos seus dados.</p>
+          <p>Apostas e favoritos ficam no seu navegador. Nunca vendemos nem compartilhamos seus dados.</p>
         </article>
         <article class="feature-card">
           <h3>Sem venda de bilhetes</h3>
-          <p>Somos um simulador e organizador de bolões informativo. Bilhetes reais só na Caixa.</p>
+          <p>Somos uma ferramenta informativa. Apostas reais são feitas apenas nas lotéricas ou nos canais oficiais da Caixa.</p>
         </article>
       </div>
     </section>
@@ -357,41 +377,80 @@
     </section>
 
     <section id="faq" class="faq">
+      <p class="eyebrow">Dúvidas</p>
       <h2>Perguntas frequentes</h2>
       <details class="faq-item">
-        <summary>Posso usar o site para conferir resultados?</summary>
-        <p>Sim. Os resultados vêm da API pública da Caixa quando disponível, com backup local. Sempre confira no site oficial antes de qualquer decisão.</p>
+        <summary>O Bom de Sorte vende apostas?</summary>
+        <p>Não. O site é informativo: você simula, confere e organiza apostas, mas a aposta oficial deve ser feita em uma lotérica ou nos canais oficiais da Caixa.</p>
       </details>
       <details class="faq-item">
-        <summary>Como criar confiança com os visitantes?</summary>
-        <p>Informações claras sobre regras, aviso de que não vendemos bilhetes e links para a Caixa. Dados atualizados e conferência transparente.</p>
+        <summary>Os resultados são confiáveis?</summary>
+        <p>Os resultados vêm do serviço público da Caixa. Quando ele está indisponível, mostramos os últimos dados salvos e avisamos na tela. Antes de qualquer decisão, confira no site oficial.</p>
       </details>
       <details class="faq-item">
-        <summary>O site funciona offline?</summary>
-        <p>Com o PWA instalado, páginas e dados já visitados podem ser consultados offline. Novos resultados exigem conexão.</p>
+        <summary>As estatísticas aumentam minhas chances?</summary>
+        <p>Não. Todo sorteio é independente e cada combinação tem a mesma chance. As estatísticas mostram apenas o histórico das dezenas.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Preciso criar conta para usar?</summary>
+        <p>Não. Simulador, resultados, estatísticas e bolões funcionam sem cadastro. A conta é opcional.</p>
       </details>
       <details class="faq-item">
         <summary>Como compartilhar minha aposta?</summary>
-        <p>Use &quot;Compartilhar link&quot; no simulador. O link inclui jogo e números para quem abrir carregar a mesma combinação.</p>
+        <p>No simulador, toque em &quot;Compartilhar link&quot;. Quem abrir o link verá o mesmo jogo e os mesmos números.</p>
+      </details>
+      <details class="faq-item">
+        <summary>O site funciona sem internet?</summary>
+        <p>Em parte. Instalando o site no celular, as páginas e dados já visitados ficam disponíveis offline. Novos resultados exigem conexão.</p>
       </details>
     </section>
 
     <section id="privacidade" class="privacy-section">
       <h2>Privacidade</h2>
-      <p>Seleções e favoritos ficam apenas no seu navegador (localStorage). Não coletamos dados pessoais nem enviamos apostas a servidores próprios. Ao usar a API da Caixa, aplicam-se as políticas do site oficial.</p>
+      <p>Apostas, favoritos e bolões ficam salvos apenas no seu navegador. Se você criar uma conta, guardamos somente o e-mail necessário para o acesso, sempre com conexão criptografada. Não vendemos nem compartilhamos seus dados. Os resultados são consultados no serviço público da Caixa, que possui políticas próprias.</p>
     </section>
   </main>
 
-  <footer class="container site-footer">
-    <p><strong>Aviso legal:</strong> Bom de Sorte é um projeto informativo e educacional. Não realiza vendas de bilhetes nem garante prêmios. Jogue com responsabilidade (+18). Resultados oficiais: Caixa Econômica Federal.</p>
-    <p class="muted">© 2026 Bom de Sorte — resultados, bolões e simulador com API Caixa.</p>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="#main-content">
+          <svg class="brand-logo" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#ffffff"/><circle cx="11" cy="12" r="4.6" fill="#0d9f4f"/><circle cx="21" cy="12" r="4.6" fill="#2563eb"/><circle cx="16" cy="21.2" r="4.6" fill="#f2761e"/></svg>
+          <span>Bom de Sorte</span>
+        </a>
+        <p>Resultados, estatísticas, simulador e bolões das loterias da Caixa — tudo em um só lugar, de graça.</p>
+      </div>
+      <nav class="footer-col" aria-label="Ferramentas">
+        <h3>Ferramentas</h3>
+        <a href="#resultados">Resultados</a>
+        <a href="#estatisticas">Estatísticas</a>
+        <a href="#simulador">Simulador</a>
+        <a href="#bolao">Bolão</a>
+      </nav>
+      <nav class="footer-col" aria-label="Ajuda">
+        <h3>Ajuda</h3>
+        <a href="#como-jogar">Como jogar</a>
+        <a href="#dicas">Jogo responsável</a>
+        <a href="#faq">Perguntas frequentes</a>
+        <a href="#privacidade">Privacidade</a>
+      </nav>
+      <div class="footer-col">
+        <h3>Oficial</h3>
+        <a href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">Loterias Caixa</a>
+        <span class="age-badge" title="Proibido para menores de 18 anos">+18</span>
+      </div>
+    </div>
+    <div class="container footer-legal">
+      <p><strong>Aviso legal:</strong> o Bom de Sorte é um site informativo, sem vínculo com a Caixa Econômica Federal. Não vendemos bilhetes nem garantimos prêmios. Jogue com responsabilidade. Proibido para menores de 18 anos.</p>
+      <p>© <span id="footerYear">2026</span> Bom de Sorte. Todos os direitos reservados.</p>
+    </div>
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <dialog class="auth-dialog" id="authDialog" aria-labelledby="authDialogTitle">
     <div class="auth-brand">
-      <span class="auth-brand-name"><span class="brand-mark" aria-hidden="true">●</span>Bom de Sorte</span>
+      <span class="auth-brand-name"><svg class="brand-logo" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#ffffff"/><circle cx="11" cy="12" r="4.6" fill="#0d9f4f"/><circle cx="21" cy="12" r="4.6" fill="#2563eb"/><circle cx="16" cy="21.2" r="4.6" fill="#f2761e"/></svg>Bom de Sorte</span>
       <button type="button" class="auth-close" id="closeAuthDialog" aria-label="Fechar">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
@@ -471,7 +530,7 @@
   </dialog>
 
   <section class="print-slip" aria-hidden="true">
-    <h2>Comprovante de aposta (simulação)</h2>
+    <h2>Bom de Sorte — Comprovante de simulação</h2>
     <p id="printModality"></p>
     <p id="printNumbers"></p>
     <p class="muted">Não válido como bilhete oficial.</p>

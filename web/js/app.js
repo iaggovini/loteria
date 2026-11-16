@@ -67,6 +67,16 @@ function onModalityChange() {
   renderFavoritesList(handleFavoriteAction);
 }
 
+// Probabilidades oficiais do prêmio principal (aposta simples), conforme a Caixa.
+const TOP_PRIZE_ODDS = {
+  megasena: '50.063.860',
+  lotofacil: '3.268.760',
+  quina: '24.040.016',
+  lotomania: '11.372.635',
+  duplasena: '15.890.700',
+  maismilionaria: '238.360.500',
+};
+
 function renderRules(mod) {
   const rulesEl = document.getElementById('rulesContent');
   if (!rulesEl) return;
@@ -74,7 +84,7 @@ function renderRules(mod) {
   const tiers = mod.prizeTiers.map((t) => `<li>${t.label}</li>`).join('');
   rulesEl.innerHTML = `
     <p>${mod.description} Sorteios: ${mod.drawDays}.</p>
-    <p>Probabilidade (referência): jogar ${mod.pick} números na faixa completa — consulte o regulamento oficial para valores exatos.</p>
+    ${TOP_PRIZE_ODDS[mod.id] ? `<p>Chance de ganhar o prêmio principal com uma aposta simples: <strong>1 em ${TOP_PRIZE_ODDS[mod.id]}</strong>.</p>` : ''}
     <h3>Faixas de premiação</h3>
     <ul>${tiers}</ul>
     <p class="muted">Valide bilhetes apenas em casas credenciadas ou no site/app oficial da Caixa.</p>
@@ -196,6 +206,8 @@ function initCompare() {
 function init() {
   setTheme(getTheme());
   initMobileMenu();
+  const yearEl = document.getElementById('footerYear');
+  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
   initThemeToggle(setTheme);
   initScrollSpy();
   registerServiceWorker();

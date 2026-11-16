@@ -1,4 +1,4 @@
-const CACHE = 'loteria-v7';
+const CACHE = 'loteria-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -57,6 +57,20 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (request.method !== 'GET') return;
+
+  // Páginas: rede primeiro, para que novas versões apareçam logo após o deploy.
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          const clone = response.clone();
+          caches.open(CACHE).then((cache) => cache.put('./index.html', clone));
+          return response;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(request).then(
