@@ -231,14 +231,14 @@ nav a.active {
 .auth-area { display: flex; align-items: center; gap: 8px; }
 .btn-auth { border: 1px solid var(--primary); background: transparent; color: var(--text); border-radius: 999px; padding: 8px 16px; min-height: 40px; cursor: pointer; font: inherit; font-size: .9rem; font-weight: 600; transition: background .2s ease, color .2s ease; }
 .btn-auth:hover { background: var(--primary); color: #020617; }
-.auth-user { display: inline-flex; align-items: center; gap: 8px; max-width: 220px; padding: 3px 12px 3px 3px; border: 1px solid transparent; border-radius: 999px; background: transparent; font: inherit; font-size: .85rem; color: var(--muted); cursor: pointer; transition: background .2s ease, border-color .2s ease; }
+.auth-user { display: inline-flex; align-items: center; gap: 8px; max-width: 220px; padding: 3px; border: 1px solid transparent; border-radius: 999px; background: transparent; font: inherit; font-size: .85rem; color: var(--muted); cursor: pointer; transition: background .2s ease, border-color .2s ease; }
 .auth-user:hover, .auth-user:focus-visible { background: rgba(255, 255, 255, .1); border-color: rgba(255, 255, 255, .25); }
 
 /* ---------- Minha conta ---------- */
 .account-dialog { width: min(520px, calc(100% - 32px)); }
 .account-head { display: flex; align-items: center; gap: 14px; }
 .account-head > div { display: grid; gap: 4px; min-width: 0; }
-.account-avatar { width: 48px; height: 48px; font-size: 1.2rem; background: var(--brand-grad); color: #ffffff; }
+.auth-avatar.account-avatar { width: 48px; height: 48px; font-size: 1.2rem; background: var(--brand-grad); color: #ffffff; }
 .account-email { overflow-wrap: anywhere; font-size: 1.02rem; }
 .account-badge { justify-self: start; padding: 2px 10px; border-radius: 999px; font-size: .75rem; font-weight: 600; background: color-mix(in srgb, var(--success) 16%, transparent); color: var(--success); }
 .account-badge:empty { display: none; }
@@ -260,7 +260,7 @@ nav a.active {
 .account-delete:disabled { opacity: .45; cursor: not-allowed; }
 @media (max-width: 480px) { .account-info { grid-template-columns: 1fr; } }
 .auth-user-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.auth-avatar { display: grid; flex: none; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: #ffffff; color: #062a52; font-weight: 700; font-size: .85rem; }
+.auth-avatar { display: grid; flex: none; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #ffffff; color: #062a52; font-weight: 700; font-size: .85rem; }
 
 .auth-dialog { width: min(420px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 0; overflow: auto; border: 1px solid var(--border); border-radius: 20px; color: var(--text); background: var(--surface); box-shadow: 0 24px 70px rgba(2, 6, 23, .45); }
 .auth-dialog[open] { animation: auth-in .22s ease-out; }

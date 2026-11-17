@@ -229,17 +229,14 @@ function renderUser(user) {
   const chip = document.createElement('button');
   chip.type = 'button';
   chip.className = 'auth-user';
-  chip.title = 'Minha conta';
+  chip.title = email ? `Minha conta (${email})` : 'Minha conta';
   chip.setAttribute('aria-label', `Minha conta (${email})`);
   chip.addEventListener('click', () => openAccount());
   const avatar = document.createElement('span');
   avatar.className = 'auth-avatar';
   avatar.setAttribute('aria-hidden', 'true');
   avatar.textContent = (email[0] || '?').toUpperCase();
-  const name = document.createElement('span');
-  name.className = 'auth-user-email';
-  name.textContent = email || 'Minha conta';
-  chip.append(avatar, name);
+  chip.append(avatar); // só a inicial; o e-mail fica no título e no painel Minha conta
 
   const logout = document.createElement('button');
   logout.type = 'button'; logout.className = 'btn-auth'; logout.textContent = 'Sair';
