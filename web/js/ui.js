@@ -6,7 +6,7 @@ export function showToast(message, type = 'info') {
 
   el.textContent = message;
   el.className = `toast toast-${type} visible`;
-  el.setAttribute('role', 'alert');
+  el.setAttribute('role', type === 'error' || type === 'warning' ? 'alert' : 'status');
 
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => {
@@ -35,6 +35,8 @@ export function initMobileMenu() {
 export function initThemeToggle(onChange) {
   const btn = document.getElementById('themeToggle');
   if (!btn) return;
+  const label = (theme) => (theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro');
+  btn.setAttribute('aria-label', label(document.documentElement.getAttribute('data-theme') || 'dark'));
 
   btn.addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -80,13 +82,6 @@ export function setError(container, message) {
   container.innerHTML = `<p class="state-message state-error" role="alert">${message}</p>`;
 }
 
-export function registerServiceWorker() {
-  if (!('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
-}
-
 export function showConfirm(message, {
   title = 'Confirmar',
   confirmText = 'Confirmar',
@@ -110,16 +105,28 @@ export function showConfirm(message, {
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('modal-visible'));
 
+    const previousFocus = document.activeElement;
+    let closed = false;
     const close = (result) => {
+      if (closed) return;
+      closed = true;
       overlay.classList.remove('modal-visible');
+      setTimeout(() => overlay.remove(), 400); // caso a transição não dispare
+      previousFocus?.focus?.();
       overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
       document.removeEventListener('keydown', onKey);
       resolve(result);
     };
 
+    // Enter aciona o botão em foco (comportamento nativo); Tab fica preso no modal.
     const onKey = (e) => {
       if (e.key === 'Escape') close(false);
-      if (e.key === 'Enter') close(true);
+      if (e.key === 'Tab') {
+        const buttons = [...overlay.querySelectorAll('button')];
+        const index = buttons.indexOf(document.activeElement);
+        e.preventDefault();
+        buttons[(index + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
+      }
     };
 
     overlay.querySelector('.modal-confirm').addEventListener('click', () => close(true));

@@ -1,9 +1,11 @@
-const CACHE = 'loteria-v10';
+const CACHE = 'loteria-v11';
 const ASSETS = [
   './',
   './index.html',
   './css/style.css',
+  './css/pool-print.css',
   './js/app.js',
+  './js/sw-register.js',
   './js/config.js',
   './js/api.js',
   './js/storage.js',
@@ -14,10 +16,10 @@ const ASSETS = [
   './js/favorites.js',
   './js/pool.js',
   './js/auth.js',
+  './js/account.js',
   './js/auth-config.js',
   './js/cloud.js',
   './js/vendor/supabase.js',
-  './js/print.js',
   './favicon.svg',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -42,50 +44,39 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+// Rede primeiro; o cache só é usado sem conexão. Assim um deploy novo chega
+// a todos sem depender de trocar a versão do cache.
+function networkFirst(request, cacheKey = request) {
+  return fetch(request)
+    .then((response) => {
+      if (response.ok) {
+        const clone = response.clone();
+        caches.open(CACHE).then((cache) => cache.put(cacheKey, clone));
+      }
+      return response;
+    })
+    .catch(() => caches.match(cacheKey).then((cached) => cached || Response.error()));
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+  if (request.method !== 'GET') return;
   const url = new URL(request.url);
 
-  if (url.origin.includes('caixa.gov.br')) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE).then((cache) => cache.put(request, clone));
-          return response;
-        })
-        .catch(() => caches.match(request))
-    );
+  // Resultados da Caixa: guardados para consulta offline.
+  if (url.hostname.endsWith('caixa.gov.br')) {
+    event.respondWith(networkFirst(request));
     return;
   }
 
-  if (request.method !== 'GET') return;
+  // Supabase, Turnstile e outros serviços externos nunca passam pelo cache
+  // (dados de conta não podem ficar guardados no aparelho).
+  if (url.origin !== self.location.origin) return;
 
-  // Páginas: rede primeiro, para que novas versões apareçam logo após o deploy.
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE).then((cache) => cache.put('./index.html', clone));
-          return response;
-        })
-        .catch(() => caches.match('./index.html'))
-    );
+    event.respondWith(networkFirst(request, './index.html'));
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then(
-      (cached) =>
-        cached ||
-        fetch(request).then((response) => {
-          if (response.ok && url.origin === self.location.origin) {
-            const clone = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(request, clone));
-          }
-          return response;
-        })
-    )
-  );
+  event.respondWith(networkFirst(request));
 });

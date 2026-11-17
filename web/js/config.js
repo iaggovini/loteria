@@ -14,8 +14,7 @@ export const MODALITIES = {
     prizeTiers: [
       { hits: 6, label: 'Sena (6 acertos)' },
       { hits: 5, label: 'Quina (5 acertos)' },
-      { hits: 4, label: 'Quadra (4 acertos)' },
-      { hits: 3, label: 'Terno (3 acertos — sem prêmio fixo)' }
+      { hits: 4, label: 'Quadra (4 acertos)' }
     ]
   },
   lotofacil: {
@@ -130,22 +129,33 @@ export const MODALITY_COLORS = {
   maismilionaria: '#1f8a5f'
 };
 
-export function formatNumber(value, modality) {
-  const pad = modality.max > 60 || modality.id === 'lotomania' ? 2 : 2;
-  return String(value).padStart(pad, '0');
+export function formatNumber(value) {
+  return String(value).padStart(2, '0');
+}
+
+export function formatMoney(value) {
+  return (Number(value) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+/* Faixa de premiação atingida (ou null se a aposta não foi premiada). */
+export function findPrizeTier(modality, hits, extraHits = 0) {
+  if (!modality.extra) return modality.prizeTiers.find((t) => t.hits === hits) || null;
+  return modality.prizeTiers.find((t) => {
+    if (t.hits !== hits) return false;
+    if (t.extraHits === 2) return extraHits === 2;
+    if (t.extraHits === 1) return extraHits >= 1;
+    return true;
+  }) || null;
 }
 
 export function getPrizeLabel(modality, hits) {
-  const tier = modality.prizeTiers.find((t) => t.hits === hits);
+  const tier = findPrizeTier(modality, hits);
   if (tier) return tier.label;
-  if (hits >= 3 && modality.id === 'megasena') return `${hits} acertos`;
-  return `${hits} acerto${hits === 1 ? '' : 's'}`;
+  return `${hits} acerto${hits === 1 ? '' : 's'} (sem prêmio)`;
 }
 
 export function getExtraPrizeLabel(modality, hits, extraHits) {
-  const tier = modality.prizeTiers.find(
-    (t) => t.hits === hits && extraHits >= (t.extraHits ?? 0)
-  );
+  const tier = findPrizeTier(modality, hits, extraHits);
   if (tier) return tier.label;
-  return `${hits} acerto${hits === 1 ? '' : 's'} + ${extraHits} trevo${extraHits === 1 ? '' : 's'}`;
+  return `${hits} acerto${hits === 1 ? '' : 's'} + ${extraHits} trevo${extraHits === 1 ? '' : 's'} (sem prêmio)`;
 }

@@ -45,6 +45,10 @@ create table if not exists public.favorites (
   saved_at timestamptz not null default now()
 );
 
+-- Trevos da +Milionária (adicionado depois; seguro em bancos já existentes).
+alter table public.favorites add column if not exists extra smallint[]
+  check (extra is null or cardinality(extra) between 1 and 6);
+
 create index if not exists favorites_user_saved_idx
   on public.favorites (user_id, saved_at desc);
 
@@ -123,3 +127,25 @@ create policy "Usuários removem apenas seu bolão"
 -- Somente usuários logados acessam estas tabelas pela API.
 revoke all on public.favorites, public.pools from anon;
 grant select, insert, update, delete on public.favorites, public.pools to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Exclusão da própria conta (LGPD). Apaga o usuário e, em cascata, favoritos,
+-- bolão e configurações. Só age sobre a conta de quem está logado.
+-- ---------------------------------------------------------------------------
+
+create or replace function public.delete_my_account()
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'Não autenticado';
+  end if;
+  delete from auth.users where id = auth.uid();
+end;
+$$;
+
+revoke all on function public.delete_my_account() from public, anon;
+grant execute on function public.delete_my_account() to authenticated;

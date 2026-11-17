@@ -349,7 +349,7 @@
         </article>
         <article class="feature-card">
           <h3>Privacidade por padrão</h3>
-          <p>Apostas e favoritos ficam no seu navegador. Nunca vendemos nem compartilhamos seus dados.</p>
+          <p>Sem cadastro, tudo fica no seu navegador. Com conta, só você acessa seus dados. Nunca vendemos nem compartilhamos suas informações.</p>
         </article>
         <article class="feature-card">
           <h3>Sem venda de bilhetes</h3>
@@ -393,7 +393,7 @@
       </details>
       <details class="faq-item">
         <summary>Preciso criar conta para usar?</summary>
-        <p>Não. Simulador, resultados, estatísticas e bolões funcionam sem cadastro. A conta é opcional.</p>
+        <p>Não. Simulador, resultados, estatísticas e bolões funcionam sem cadastro. A conta é opcional e serve para guardar seus favoritos e seu bolão e acessá-los em qualquer aparelho.</p>
       </details>
       <details class="faq-item">
         <summary>Como compartilhar minha aposta?</summary>
@@ -407,7 +407,11 @@
 
     <section id="privacidade" class="privacy-section">
       <h2>Privacidade</h2>
-      <p>Apostas, favoritos e bolões ficam salvos apenas no seu navegador. Se você criar uma conta, guardamos somente o e-mail necessário para o acesso, sempre com conexão criptografada. Não vendemos nem compartilhamos seus dados. Os resultados são consultados no serviço público da Caixa, que possui políticas próprias.</p>
+      <p>Sem conta, suas apostas, favoritos e bolões ficam salvos apenas neste navegador. Se você criar uma conta, guardamos o seu e-mail e, para que você os acesse em qualquer aparelho, seus favoritos e seu bolão — protegidos para que só você tenha acesso, sempre com conexão criptografada. Ao sair da conta, esses dados são apagados do navegador. Não vendemos nem compartilhamos seus dados. Os resultados são consultados no serviço público da Caixa, que possui políticas próprias.</p>
+      <div class="privacy-account" id="privacyAccount" hidden>
+        <p>Em <strong>Minha conta</strong> você vê as informações da sua conta, baixa uma cópia dos seus dados e pode excluir a conta a qualquer momento.</p>
+        <button type="button" class="btn-secondary" id="privacyOpenAccount">Abrir Minha conta</button>
+      </div>
     </section>
   </main>
 
@@ -529,6 +533,97 @@
     </div>
   </dialog>
 
+  <dialog class="auth-dialog account-dialog" id="accountDialog" aria-labelledby="accountTitle">
+    <div class="auth-brand">
+      <span class="auth-brand-name" id="accountTitle">Minha conta</span>
+      <button type="button" class="auth-close" id="closeAccountDialog" aria-label="Fechar">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="auth-body">
+      <div class="account-head">
+        <span class="auth-avatar account-avatar" id="accountAvatar" aria-hidden="true">?</span>
+        <div>
+          <strong class="account-email" id="accountEmail"></strong>
+          <span class="account-badge" id="accountBadge"></span>
+        </div>
+      </div>
+
+      <div class="auth-tabs account-tabs" id="accountTabs" role="tablist" aria-label="Seções da conta">
+        <button type="button" role="tab" class="auth-tab" id="accountTab-perfil" data-account-tab="perfil" aria-controls="accountPanel-perfil" aria-selected="true">Perfil</button>
+        <button type="button" role="tab" class="auth-tab" id="accountTab-seguranca" data-account-tab="seguranca" aria-controls="accountPanel-seguranca" aria-selected="false" tabindex="-1">Segurança</button>
+        <button type="button" role="tab" class="auth-tab" id="accountTab-dados" data-account-tab="dados" aria-controls="accountPanel-dados" aria-selected="false" tabindex="-1">Meus dados</button>
+      </div>
+
+      <section class="account-panel" id="accountPanel-perfil" role="tabpanel" aria-labelledby="accountTab-perfil">
+        <dl class="account-info">
+          <div><dt>Conta criada em</dt><dd id="accountCreated">—</dd></div>
+          <div><dt>Último acesso</dt><dd id="accountLastSignIn">—</dd></div>
+          <div><dt>Favoritos na conta</dt><dd id="accountFavorites">—</dd></div>
+          <div><dt>Bolão na conta</dt><dd id="accountPool">—</dd></div>
+        </dl>
+        <p class="account-note">Seus favoritos e seu bolão são salvos automaticamente na conta e aparecem em qualquer aparelho em que você entrar.</p>
+        <button type="button" class="btn-secondary account-wide" id="accountSignOut">Sair da conta</button>
+      </section>
+
+      <section class="account-panel" id="accountPanel-seguranca" role="tabpanel" aria-labelledby="accountTab-seguranca" hidden>
+        <form class="auth-form" id="accountPasswordForm" novalidate>
+          <h3 class="account-subtitle">Alterar senha</h3>
+          <div class="auth-field">
+            <label for="accountNewPassword">Nova senha</label>
+            <input id="accountNewPassword" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+            <ul class="auth-rules" id="accountPasswordRules" aria-label="Requisitos da senha">
+              <li data-rule="length">12 ou mais caracteres</li>
+              <li data-rule="upper">Letra maiúscula</li>
+              <li data-rule="lower">Letra minúscula</li>
+              <li data-rule="number">Número</li>
+              <li data-rule="symbol">Símbolo (ex.: ! @ # $)</li>
+            </ul>
+          </div>
+          <button type="submit" class="auth-submit" id="accountPasswordSubmit">Salvar nova senha</button>
+        </form>
+
+        <form class="auth-form account-block" id="accountEmailForm" novalidate>
+          <h3 class="account-subtitle">Alterar e-mail</h3>
+          <div class="auth-field">
+            <label for="accountNewEmail">Novo e-mail</label>
+            <input id="accountNewEmail" type="email" autocomplete="email" inputmode="email" maxlength="254" placeholder="novo@exemplo.com" required>
+          </div>
+          <p class="account-note">Enviaremos um link de confirmação. A troca só vale depois que você clicar nele.</p>
+          <button type="submit" class="btn-secondary account-wide" id="accountEmailSubmit">Enviar confirmação</button>
+        </form>
+
+        <div class="account-block">
+          <h3 class="account-subtitle">Sessões</h3>
+          <p class="account-note">Esqueceu a conta aberta em outro celular ou computador? Saia de todos os aparelhos de uma vez.</p>
+          <button type="button" class="btn-secondary account-wide" id="accountSignOutAll">Sair de todos os aparelhos</button>
+        </div>
+      </section>
+
+      <section class="account-panel" id="accountPanel-dados" role="tabpanel" aria-labelledby="accountTab-dados" hidden>
+        <div>
+          <h3 class="account-subtitle">Baixar meus dados</h3>
+          <p class="account-note">Receba um arquivo com tudo o que guardamos sobre você: e-mail, datas da conta, favoritos e bolão.</p>
+          <button type="button" class="btn-secondary account-wide" id="accountExport">Baixar meus dados (JSON)</button>
+        </div>
+
+        <div class="account-danger">
+          <h3 class="account-subtitle">Excluir conta</h3>
+          <p class="account-note">Apaga <strong>definitivamente</strong> seu e-mail, favoritos e bolão dos nossos servidores. Essa ação não pode ser desfeita.</p>
+          <div class="auth-field">
+            <label for="accountDeleteConfirm">Para confirmar, digite <strong>EXCLUIR</strong></label>
+            <input id="accountDeleteConfirm" type="text" autocomplete="off" spellcheck="false" maxlength="10">
+          </div>
+          <button type="button" class="account-delete account-wide" id="accountDelete" disabled>Excluir minha conta</button>
+        </div>
+      </section>
+
+      <div class="auth-alert" id="accountError" role="alert" hidden>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7.5v5.5M12 16.5v.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span id="accountErrorText"></span>
+      </div>
+    </div>
+  </dialog>
   <section class="print-slip" aria-hidden="true">
     <h2>Bom de Sorte — Comprovante de simulação</h2>
     <p id="printModality"></p>
@@ -536,7 +631,7 @@
     <p class="muted">Não válido como bilhete oficial.</p>
   </section>
 
+  <script src="js/sw-register.js" defer></script>
   <script type="module" src="js/app.js"></script>
-  <script type="module" src="js/print.js"></script>
 </body>
 </html>

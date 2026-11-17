@@ -9,8 +9,7 @@ import {
   showToast,
   initMobileMenu,
   initThemeToggle,
-  initScrollSpy,
-  registerServiceWorker
+  initScrollSpy
 } from './ui.js';
 import {
   initResults,
@@ -64,6 +63,7 @@ function initModalitySelector() {
 function onModalityChange() {
   switchModality(currentModality);
   switchPoolModality(currentModality);
+  clearCompare();
   initResults(currentModality);
   renderRules(currentModality);
   renderFavoritesList(handleFavoriteAction);
@@ -121,7 +121,15 @@ function handleFavoriteAction(action, idOrName) {
       );
       return;
     }
-    addFavorite(currentModality, nums, idOrName);
+    const extra = currentModality.extra ? getSelectedExtra() : [];
+    if (currentModality.extra && extra.length !== currentModality.extra.pick) {
+      showToast(
+        `Selecione ${currentModality.extra.pick} ${currentModality.extra.label.toLowerCase()}s antes de salvar.`,
+        'warning'
+      );
+      return;
+    }
+    addFavorite(currentModality, nums, idOrName, extra);
     renderFavoritesList(handleFavoriteAction);
     return;
   }
@@ -130,7 +138,7 @@ function handleFavoriteAction(action, idOrName) {
     const fav = getFavorite(idOrName);
     if (!fav) return;
     changeModality(fav.modalityId);
-    applyNumbers(fav.numbers);
+    applyNumbers(fav.numbers, fav.extra);
     showToast(`Aposta "${fav.name}" carregada.`, 'success');
     document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
     return;
@@ -143,15 +151,7 @@ function handleFavoriteAction(action, idOrName) {
 }
 
 function selectModality(id) {
-  if (!MODALITIES[id] || id === currentModality.id) {
-    document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
-    return;
-  }
-  const select = document.getElementById('modalitySelect');
-  if (select) select.value = id;
-  currentModality = MODALITIES[id];
-  setModality(id);
-  onModalityChange();
+  changeModality(id);
   document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -165,13 +165,20 @@ function applyUrlParams() {
   const bet = parseUrlBet();
   if (!bet || !MODALITIES[bet.modalityId]) return;
 
-  const select = document.getElementById('modalitySelect');
-  if (select) select.value = bet.modalityId;
-  currentModality = MODALITIES[bet.modalityId];
-  setModality(bet.modalityId);
-  switchModality(currentModality);
-  applyNumbers(bet.numbers);
+  changeModality(bet.modalityId);
+  applyNumbers(bet.numbers, bet.extra);
   showToast('Aposta carregada do link compartilhado.', 'info');
+  // Remove os parâmetros para que recarregar a página não sobrescreva a seleção.
+  window.history.replaceState(null, '', location.pathname + location.hash);
+}
+
+function clearCompare() {
+  ['compareA', 'compareB'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '';
+  });
+  const out = document.getElementById('compareResult');
+  if (out) out.innerHTML = '';
 }
 
 function populateCompareSelects() {
@@ -181,7 +188,7 @@ function populateCompareSelects() {
   if (!a || !b || !history.length) return;
 
   const options = history
-    .map((h) => `<option value="${h.contest}">Concurso ${h.contest} (${h.date})</option>`)
+    .map((h) => `<option value="${Number(h.contest)}">Concurso ${Number(h.contest)} (${String(h.date).replace(/[<>&"]/g, '')})</option>`)
     .join('');
 
   a.innerHTML = options;
@@ -224,7 +231,6 @@ function init() {
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
   initThemeToggle(setTheme);
   initScrollSpy();
-  registerServiceWorker();
   initCloud({
     onFavoritesLoaded: () => renderFavoritesList(handleFavoriteAction),
     onPoolLoaded: handleCloudPool

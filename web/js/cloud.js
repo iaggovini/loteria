@@ -80,12 +80,13 @@ function toRow(fav, uid) {
     modality_id: fav.modalityId,
     modality_name: String(fav.modalityName || '').slice(0, 40),
     numbers: fav.numbers.map(Number),
+    extra: fav.extra?.length ? fav.extra.map(Number) : null,
     saved_at: fav.savedAt || new Date().toISOString()
   };
 }
 
 function fromRow(row) {
-  return {
+  const fav = {
     id: row.id,
     name: row.name,
     modalityId: row.modality_id,
@@ -93,12 +94,14 @@ function fromRow(row) {
     numbers: row.numbers,
     savedAt: row.saved_at
   };
+  if (row.extra?.length) fav.extra = row.extra;
+  return fav;
 }
 
 async function syncFavorites(supabase, uid) {
   const { data, error } = await supabase
     .from('favorites')
-    .select('id, name, modality_id, modality_name, numbers, saved_at')
+    .select('id, name, modality_id, modality_name, numbers, extra, saved_at')
     .order('saved_at', { ascending: false });
   if (error) throw error;
 

@@ -28,16 +28,16 @@ export function renderFavoritesList(onApply) {
   list.innerHTML = favorites
     .map(
       (fav) => `
-      <article class="favorite-item" data-id="${fav.id}">
+      <article class="favorite-item" data-id="${escapeHtml(fav.id)}">
         <div>
           <strong>${escapeHtml(fav.name)}</strong>
-          <span class="favorite-meta">${fav.modalityName} · ${fav.numbers
-            .map((n) => String(n).padStart(2, '0'))
-            .join(' - ')}</span>
+          <span class="favorite-meta">${escapeHtml(fav.modalityName)} · ${(fav.numbers || [])
+            .map((n) => String(Number(n)).padStart(2, '0'))
+            .join(' - ')}${fav.extra?.length ? ` + trevos ${fav.extra.map(Number).join(' - ')}` : ''}</span>
         </div>
         <div class="favorite-actions">
-          <button type="button" class="btn-sm" data-action="apply" data-id="${fav.id}">Usar</button>
-          <button type="button" class="btn-sm btn-danger" data-action="remove" data-id="${fav.id}">Excluir</button>
+          <button type="button" class="btn-sm" data-action="apply" data-id="${escapeHtml(fav.id)}">Usar</button>
+          <button type="button" class="btn-sm btn-danger" data-action="remove" data-id="${escapeHtml(fav.id)}" aria-label="Excluir ${escapeHtml(fav.name)}">Excluir</button>
         </div>
       </article>`
     )
@@ -52,7 +52,7 @@ export function renderFavoritesList(onApply) {
   });
 }
 
-export function addFavorite(modality, numbers, name) {
+export function addFavorite(modality, numbers, name, extra) {
   const favorites = loadFavorites();
   const entry = {
     id: crypto.randomUUID(),
@@ -62,6 +62,7 @@ export function addFavorite(modality, numbers, name) {
     numbers: [...numbers].sort((a, b) => a - b),
     savedAt: new Date().toISOString()
   };
+  if (extra?.length) entry.extra = [...extra].sort((a, b) => a - b);
   favorites.unshift(entry);
   saveFavorites(favorites.slice(0, 20));
   showToast('Aposta salva nos favoritos.', 'success');

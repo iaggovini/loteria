@@ -1,5 +1,6 @@
 import { AUTH_CONFIG } from './auth-config.js';
 import { showToast } from './ui.js';
+import { openAccount, closeAccount } from './account.js';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 let client;
@@ -28,7 +29,7 @@ const MODES = {
   }
 };
 
-const PASSWORD_RULES = {
+export const PASSWORD_RULES = {
   length: (v) => v.length >= 12,
   upper: (v) => /[A-Z]/.test(v),
   lower: (v) => /[a-z]/.test(v),
@@ -68,6 +69,17 @@ export async function getClient() {
 
 let captchaWidget;
 let captchaToken;
+let captchaFailed = false;
+const captchaWaiters = [];
+
+// Espera o token do CAPTCHA (até `ms`), em vez de recusar o envio na hora.
+function waitForCaptcha(ms = 10000) {
+  if (!AUTH_CONFIG.turnstileSiteKey || captchaToken) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    captchaWaiters.push(resolve);
+    setTimeout(() => resolve(Boolean(captchaToken)), ms);
+  });
+}
 
 function loadTurnstile() {
   if (window.turnstile) return Promise.resolve(window.turnstile);
@@ -92,9 +104,14 @@ async function initCaptcha() {
       size: 'flexible',
       // Só aparece quando o Cloudflare precisa de interação do usuário.
       appearance: 'interaction-only',
-      callback: (token) => { captchaToken = token; },
+      callback: (token) => {
+        captchaToken = token;
+        captchaFailed = false;
+        captchaWaiters.splice(0).forEach((resolve) => resolve(true));
+      },
       'expired-callback': () => { captchaToken = undefined; },
-      'error-callback': () => { captchaToken = undefined; }
+      // O Turnstile tenta de novo sozinho; só registramos a falha.
+      'error-callback': () => { captchaToken = undefined; captchaFailed = true; }
     });
   } catch {
     setError('Não foi possível carregar a verificação de segurança. Recarregue a página.');
@@ -117,7 +134,7 @@ function setError(message = '') {
   error.hidden = !message;
 }
 
-function friendlyError(error, fallback) {
+export function friendlyError(error, fallback) {
   const code = error?.code || '';
   if (error?.status === 429 || code.includes('rate_limit')) return 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.';
   if (code === 'email_not_confirmed') return 'Seu e-mail ainda não foi confirmado. Abra o link que enviamos para ativar a conta.';
@@ -195,9 +212,12 @@ function showDone(title, email, message) {
 
 function renderUser(user) {
   window.dispatchEvent(new CustomEvent('auth:user', { detail: user || null }));
+  const privacy = $('privacyAccount');
+  if (privacy) privacy.hidden = !user;
   const { area } = getElements();
   area.replaceChildren();
   if (!user) {
+    closeAccount();
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'btn-auth'; button.id = 'openAuthDialog';
     button.textContent = 'Entrar';
@@ -206,9 +226,12 @@ function renderUser(user) {
     return;
   }
   const email = user.email || '';
-  const chip = document.createElement('span');
+  const chip = document.createElement('button');
+  chip.type = 'button';
   chip.className = 'auth-user';
-  chip.title = email;
+  chip.title = 'Minha conta';
+  chip.setAttribute('aria-label', `Minha conta (${email})`);
+  chip.addEventListener('click', () => openAccount());
   const avatar = document.createElement('span');
   avatar.className = 'auth-avatar';
   avatar.setAttribute('aria-hidden', 'true');
@@ -248,7 +271,13 @@ async function submit(els) {
   if ((mode === 'signup' || mode === 'recovery') && !validPassword(password)) {
     return setError('A senha ainda não cumpre todos os requisitos.');
   }
-  if (mode !== 'recovery' && captchaMissing()) return setError('Aguarde a verificação de segurança e tente novamente.');
+  if (mode !== 'recovery' && captchaMissing()) {
+    if (captchaFailed) resetCaptcha();
+    const ready = await waitForCaptcha();
+    if (!ready) {
+      return setError('A verificação de segurança não foi concluída. Recarregue a página e tente de novo; se continuar, desative bloqueadores de anúncio ou tente outro navegador.');
+    }
+  }
 
   const supabase = await getClient();
 
@@ -297,6 +326,7 @@ export async function initAuth() {
     return;
   }
   els.open?.addEventListener('click', () => openDialog());
+  $('privacyOpenAccount')?.addEventListener('click', () => openAccount());
   els.close.addEventListener('click', () => els.dialog.close());
   els.dialog.addEventListener('click', (event) => { if (event.target === els.dialog) els.dialog.close(); });
   els.tabs.addEventListener('click', (event) => {

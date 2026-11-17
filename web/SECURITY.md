@@ -14,7 +14,9 @@ O login usa Supabase Auth. O navegador recebe somente a chave **anon/publishable
 
 ## Limites importantes
 
-Nenhum login do lado do navegador, sozinho, torna dados invioláveis. A proteção depende de HTTPS, confirmação de e-mail, RLS em todo dado privado, chaves administrativas somente no servidor e atualização regular de dependências. Sem login, favoritos e bolão ficam apenas no `localStorage`. Com login, `js/cloud.js` os sincroniza com as tabelas `favorites` e `pools` (protegidas por RLS: cada conta só lê e altera os próprios dados). Ao entrar, dados criados sem login são enviados para a conta; ao sair, os dados da conta são apagados do navegador.
+Nenhum login do lado do navegador, sozinho, torna dados invioláveis. A proteção depende de HTTPS, confirmação de e-mail, RLS em todo dado privado, chaves administrativas somente no servidor e atualização regular de dependências. Sem login, favoritos e bolão ficam apenas no `localStorage`. Com login, `js/cloud.js` os sincroniza com as tabelas `favorites` e `pools` (protegidas por RLS: cada conta só lê e altera os próprios dados). Ao entrar, dados criados sem login são enviados para a conta; ao sair, os dados da conta são apagados do navegador. A função `delete_my_account()` (botão "Excluir minha conta" na seção Privacidade) apaga o usuário e, em cascata, todos os seus dados.
+
+O Service Worker nunca guarda respostas do Supabase nem do Turnstile; só arquivos do próprio site e resultados da Caixa, para uso offline.
 
 ## Biblioteca do Supabase
 

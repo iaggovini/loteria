@@ -1,4 +1,5 @@
-import { formatNumber, getPrizeLabel, getExtraPrizeLabel } from './config.js';
+import { formatNumber, formatMoney, getPrizeLabel, getExtraPrizeLabel, findPrizeTier } from './config.js';
+import { fetchContest } from './api.js';
 import { showToast, showConfirm } from './ui.js';
 import { getLatestResult } from './results.js';
 import { loadPoolRaw, savePoolRaw } from './storage.js';
@@ -139,7 +140,7 @@ function addParticipant() {
   const nameEl = document.getElementById('participantName');
   const cotasEl = document.getElementById('participantCotas');
   const name = nameEl?.value.trim();
-  const shares = Math.max(1, Number(cotasEl?.value) || 1);
+  const shares = Math.min(1000, Math.max(1, Math.floor(Number(cotasEl?.value)) || 1));
 
   if (!name) {
     showToast('Digite o nome do participante.', 'warning');
@@ -317,7 +318,7 @@ function renderSummary() {
     ? `<div class="summary-participants">${state.participants
         .map((p) => {
           const cost = (p.shares / totalShares) * total;
-          return `<span class="participant-badge"><strong>${escapeHtml(p.name)}</strong> R$&nbsp;${cost.toFixed(2)}</span>`;
+          return `<span class="participant-badge"><strong>${escapeHtml(p.name)}</strong> ${formatMoney(cost)}</span>`;
         })
         .join('')}</div>`
     : '';
@@ -329,7 +330,7 @@ function renderSummary() {
         <span class="summary-lbl">Apostas</span>
       </div>
       <div class="summary-item">
-        <span class="summary-val">R$&nbsp;${total.toFixed(2)}</span>
+        <span class="summary-val">${formatMoney(total)}</span>
         <span class="summary-lbl">Total</span>
       </div>
       <div class="summary-item">
@@ -337,7 +338,7 @@ function renderSummary() {
         <span class="summary-lbl">Cotas</span>
       </div>
       <div class="summary-item summary-highlight">
-        <span class="summary-val">R$&nbsp;${perShare.toFixed(2)}</span>
+        <span class="summary-val">${formatMoney(perShare)}</span>
         <span class="summary-lbl">Por cota</span>
       </div>
     </div>
@@ -345,17 +346,32 @@ function renderSummary() {
   `;
 }
 
-function conferPool() {
-  const latest = getLatestResult();
+async function conferPool() {
   const out = document.getElementById('poolConference');
   if (!out) return;
 
-  if (!latest) {
-    showToast('Carregue os resultados antes de conferir.', 'warning');
-    return;
-  }
   if (!state.bets.length) {
     showToast('Adicione apostas ao bolão antes de conferir.', 'warning');
+    return;
+  }
+
+  let latest = getLatestResult();
+  if (latest && latest.modalityId !== modality.id) latest = null;
+  const wanted = Number(String(state.contestNumber).trim());
+  if (Number.isInteger(wanted) && wanted > 0 && wanted !== latest?.contest) {
+    if (latest && wanted > latest.contest) {
+      showToast(`O concurso ${wanted} ainda não foi sorteado. O último é o ${latest.contest}.`, 'info');
+      return;
+    }
+    try {
+      latest = await fetchContest(modality.id, wanted);
+    } catch {
+      showToast(`Não foi possível buscar o concurso ${wanted}. Verifique o número e tente novamente.`, 'warning');
+      return;
+    }
+  }
+  if (!latest) {
+    showToast('Aguarde o carregamento dos resultados para conferir.', 'warning');
     return;
   }
 
@@ -364,6 +380,7 @@ function conferPool() {
   const extraDrawnSet = modality.extra && latest.trevos ? new Set(latest.trevos) : null;
 
   let bestHits = 0;
+  let winners = 0;
 
   const rows = state.bets.map((bet, i) => {
     const hitsPerDraw = drawnSets.map((s) => bet.numbers.filter((n) => s.has(n)));
@@ -379,8 +396,8 @@ function conferPool() {
     const label = modality.extra
       ? getExtraPrizeLabel(modality, hits.length, extraHits.length)
       : getPrizeLabel(modality, hits.length);
-    const minPrizeTier = modality.prizeTiers[modality.prizeTiers.length - 1]?.hits ?? 0;
-    const isWinner = hits.length > 0 && hits.length >= minPrizeTier;
+    const isWinner = Boolean(findPrizeTier(modality, hits.length, extraHits.length));
+    if (isWinner) winners += 1;
 
     return `
       <div class="confer-row${isWinner ? ' confer-winner' : ''}">
@@ -394,7 +411,7 @@ function conferPool() {
   out.innerHTML = `
     <h3>Conferência do Bolão</h3>
     <div class="confer-drawn">
-      <span class="muted">Sorteio ${latest.contest} (${latest.date}):</span>
+      <span class="muted">Concurso ${Number(latest.contest)} (${escapeHtml(latest.date)}):</span>
       <div class="balls">
         ${latest.balls
           .map((n) => `<span class="ball">${formatNumber(n, modality)}</span>`)
@@ -412,9 +429,9 @@ function conferPool() {
       }
     </div>
     ${
-      bestHits > 0
-        ? `<p class="confer-best-msg">Melhor resultado do bolão: <strong>${bestHits} acerto(s)</strong></p>`
-        : '<p class="muted confer-best-msg">Nenhum acerto neste bolão para este concurso.</p>'
+      winners > 0
+        ? `<p class="confer-best-msg">🎉 <strong>${winners} aposta(s) premiada(s)</strong> neste concurso. Confirme sempre no site oficial da Caixa.</p>`
+        : `<p class="muted confer-best-msg">Nenhuma aposta premiada neste concurso. Melhor resultado: ${bestHits} acerto(s).</p>`
     }
     <div class="confer-rows">${rows.join('')}</div>
   `;
@@ -448,14 +465,14 @@ function buildPoolText() {
 
   const total = state.bets.length * state.betPrice;
   lines.push(`─────────────────────`);
-  lines.push(`Total: R$ ${total.toFixed(2)}`);
+  lines.push(`Total: ${formatMoney(total)}`);
 
   if (state.participants.length) {
     const totalShares = state.participants.reduce((s, p) => s + p.shares, 0);
     lines.push(`Participantes:`);
     state.participants.forEach((p, i) => {
       const cost = (p.shares / totalShares) * total;
-      lines.push(`  ${i + 1}. ${p.name} — R$ ${cost.toFixed(2)}`);
+      lines.push(`  ${i + 1}. ${p.name} — ${formatMoney(cost)}`);
     });
   }
 
@@ -511,7 +528,7 @@ function printPool() {
            ${state.participants
              .map((p, i) => {
                const cost = (p.shares / totalShares) * total;
-               return `<tr><td>${i + 1}</td><td>${escapeHtml(p.name)}</td><td>${p.shares}</td><td>R$ ${cost.toFixed(2)}</td></tr>`;
+               return `<tr><td>${i + 1}</td><td>${escapeHtml(p.name)}</td><td>${p.shares}</td><td>${formatMoney(cost)}</td></tr>`;
              })
              .join('')}
          </tbody>
@@ -531,19 +548,7 @@ function printPool() {
 <head>
   <meta charset="UTF-8">
   <title>Bolão — ${name}</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 40px; color: #000; max-width: 800px; margin: 0 auto; }
-    h1 { margin: 0 0 6px; font-size: 1.6rem; }
-    .meta { color: #555; margin-bottom: 28px; font-size: 0.9rem; }
-    h3 { margin: 24px 0 10px; }
-    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: left; font-size: 0.9rem; }
-    th { background: #f0f0f0; font-weight: 700; }
-    tr:nth-child(even) td { background: #fafafa; }
-    .summary-box { background: #f5f5f5; border: 1px solid #ddd; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; font-size: 0.95rem; }
-    .summary-box strong { font-size: 1.1rem; }
-    .disclaimer { font-size: 0.78rem; color: #999; margin-top: 32px; border-top: 1px solid #e0e0e0; padding-top: 12px; }
-  </style>
+  <link rel="stylesheet" href="${new URL('css/pool-print.css', location.href).href}">
 </head>
 <body>
   <h1>${name}</h1>
@@ -556,10 +561,10 @@ function printPool() {
   </table>
 
   <div class="summary-box">
-    <strong>${state.bets.length}</strong> aposta(s) &times; R$ ${state.betPrice.toFixed(2)} =
-    <strong>R$ ${total.toFixed(2)}</strong> total &nbsp;|&nbsp;
+    <strong>${state.bets.length}</strong> aposta(s) &times; ${formatMoney(state.betPrice)} =
+    <strong>${formatMoney(total)}</strong> total &nbsp;|&nbsp;
     Dividido em <strong>${totalShares}</strong> cota(s):
-    <strong>R$ ${(total / totalShares).toFixed(2)}</strong> por cota
+    <strong>${formatMoney(total / totalShares)}</strong> por cota
   </div>
 
   ${participantsBlock}
@@ -576,7 +581,13 @@ function printPool() {
   win.document.write(html);
   win.document.close();
   win.focus();
-  win.print();
+  // Espera o CSS carregar para não imprimir a página sem formatação.
+  const link = win.document.querySelector('link[rel="stylesheet"]');
+  let printed = false;
+  const doPrint = () => { if (!printed) { printed = true; win.print(); } };
+  link?.addEventListener('load', doPrint);
+  link?.addEventListener('error', doPrint);
+  setTimeout(doPrint, 1500);
 }
 
 function escapeHtml(str) {

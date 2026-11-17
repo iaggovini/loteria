@@ -1,4 +1,4 @@
-import { formatNumber, getPrizeLabel, getExtraPrizeLabel } from './config.js';
+import { formatNumber, getPrizeLabel, getExtraPrizeLabel, findPrizeTier } from './config.js';
 import { loadSelection, saveSelection } from './storage.js';
 import { showToast } from './ui.js';
 import { getLatestResult } from './results.js';
@@ -39,7 +39,7 @@ function bindActions(callbacks) {
   document.getElementById('btnConference')?.addEventListener('click', () => runConference());
   document.getElementById('btnCopy')?.addEventListener('click', () => copyBet());
   document.getElementById('btnShare')?.addEventListener('click', () => shareBet());
-  document.getElementById('btnPrint')?.addEventListener('click', () => window.print());
+  document.getElementById('btnPrint')?.addEventListener('click', () => printBet());
 
   ['filterEven', 'filterOdd', 'filterLow'].forEach((id) => {
     document.getElementById(id)?.addEventListener('change', () => {
@@ -101,7 +101,9 @@ function buildGrid() {
 }
 
 function syncGridClasses() {
-  document.querySelectorAll('.number-btn').forEach((button) => {
+  if (!els.grid) return;
+  // Só a grade principal: os botões de trevo têm a própria sincronização.
+  els.grid.querySelectorAll('.number-btn').forEach((button) => {
     const value = Number(button.textContent);
     const isSelected = selected.has(value);
     button.classList.toggle('selected', isSelected);
@@ -241,17 +243,43 @@ export function clearSelection() {
   clearConference();
 }
 
-export function applyNumbers(numbers) {
+export function applyNumbers(numbers, extra) {
   selected.clear();
-  numbers
+  [...new Set(numbers)]
     .filter(
       (n) =>
         Number.isInteger(n) && n >= modality.min && n <= modality.max
     )
     .slice(0, modality.pick)
     .forEach((n) => selected.add(n));
+  if (modality.extra) {
+    selectedExtra.clear();
+    const { min, max, pick } = modality.extra;
+    [...new Set(extra || [])]
+      .filter((n) => Number.isInteger(n) && n >= min && n <= max)
+      .slice(0, pick)
+      .forEach((n) => selectedExtra.add(n));
+    syncExtraGridClasses();
+  }
   syncGridClasses();
   updateUI();
+  clearConference();
+}
+
+function printBet() {
+  const nums = getSelectedNumbers();
+  if (!nums.length) {
+    showToast('Selecione números antes de imprimir.', 'warning');
+    return;
+  }
+  const extra = modality.extra && selectedExtra.size
+    ? ` + ${modality.extra.label.toLowerCase()}s ${getSelectedExtra().join(' - ')}`
+    : '';
+  const modEl = document.getElementById('printModality');
+  const numsEl = document.getElementById('printNumbers');
+  if (modEl) modEl.textContent = modality.name;
+  if (numsEl) numsEl.textContent = nums.map((n) => formatNumber(n, modality)).join(' - ') + extra;
+  window.print();
 }
 
 export function getSelectedNumbers() {
@@ -288,7 +316,19 @@ function buildPool() {
       );
 }
 
+let generating = false;
+
 export async function generateQuickPick() {
+  if (generating) return;
+  generating = true;
+  try {
+    await quickPick();
+  } finally {
+    generating = false;
+  }
+}
+
+async function quickPick() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const pool = buildPool();
   const pick = [];
@@ -297,7 +337,7 @@ export async function generateQuickPick() {
   clearSelection();
 
   if (!reduceMotion) {
-    const buttons = [...document.querySelectorAll('.number-btn')];
+    const buttons = els.grid ? [...els.grid.querySelectorAll('.number-btn')] : [];
     for (let round = 0; round < 12; round += 1) {
       buttons.forEach((btn) => btn.classList.toggle('shuffling', Math.random() > 0.7));
       // eslint-disable-next-line no-await-in-loop
@@ -333,8 +373,8 @@ function runConference() {
   const latest = getLatestResult();
   const box = els.conference;
 
-  if (!latest) {
-    showToast('Carregue os resultados antes de conferir.', 'warning');
+  if (!latest || latest.modalityId !== modality.id) {
+    showToast('Aguarde o carregamento dos resultados para conferir.', 'warning');
     return;
   }
 
@@ -381,7 +421,7 @@ function runConference() {
   if (box) {
     box.hidden = false;
     box.innerHTML = `
-      <p><strong>Concurso ${latest.contest}</strong> (${latest.date})</p>
+      <p><strong>Concurso ${Number(latest.contest)}</strong> (${String(latest.date).replace(/[<>&"]/g, '')})</p>
       ${drawResults
         .map(
           (d) => `
@@ -416,7 +456,13 @@ function runConference() {
     `;
   }
 
-  showToast(`Conferência: ${best.hits.length} acerto(s).`, best.hits.length >= 4 ? 'success' : 'info');
+  const won = modality.extra
+    ? findPrizeTier(modality, best.hits.length, extraHitsCount)
+    : findPrizeTier(modality, best.hits.length);
+  showToast(
+    won ? `Parabéns! ${label}.` : `Conferência: ${best.hits.length} acerto(s), sem prêmio.`,
+    won ? 'success' : 'info'
+  );
 }
 
 function clearConference() {
@@ -451,6 +497,9 @@ function shareBet() {
   const url = new URL(window.location.href);
   url.searchParams.set('jogo', modality.id);
   url.searchParams.set('n', nums.join(','));
+  if (modality.extra && selectedExtra.size) url.searchParams.set('t', getSelectedExtra().join(','));
+  else url.searchParams.delete('t');
+  url.hash = 'simulador';
   navigator.clipboard
     .writeText(url.toString())
     .then(() => showToast('Link da aposta copiado.', 'success'))
@@ -464,8 +513,10 @@ export function parseUrlBet() {
   const game = params.get('jogo');
   const nums = params.get('n');
   if (!game || !nums) return null;
+  const toList = (value) => String(value || '').split(',').slice(0, 100).map(Number).filter(Number.isInteger);
   return {
     modalityId: game,
-    numbers: nums.split(',').map(Number).filter((n) => !Number.isNaN(n))
+    numbers: toList(nums),
+    extra: toList(params.get('t'))
   };
 }
