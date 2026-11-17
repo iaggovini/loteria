@@ -1,6 +1,6 @@
 /*
  * Painel "Minha conta": informações da conta, troca de senha e e-mail,
- * encerramento de sessões, exportação dos dados (LGPD) e exclusão da conta.
+ * encerramento de sessões e exclusão da conta.
  */
 import { getClient, PASSWORD_RULES, friendlyError } from './auth.js';
 import { showToast } from './ui.js';
@@ -196,48 +196,6 @@ async function signOut(scope) {
   }
 }
 
-async function exportData() {
-  setError();
-  const button = $('accountExport');
-  setBusy(button, true, 'Preparando…');
-  try {
-    const supabase = await getClient();
-    const [{ data: userData, error: userError }, fav, pool] = await Promise.all([
-      supabase.auth.getUser(),
-      supabase.from('favorites').select('id, name, modality_id, modality_name, numbers, extra, saved_at').order('saved_at', { ascending: false }),
-      supabase.from('pools').select('data, updated_at').maybeSingle()
-    ]);
-    if (userError || fav.error || pool.error) throw new Error('falha');
-    const user = userData.user;
-    const payload = {
-      exportadoEm: new Date().toISOString(),
-      site: 'Bom de Sorte',
-      conta: {
-        email: user.email,
-        criadaEm: user.created_at,
-        ultimoAcesso: user.last_sign_in_at,
-        emailConfirmadoEm: user.email_confirmed_at || null
-      },
-      favoritos: fav.data,
-      bolao: pool.data
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `bom-de-sorte-meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.append(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    showToast('Arquivo com seus dados baixado.', 'success');
-  } catch {
-    setError('Não foi possível gerar o arquivo agora. Tente novamente.');
-  } finally {
-    setBusy(button, false);
-  }
-}
-
 async function deleteAccount() {
   setError();
   if ($('accountDeleteConfirm').value.trim().toUpperCase() !== 'EXCLUIR') return;
@@ -283,7 +241,6 @@ function bindOnce() {
   $('accountEmailForm').addEventListener('submit', changeEmail);
   $('accountSignOut').addEventListener('click', () => signOut('local'));
   $('accountSignOutAll').addEventListener('click', () => signOut('global'));
-  $('accountExport').addEventListener('click', exportData);
   $('accountDeleteConfirm').addEventListener('input', (event) => {
     $('accountDelete').disabled = event.target.value.trim().toUpperCase() !== 'EXCLUIR';
   });
