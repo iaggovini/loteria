@@ -34,18 +34,20 @@ export function initMobileMenu() {
 
 export function initThemeToggle(onChange) {
   const btn = document.getElementById('themeToggle');
+  const text = document.getElementById('themeToggleLabel');
   if (!btn) return;
-  const label = (theme) => (theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro');
-  btn.setAttribute('aria-label', label(document.documentElement.getAttribute('data-theme') || 'dark'));
+  const sync = (theme) => {
+    const label = theme === 'dark' ? 'Modo claro' : 'Modo escuro';
+    if (text) text.textContent = label;
+    btn.setAttribute('aria-label', `Ativar ${label.toLowerCase()}`);
+  };
+  sync(document.documentElement.getAttribute('data-theme') || 'dark');
 
   btn.addEventListener('click', () => {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     const next = current === 'dark' ? 'light' : 'dark';
     onChange(next);
-    btn.setAttribute(
-      'aria-label',
-      next === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro'
-    );
+    sync(next);
   });
 }
 

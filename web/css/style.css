@@ -1710,6 +1710,7 @@ select {
   .numbers,
   .menu-toggle,
   .theme-toggle,
+  .theme-link,
   nav {
     display: none !important;
   }
@@ -2022,6 +2023,10 @@ section { margin-bottom: 72px; scroll-margin-top: 96px; }
   line-height: 1.7;
 }
 .footer-legal p { margin: 0 0 6px; }
+.footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.footer-bottom p { margin: 0; }
+.theme-link { display: inline-flex; align-items: center; gap: 6px; padding: 4px 0; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: .8rem; cursor: pointer; opacity: .75; transition: opacity .2s ease, color .2s ease; }
+.theme-link:hover, .theme-link:focus-visible { opacity: 1; color: var(--text); }
 
 /* Responsivo */
 @media (max-width: 1100px) {
