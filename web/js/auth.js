@@ -57,7 +57,7 @@ function getElements() {
   };
 }
 
-async function getClient() {
+export async function getClient() {
   if (client) return client;
   const { createClient } = await import('./vendor/supabase.js');
   client = createClient(AUTH_CONFIG.supabaseUrl, AUTH_CONFIG.supabaseAnonKey, {
@@ -194,6 +194,7 @@ function showDone(title, email, message) {
 }
 
 function renderUser(user) {
+  window.dispatchEvent(new CustomEvent('auth:user', { detail: user || null }));
   const { area } = getElements();
   area.replaceChildren();
   if (!user) {

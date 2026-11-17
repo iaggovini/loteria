@@ -34,8 +34,10 @@ import {
   removeFavorite,
   getFavorite
 } from './favorites.js';
-import { initPool, switchPoolModality, addBetToPool } from './pool.js';
+import { initPool, switchPoolModality, addBetToPool, reloadPool } from './pool.js';
 import { initAuth } from './auth.js';
+import { initCloud } from './cloud.js';
+import { savePoolRaw } from './storage.js';
 
 let currentModality = MODALITIES[getModality()] || MODALITIES[DEFAULT_MODALITY];
 
@@ -91,6 +93,24 @@ function renderRules(mod) {
   `;
 }
 
+function changeModality(id) {
+  if (!MODALITIES[id] || id === currentModality.id) return;
+  const select = document.getElementById('modalitySelect');
+  if (select) select.value = id;
+  currentModality = MODALITIES[id];
+  setModality(id);
+  onModalityChange();
+}
+
+// Chamado quando o bolão salvo na conta é baixado (ou apagado ao sair).
+function handleCloudPool(pool) {
+  if (pool && MODALITIES[pool.modalityId] && pool.modalityId !== currentModality.id) {
+    changeModality(pool.modalityId); // limpa o bolão local; restauramos logo abaixo
+    savePoolRaw(pool);
+  }
+  reloadPool();
+}
+
 function handleFavoriteAction(action, idOrName) {
   if (action === 'save') {
     const nums = getSelectedNumbers();
@@ -109,13 +129,7 @@ function handleFavoriteAction(action, idOrName) {
   if (action === 'apply') {
     const fav = getFavorite(idOrName);
     if (!fav) return;
-    if (fav.modalityId !== currentModality.id) {
-      const select = document.getElementById('modalitySelect');
-      if (select) select.value = fav.modalityId;
-      currentModality = MODALITIES[fav.modalityId];
-      setModality(fav.modalityId);
-      onModalityChange();
-    }
+    changeModality(fav.modalityId);
     applyNumbers(fav.numbers);
     showToast(`Aposta "${fav.name}" carregada.`, 'success');
     document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
@@ -211,6 +225,10 @@ function init() {
   initThemeToggle(setTheme);
   initScrollSpy();
   registerServiceWorker();
+  initCloud({
+    onFavoritesLoaded: () => renderFavoritesList(handleFavoriteAction),
+    onPoolLoaded: handleCloudPool
+  });
   initAuth().catch(() => {
     document.getElementById('authArea')?.replaceChildren();
   });

@@ -1,6 +1,7 @@
 import { formatNumber, getPrizeLabel, getExtraPrizeLabel } from './config.js';
 import { showToast, showConfirm } from './ui.js';
 import { getLatestResult } from './results.js';
+import { loadPoolRaw, savePoolRaw } from './storage.js';
 
 const TEMPLATES = {
   casal:    { name: 'Bolão Casal',        bets: 2  },
@@ -587,14 +588,26 @@ function escapeHtml(str) {
 }
 
 function saveToStorage() {
-  localStorage.setItem('loteria-bolao', JSON.stringify({ ...state }));
+  savePoolRaw({ ...state });
+  window.dispatchEvent(new CustomEvent('pool:changed'));
+}
+
+/* Recarrega o bolão do armazenamento local (após sincronizar ou sair da conta). */
+export function reloadPool() {
+  if (!modality) return;
+  Object.assign(state, {
+    modalityId: modality.id, name: '', organizer: '', contestNumber: '',
+    betPrice: 5, bets: [], participants: []
+  });
+  loadFromStorage();
+  restoreInputValues();
+  render();
 }
 
 function loadFromStorage() {
   try {
-    const raw = localStorage.getItem('loteria-bolao');
-    if (!raw) return;
-    const data = JSON.parse(raw);
+    const data = loadPoolRaw();
+    if (!data) return;
     state.name = data.name || '';
     state.organizer = data.organizer || '';
     state.contestNumber = data.contestNumber || '';

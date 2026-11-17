@@ -1,4 +1,4 @@
-const CACHE = 'loteria-v9';
+const CACHE = 'loteria-v10';
 const ASSETS = [
   './',
   './index.html',
@@ -15,6 +15,7 @@ const ASSETS = [
   './js/pool.js',
   './js/auth.js',
   './js/auth-config.js',
+  './js/cloud.js',
   './js/vendor/supabase.js',
   './js/print.js',
   './favicon.svg',

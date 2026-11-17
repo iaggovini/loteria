@@ -4,7 +4,9 @@ const KEYS = {
   selection: 'loteria-selecao-v2',
   favorites: 'loteria-favoritos',
   theme: 'loteria-tema',
-  modality: 'loteria-modalidade'
+  modality: 'loteria-modalidade',
+  pool: 'loteria-bolao',
+  owner: 'loteria-dono'
 };
 
 export function getTheme() {
@@ -68,5 +70,36 @@ export function loadFavorites() {
 }
 
 export function saveFavorites(list) {
+  const prev = loadFavorites();
   localStorage.setItem(KEYS.favorites, JSON.stringify(list));
+  window.dispatchEvent(new CustomEvent('favorites:changed', { detail: { prev, next: list } }));
+}
+
+/* Escrita local sem disparar sincronização (usada ao baixar dados da nuvem). */
+export function replaceFavorites(list) {
+  localStorage.setItem(KEYS.favorites, JSON.stringify(list));
+}
+
+export function loadPoolRaw() {
+  try {
+    const data = JSON.parse(localStorage.getItem(KEYS.pool) || 'null');
+    return data && typeof data === 'object' ? data : null;
+  } catch {
+    return null;
+  }
+}
+
+export function savePoolRaw(data) {
+  if (data) localStorage.setItem(KEYS.pool, JSON.stringify(data));
+  else localStorage.removeItem(KEYS.pool);
+}
+
+/* Conta dona dos dados guardados neste navegador (null = criados sem login). */
+export function getDataOwner() {
+  return localStorage.getItem(KEYS.owner);
+}
+
+export function setDataOwner(userId) {
+  if (userId) localStorage.setItem(KEYS.owner, userId);
+  else localStorage.removeItem(KEYS.owner);
 }
