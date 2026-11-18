@@ -573,6 +573,10 @@
         <form class="auth-form" id="accountPasswordForm" novalidate>
           <h3 class="account-subtitle">Alterar senha</h3>
           <div class="auth-field">
+            <label for="accountCurrentPassword">Senha atual</label>
+            <input id="accountCurrentPassword" type="password" autocomplete="current-password" maxlength="128" required>
+          </div>
+          <div class="auth-field">
             <label for="accountNewPassword">Nova senha</label>
             <input id="accountNewPassword" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
             <ul class="auth-rules" id="accountPasswordRules" aria-label="Requisitos da senha">

@@ -149,3 +149,35 @@ $$;
 
 revoke all on function public.delete_my_account() from public, anon;
 grant execute on function public.delete_my_account() to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Confere a senha atual antes de trocá-la. Só compara a senha da conta de
+-- quem está logado; uma tentativa errada espera 1 segundo para dificultar
+-- tentativas em sequência.
+-- ---------------------------------------------------------------------------
+
+create or replace function public.verify_my_password(current_password text)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  ok boolean;
+begin
+  if auth.uid() is null then
+    raise exception 'Não autenticado';
+  end if;
+  select coalesce(u.encrypted_password = extensions.crypt(current_password, u.encrypted_password), false)
+    into ok
+    from auth.users u
+   where u.id = auth.uid();
+  if not coalesce(ok, false) then
+    perform pg_sleep(1);
+  end if;
+  return coalesce(ok, false);
+end;
+$$;
+
+revoke all on function public.verify_my_password(text) from public, anon;
+grant execute on function public.verify_my_password(text) to authenticated;

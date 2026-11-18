@@ -92,6 +92,7 @@ export async function openAccount(tab = 'perfil') {
   if (!dialog) return;
   bindOnce();
   selectTab(tab);
+  $('accountCurrentPassword').value = '';
   $('accountNewPassword').value = '';
   $('accountNewEmail').value = '';
   $('accountDeleteConfirm').value = '';
@@ -119,17 +120,41 @@ export function closeAccount() {
 async function changePassword(event) {
   event.preventDefault();
   setError();
+  const currentInput = $('accountCurrentPassword');
+  const currentPassword = currentInput.value;
   const input = $('accountNewPassword');
   const password = input.value;
+  if (!currentPassword) {
+    setError('Digite sua senha atual.');
+    currentInput.focus();
+    return;
+  }
   if (!Object.values(PASSWORD_RULES).every((rule) => rule(password))) {
     setError('A nova senha ainda não cumpre todos os requisitos.');
     input.focus();
     return;
   }
+  if (password === currentPassword) {
+    setError('A nova senha precisa ser diferente da senha atual.');
+    input.focus();
+    return;
+  }
   const button = $('accountPasswordSubmit');
-  setBusy(button, true, 'Salvando…');
+  setBusy(button, true, 'Conferindo…');
   try {
     const supabase = await getClient();
+    const { data: valid, error: verifyError } = await supabase.rpc('verify_my_password', { current_password: currentPassword });
+    if (verifyError) {
+      setError('Não foi possível conferir a senha atual agora. Tente novamente.');
+      return;
+    }
+    if (!valid) {
+      setError('A senha atual está incorreta.');
+      currentInput.value = '';
+      currentInput.focus();
+      return;
+    }
+    setBusy(button, true, 'Salvando…');
     const { error } = await supabase.auth.updateUser({ password });
     if (error) {
       if (error.code === 'reauthentication_needed') {
@@ -139,6 +164,7 @@ async function changePassword(event) {
       }
       return;
     }
+    currentInput.value = '';
     input.value = '';
     updateRules();
     showToast('Senha alterada com sucesso.', 'success');
