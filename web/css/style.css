@@ -344,7 +344,7 @@ nav a.active {
   content: "";
   position: absolute;
   top: -40px;
-  right: -10%;
+  right: 0;
   width: 60%;
   height: 340px;
   background: radial-gradient(circle, var(--hero-grad), transparent 70%);
@@ -2089,3 +2089,217 @@ section { margin-bottom: 72px; scroll-margin-top: 96px; }
 
 .pool-summary:empty { display: none; }
 .rules-section strong { color: var(--text); }
+
+/* =========================================================
+   Próximos sorteios, faixa de resultados e destaque do prêmio
+   ========================================================= */
+
+/* Faixa de últimos resultados */
+.results-ticker { margin-top: 12px; }
+.ticker-inner { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.ticker-title {
+  flex: none;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ticker-track {
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding: 4px 2px;
+  -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, #000 92%, transparent);
+}
+.ticker-track::-webkit-scrollbar { display: none; }
+.ticker-item {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 14px 6px 12px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  scroll-snap-align: start;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.ticker-item:hover { border-color: var(--accent); transform: translateY(-1px); }
+.ticker-name { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; white-space: nowrap; }
+.ticker-contest { color: var(--muted); font-variant-numeric: tabular-nums; }
+.ticker-balls { display: inline-flex; gap: 4px; }
+.ticker-ball {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ticker-more { color: var(--muted); }
+
+/* Selo "Acumulou" */
+.draw-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warning) 20%, transparent);
+  color: var(--warning);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.draw-badge[hidden] { display: none; }
+.draw-badge-head { background: rgba(255, 255, 255, 0.95); color: var(--accent); }
+
+/* Hero em duas colunas com o maior prêmio */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: 48px; align-items: center; }
+.hero:has(.hero-jackpot[hidden]) { grid-template-columns: minmax(0, 1fr); }
+.hero-main { min-width: 0; }
+.hero-jackpot {
+  position: relative;
+  overflow: hidden;
+  padding: 28px;
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 90% at 100% 0%, rgba(255, 255, 255, 0.18), transparent 60%),
+    linear-gradient(150deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #020617));
+  color: #fff;
+  box-shadow: 0 30px 60px -30px var(--accent);
+}
+.hero-jackpot[hidden] { display: none; }
+.hero .hero-jackpot p { margin: 0; color: inherit; max-width: none; line-height: 1.4; font-size: 0.95rem; }
+.hero-jackpot .pill-dot { background: #fff; }
+.hero .hero-jackpot .jackpot-kicker { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.9rem; }
+.hero .hero-jackpot .jackpot-label { margin-top: 22px; opacity: 0.85; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.hero .hero-jackpot .jackpot-value { font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
+.hero .hero-jackpot .jackpot-date { margin-top: 10px; }
+.jackpot-date .draw-badge { background: rgba(255, 255, 255, 0.95); color: var(--accent); }
+.hero .hero-jackpot .jackpot-countdown { margin-top: 6px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.jackpot-countdown[hidden] { display: none; }
+.jackpot-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.jackpot-actions button {
+  flex: 1 1 140px;
+  min-height: 46px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.jackpot-primary { border: 0; background: #fff; color: color-mix(in srgb, var(--accent) 70%, #020617); }
+.jackpot-secondary { border: 1px solid rgba(255, 255, 255, 0.6); background: transparent; color: #fff; }
+.jackpot-actions button:hover { transform: translateY(-1px); }
+.jackpot-secondary:hover { background: rgba(255, 255, 255, 0.12); }
+
+/* Cards de próximos sorteios */
+.section-link { color: var(--primary); font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
+.section-link:hover { text-decoration: underline; }
+.draw-card .modality-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.draw-card .modality-card-body { gap: 14px; }
+.draw-card .draw-info p { margin: 0; }
+.draw-label { color: var(--muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.draw-card .draw-prize {
+  margin-top: 2px;
+  font-size: clamp(1.6rem, 2.6vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text);
+}
+.draw-skeleton {
+  width: 70%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--surface-2), color-mix(in srgb, var(--surface-2) 50%, transparent), var(--surface-2));
+  background-size: 200% 100%;
+  animation: draw-shimmer 1.4s linear infinite;
+}
+@keyframes draw-shimmer { to { background-position: -200% 0; } }
+.draw-card .draw-meta { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 6px; color: var(--muted); font-size: 0.88rem; }
+.draw-meta span:first-child { color: var(--text); font-weight: 600; }
+.draw-card .draw-countdown {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.draw-card .draw-countdown[hidden] { display: none; }
+.draw-unavailable { color: var(--muted); }
+.draw-card .draw-rule { margin: 0; padding-top: 12px; border-top: 1px solid var(--border); font-size: 0.88rem; line-height: 1.6; }
+.draw-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+.draw-card .modality-card-body .draw-actions button { margin: 0; align-self: stretch; }
+.btn-draw-primary,
+.btn-draw-secondary {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s ease, background 0.2s ease;
+}
+.btn-draw-primary { border: 0; background: var(--accent); color: #fff; }
+.btn-draw-primary:hover { filter: brightness(1.1); }
+.btn-draw-secondary { border: 1px solid var(--accent); background: transparent; color: var(--text); }
+.btn-draw-secondary:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+
+/* Rodapé: links das loterias */
+.footer-grid { grid-template-columns: 2fr repeat(4, 1fr); }
+.footer-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.footer-link:hover { color: var(--text); }
+.footer-col a, .footer-col .footer-link { font-size: 0.95rem; line-height: 1.5; }
+
+@media (max-width: 960px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .hero-jackpot { max-width: 520px; }
+}
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .ticker-title { display: none; }
+  .section-head .section-link { white-space: normal; }
+}
+@media (max-width: 480px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .hero-jackpot { padding: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .draw-skeleton { animation: none; }
+  .ticker-item:hover, .jackpot-actions button:hover { transform: none; }
+}
+@media print {
+  .results-ticker, .hero-jackpot { display: none !important; }
+}

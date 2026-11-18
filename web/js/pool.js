@@ -43,6 +43,10 @@ export function switchPoolModality(mod) {
   render();
 }
 
+export function getPoolBetCount() {
+  return state.bets.length;
+}
+
 export function addBetToPool(numbers, extra) {
   if (!numbers.length) return false;
   const bet = { id: crypto.randomUUID(), numbers: [...numbers] };

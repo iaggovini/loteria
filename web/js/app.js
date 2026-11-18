@@ -9,7 +9,8 @@ import {
   showToast,
   initMobileMenu,
   initThemeToggle,
-  initScrollSpy
+  initScrollSpy,
+  showConfirm
 } from './ui.js';
 import {
   initResults,
@@ -33,7 +34,8 @@ import {
   removeFavorite,
   getFavorite
 } from './favorites.js';
-import { initPool, switchPoolModality, addBetToPool, reloadPool } from './pool.js';
+import { initPool, switchPoolModality, addBetToPool, reloadPool, getPoolBetCount } from './pool.js';
+import { initDraws } from './draws.js';
 import { initAuth } from './auth.js';
 import { initCloud } from './cloud.js';
 import { savePoolRaw } from './storage.js';
@@ -153,6 +155,27 @@ function handleFavoriteAction(action, idOrName) {
 function selectModality(id) {
   changeModality(id);
   document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function openPoolFor(id) {
+  if (!MODALITIES[id]) return;
+  if (id !== currentModality.id && getPoolBetCount() > 0) {
+    const ok = await showConfirm(
+      `Seu bolão atual de ${currentModality.name} tem apostas. Trocar para ${MODALITIES[id].name} vai apagá-las.`,
+      { title: 'Trocar o jogo do bolão?', confirmText: 'Trocar e apagar', danger: true }
+    );
+    if (!ok) {
+      document.getElementById('bolao')?.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+  }
+  changeModality(id);
+  document.getElementById('bolao')?.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showResultsFor(id) {
+  changeModality(id);
+  document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' });
 }
 
 function initModalityShortcuts() {
@@ -275,6 +298,7 @@ function init() {
 
   initCompare();
   applyUrlParams();
+  initDraws({ onSelect: selectModality, onPool: openPoolFor, onResults: showResultsFor });
 }
 
 init();
