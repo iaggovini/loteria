@@ -1,4 +1,4 @@
-const CACHE = 'loteria-v15';
+const CACHE = 'loteria-v16';
 const ASSETS = [
   './',
   './index.html',

@@ -256,9 +256,11 @@ function openDialog(nextMode = 'signin') {
   if (!dialog.open) dialog.showModal();
   if (mode !== 'recovery') email.focus();
   if (!captchaStarted) { captchaStarted = true; initCaptcha(); }
+  connect().catch(() => {});
 }
 
 async function submit(els) {
+  await connect();
   const email = els.email.value.trim().toLowerCase();
   const password = els.password.value;
   const redirectTo = `${location.origin}${location.pathname}`;
@@ -348,11 +350,46 @@ export async function initAuth() {
     }
   });
 
-  const supabase = await getClient();
-  const { data } = await supabase.auth.getSession();
-  renderUser(data.session?.user);
-  supabase.auth.onAuthStateChange((event, session) => {
-    renderUser(session?.user);
-    if (event === 'PASSWORD_RECOVERY') openDialog('recovery');
-  });
+  // A biblioteca de login (≈220 KB) só é baixada quando há uma sessão salva,
+  // um link de confirmação/recuperação na URL, ou quando a pessoa abre o login.
+  if (hasStoredSession() || hasAuthParams()) await connect();
+  else renderUser(null);
+}
+
+function hasStoredSession() {
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i) || '';
+      if (key.startsWith('sb-') && key.includes('-auth-token')) return true;
+    }
+  } catch {
+    return true; // sem acesso ao armazenamento: conecta para não esconder a sessão
+  }
+  return false;
+}
+
+function hasAuthParams() {
+  const hash = location.hash || '';
+  const search = new URLSearchParams(location.search);
+  return /access_token|refresh_token|error_description|type=recovery/.test(hash)
+    || search.has('code') || search.has('token_hash') || search.has('error_description');
+}
+
+let connecting = null;
+function connect() {
+  if (!connecting) {
+    connecting = (async () => {
+      const supabase = await getClient();
+      const { data } = await supabase.auth.getSession();
+      renderUser(data.session?.user);
+      supabase.auth.onAuthStateChange((event, session) => {
+        renderUser(session?.user);
+        if (event === 'PASSWORD_RECOVERY') openDialog('recovery');
+      });
+    })().catch((error) => {
+      connecting = null;
+      throw error;
+    });
+  }
+  return connecting;
 }

@@ -258,7 +258,12 @@ nav a.active {
 .account-danger { padding: 16px; border: 1px solid color-mix(in srgb, var(--danger) 45%, transparent); border-radius: 14px; background: color-mix(in srgb, var(--danger) 7%, transparent); }
 .account-delete { min-height: 44px; padding: 10px 16px; border: 0; border-radius: 12px; background: var(--danger); color: #ffffff; font: inherit; font-weight: 700; cursor: pointer; }
 .account-delete:disabled { opacity: .45; cursor: not-allowed; }
-@media (max-width: 480px) { .account-info { grid-template-columns: 1fr; } }
+@media (max-width: 480px) {
+  .account-info { gap: 8px; }
+  .account-info > div { padding: 10px 12px; }
+  .account-info dt { font-size: .68rem; }
+  .account-tabs .auth-tab { padding: 9px 6px; font-size: .84rem; white-space: nowrap; }
+}
 .auth-user-email { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .auth-avatar { display: grid; flex: none; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #ffffff; color: #062a52; font-weight: 700; font-size: .85rem; }
 
