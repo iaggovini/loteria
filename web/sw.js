@@ -1,4 +1,4 @@
-const CACHE = 'loteria-v17';
+const CACHE = 'loteria-v18';
 const ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const ASSETS = [
   './css/pool-print.css',
   './js/app.js',
   './js/sw-register.js',
+  './js/theme-init.js',
   './js/config.js',
   './js/api.js',
   './js/storage.js',

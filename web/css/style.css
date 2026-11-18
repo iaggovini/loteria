@@ -1,16 +1,16 @@
 :root,
 [data-theme="dark"] {
-  --bg: #0f172a;
-  --surface: #111827;
-  --surface-2: #1f2937;
+  --bg: #0b1220;
+  --surface: #152034;
+  --surface-2: #1f2c44;
   --text: #f8fafc;
-  --muted: #94a3b8;
+  --muted: #b0bccd;
   --primary: #38bdf8;
   --accent: #7c3aed;
   --success: #22c55e;
   --danger: #f97316;
   --warning: #fbbf24;
-  --border: rgba(148, 163, 184, 0.15);
+  --border: rgba(148, 163, 184, 0.24);
   --hero-grad: rgba(56, 189, 248, 0.15);
 }
 
@@ -20,25 +20,25 @@
   --surface-2: #e2e8f0;
   --text: #0f172a;
   --muted: #475569;
-  --primary: #0284c7;
+  --primary: #0369a1;
   --accent: #6d28d9;
   --success: #16a34a;
-  --danger: #ea580c;
-  --warning: #d97706;
-  --border: rgba(15, 23, 42, 0.12);
+  --danger: #c2410c;
+  --warning: #b45309;
+  --border: rgba(15, 23, 42, 0.16);
   --hero-grad: rgba(2, 132, 199, 0.12);
 }
 
 :root,
 [data-theme="dark"],
 [data-theme="light"] {
-  --mod-megasena: #0d9f4f;
-  --mod-lotofacil: #9333c7;
-  --mod-quina: #2563eb;
-  --mod-lotomania: #f2761e;
-  --mod-duplasena: #d6266b;
-  --mod-maismilionaria: #1f8a5f;
-  --brand-grad: linear-gradient(120deg, #062a52, #0b4f8a 45%, #0ea5c4 100%);
+  --mod-megasena: #0a7d3e;
+  --mod-lotofacil: #8a2fbd;
+  --mod-quina: #2158d6;
+  --mod-lotomania: #c2410c;
+  --mod-duplasena: #be185d;
+  --mod-maismilionaria: #17724e;
+  --brand-grad: linear-gradient(120deg, #062a52, #0b4f8a 45%, #0c6a88 100%);
 }
 
 [data-accent="megasena"] { --accent: var(--mod-megasena); }
@@ -2728,3 +2728,26 @@ h2 { letter-spacing: -0.03em; }
   body { font-size: 15px; }
   .view:not([data-view="inicio"]) { padding-top: 24px; }
 }
+
+/* =========================================================
+   Contraste e legibilidade (rodada 6)
+   ========================================================= */
+.theme-link { opacity: 1; }
+[data-theme="light"] .draw-badge { background: #fef3c7; color: #92400e; }
+[data-theme="light"] .draw-badge-head,
+[data-theme="light"] .jackpot-date .draw-badge { background: #fff; color: var(--accent); }
+[data-theme="light"] .badge-accumulated { background: #fef3c7 !important; color: #92400e !important; }
+[data-theme="light"] .eyebrow, [data-theme="light"] .hero .eyebrow { color: #075985; }
+[data-theme="light"] .site-footer { background: #ffffff; }
+[data-theme="light"] .ticker-item { background: #fff; }
+/* Contornos coloridos mais visíveis no modo escuro */
+[data-theme="dark"] .btn-draw-secondary,
+[data-theme="dark"] .actions .sim-outline { border-color: color-mix(in srgb, var(--accent) 65%, #fff); }
+/* Textos pequenos um pouco maiores */
+.draw-label, .rule-kicker, .stats-range-label { font-size: 0.78rem; }
+.ticker-ball { font-size: 0.72rem; }
+.stat-list em { font-size: 0.85rem; }
+.pool-footer-actions .pool-btn-whatsapp { background: #15803d; }
+[data-theme="light"] .hero-actions a.primary,
+[data-theme="light"] .primary { color: #fff; }
+[data-theme="light"] .skip-link { color: #fff; }

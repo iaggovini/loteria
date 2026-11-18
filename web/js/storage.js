@@ -10,7 +10,11 @@ const KEYS = {
 };
 
 export function getTheme() {
-  return localStorage.getItem(KEYS.theme) || 'dark';
+  let saved = null;
+  try { saved = localStorage.getItem(KEYS.theme); } catch { /* ignora */ }
+  if (saved === 'dark' || saved === 'light') return saved;
+  // Sem escolha salva: segue o modo (claro/escuro) do aparelho.
+  return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
 
 export function setTheme(theme) {

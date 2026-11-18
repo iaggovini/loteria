@@ -121,12 +121,12 @@ export const HISTORY_PAGE_SIZE = 9;
 export const STATS_CONTESTS = 30;
 
 export const MODALITY_COLORS = {
-  megasena: '#0d9f4f',
-  lotofacil: '#9333c7',
-  quina: '#2563eb',
-  lotomania: '#f2761e',
-  duplasena: '#d6266b',
-  maismilionaria: '#1f8a5f'
+  megasena: '#0a7d3e',
+  lotofacil: '#8a2fbd',
+  quina: '#2158d6',
+  lotomania: '#c2410c',
+  duplasena: '#be185d',
+  maismilionaria: '#17724e'
 };
 
 export function formatNumber(value) {
