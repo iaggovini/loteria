@@ -142,7 +142,8 @@ export function friendlyError(error, fallback) {
   if (code === 'same_password') return 'A nova senha precisa ser diferente da atual.';
   if (code === 'email_address_not_authorized') return 'Não conseguimos enviar e-mails para esse endereço no momento. Tente novamente mais tarde.';
   if (code.includes('captcha')) return 'A verificação de segurança falhou. Tente novamente.';
-  return fallback;
+  const detail = code || error?.status || error?.name;
+  return detail ? `${fallback} (código: ${detail})` : fallback;
 }
 
 function setBusy(busy) {
