@@ -1,4 +1,4 @@
-const CACHE = 'loteria-v20';
+const CACHE = 'loteria-v21';
 const ASSETS = [
   './',
   './index.html',
@@ -30,7 +30,9 @@ const ASSETS = [
   './data/history-megasena.json',
   './data/history-lotofacil.json',
   './data/history-quina.json',
-  './data/history-lotomania.json'
+  './data/history-lotomania.json',
+  './data/history-duplasena.json',
+  './data/history-maismilionaria.json'
 ];
 
 self.addEventListener('install', (event) => {
