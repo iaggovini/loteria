@@ -30,6 +30,32 @@ export function initMobileMenu() {
       toggle.setAttribute('aria-expanded', 'false');
     });
   });
+
+  initAutoHideHeader(nav);
+}
+
+// Esconde o topo ao rolar para baixo e mostra de novo ao rolar para cima.
+function initAutoHideHeader(nav) {
+  const header = document.querySelector('.site-header');
+  if (!header) return;
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  const update = () => {
+    ticking = false;
+    const y = window.scrollY;
+    const delta = y - lastY;
+    if (Math.abs(delta) < 8) return;
+    const keepVisible = y < 120 || nav.classList.contains('open') || header.contains(document.activeElement);
+    header.classList.toggle('is-hidden', delta > 0 && !keepVisible);
+    lastY = y;
+  };
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }, { passive: true });
+
+  header.addEventListener('focusin', () => header.classList.remove('is-hidden'));
 }
 
 export function initThemeToggle(onChange) {
