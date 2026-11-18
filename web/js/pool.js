@@ -238,13 +238,13 @@ function renderBets() {
 
   if (!state.bets.length) {
     list.innerHTML =
-      '<p class="state-message muted">Nenhuma aposta. Use o simulador ou gere surpresinhas acima.</p>';
+      '<div class="empty-state"><strong>Nenhuma aposta ainda</strong><span>Escolha um modelo, gere surpresinhas acima ou use "Incluir no bolão" no simulador.</span></div>';
     return;
   }
 
   list.innerHTML = `
-    <p class="pool-bets-count">${state.bets.length} aposta(s) — ${modality.name}</p>
-    ${state.bets
+    <p class="pool-bets-count">${state.bets.length} ${state.bets.length === 1 ? 'aposta' : 'apostas'} · ${modality.name}</p>
+    <div class="pool-bets-grid">${state.bets
       .map(
         (bet, i) => `
       <article class="pool-bet-item">
@@ -254,7 +254,7 @@ function renderBets() {
           aria-label="Remover aposta ${i + 1}">✕</button>
       </article>`
       )
-      .join('')}
+      .join('')}</div>
   `;
 
   list.querySelectorAll('[data-bet-id]').forEach((btn) => {
@@ -407,7 +407,7 @@ async function conferPool() {
       <div class="confer-row${isWinner ? ' confer-winner' : ''}">
         <span class="confer-row-num">Aposta ${i + 1}</span>
         <div class="balls confer-balls">${ballsHtml(bet.numbers, drawnSet)}${extraHtml(bet.extra, extraDrawnSet)}</div>
-        <span class="confer-hits-label">${hits.length} acerto(s)${modality.extra ? ` + ${extraHits.length} trevo(s)` : ''} — ${label}</span>
+        <span class="confer-hits-label">${isWinner ? '🏆 ' : ''}${escapeHtml(label)}</span>
       </div>`;
   });
 
@@ -434,8 +434,8 @@ async function conferPool() {
     </div>
     ${
       winners > 0
-        ? `<p class="confer-best-msg">🎉 <strong>${winners} aposta(s) premiada(s)</strong> neste concurso. Confirme sempre no site oficial da Caixa.</p>`
-        : `<p class="muted confer-best-msg">Nenhuma aposta premiada neste concurso. Melhor resultado: ${bestHits} acerto(s).</p>`
+        ? `<p class="confer-best-msg confer-best-win">🎉 <strong>${winners} ${winners === 1 ? 'aposta premiada' : 'apostas premiadas'}</strong> neste concurso. Confirme sempre no site oficial da Caixa.</p>`
+        : `<p class="muted confer-best-msg">Nenhuma aposta premiada neste concurso. Melhor resultado: ${bestHits} ${bestHits === 1 ? 'acerto' : 'acertos'}.</p>`
     }
     <div class="confer-rows">${rows.join('')}</div>
   `;

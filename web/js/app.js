@@ -63,7 +63,7 @@ function initModalitySelector() {
 }
 
 function applyAccent() {
-  ['simulador', 'resultados', 'estatisticas'].forEach((id) => {
+  ['simulador', 'resultados', 'estatisticas', 'bolao', 'como-jogar'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.dataset.accent = currentModality.id;
   });
@@ -94,12 +94,27 @@ function renderRules(mod) {
   if (!rulesEl) return;
 
   const tiers = mod.prizeTiers.map((t) => `<li>${t.label}</li>`).join('');
+  const odds = TOP_PRIZE_ODDS[mod.id];
   rulesEl.innerHTML = `
-    <p>${mod.description} Sorteios: ${mod.drawDays}.</p>
-    ${TOP_PRIZE_ODDS[mod.id] ? `<p>Chance de ganhar o prêmio principal com uma aposta simples: <strong>1 em ${TOP_PRIZE_ODDS[mod.id]}</strong>.</p>` : ''}
-    <h3>Faixas de premiação</h3>
-    <ul>${tiers}</ul>
-    <p class="muted">Valide bilhetes apenas em casas credenciadas ou no site/app oficial da Caixa.</p>
+    <div class="rules-grid">
+      <div class="rule-tile">
+        <span class="rule-kicker">Como apostar na ${mod.name}</span>
+        <p>${mod.description}</p>
+      </div>
+      <div class="rule-tile">
+        <span class="rule-kicker">Quando tem sorteio</span>
+        <p>${mod.drawDays.charAt(0).toUpperCase()}${mod.drawDays.slice(1)}, às 20h (horário de Brasília).</p>
+      </div>
+      ${odds ? `
+      <div class="rule-tile rule-tile-accent">
+        <span class="rule-kicker">Chance no prêmio principal</span>
+        <p class="rule-big">1 em ${odds}</p>
+        <span class="rule-foot">com uma aposta simples</span>
+      </div>` : ''}
+    </div>
+    <h3 class="rules-subtitle">Faixas de premiação</h3>
+    <ul class="tier-chips">${tiers}</ul>
+    <p class="muted rules-note">Valide bilhetes apenas em lotéricas credenciadas ou no site/app oficial da Caixa.</p>
   `;
 }
 

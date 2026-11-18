@@ -21,22 +21,25 @@ export function renderFavoritesList(onApply) {
 
   const favorites = loadFavorites();
   if (!favorites.length) {
-    list.innerHTML = '<p class="state-message muted">Nenhuma aposta favorita salva.</p>';
+    list.innerHTML = '<div class="empty-state"><strong>Nenhum favorito salvo</strong><span>Escolha os números no simulador, dê um nome acima e salve para jogar de novo depois.</span></div>';
     return;
   }
 
   list.innerHTML = favorites
     .map(
       (fav) => `
-      <article class="favorite-item" data-id="${escapeHtml(fav.id)}">
-        <div>
-          <strong>${escapeHtml(fav.name)}</strong>
-          <span class="favorite-meta">${escapeHtml(fav.modalityName)} · ${(fav.numbers || [])
-            .map((n) => String(Number(n)).padStart(2, '0'))
-            .join(' - ')}${fav.extra?.length ? ` + trevos ${fav.extra.map(Number).join(' - ')}` : ''}</span>
+      <article class="favorite-item" data-accent="${escapeHtml(fav.modalityId || '')}" data-id="${escapeHtml(fav.id)}">
+        <div class="favorite-main">
+          <div class="favorite-title">
+            <strong>${escapeHtml(fav.name)}</strong>
+            <span class="favorite-tag">${escapeHtml(fav.modalityName)}</span>
+          </div>
+          <div class="favorite-balls" aria-label="Números: ${(fav.numbers || []).map(Number).join(', ')}">${(fav.numbers || [])
+            .map((n) => `<span class="fav-ball">${String(Number(n)).padStart(2, '0')}</span>`)
+            .join('')}${(fav.extra || []).map((n) => `<span class="fav-ball fav-trevo" title="Trevo">${Number(n)}</span>`).join('')}</div>
         </div>
         <div class="favorite-actions">
-          <button type="button" class="btn-sm" data-action="apply" data-id="${escapeHtml(fav.id)}">Usar</button>
+          <button type="button" class="btn-sm fav-use" data-action="apply" data-id="${escapeHtml(fav.id)}">Usar no simulador</button>
           <button type="button" class="btn-sm btn-danger" data-action="remove" data-id="${escapeHtml(fav.id)}" aria-label="Excluir ${escapeHtml(fav.name)}">Excluir</button>
         </div>
       </article>`

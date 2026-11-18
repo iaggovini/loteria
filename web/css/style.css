@@ -2464,3 +2464,188 @@ section { margin-bottom: 72px; scroll-margin-top: 96px; }
 .result-featured .badge { justify-self: start; }
 #resultsCards .result-card:not(.result-featured) .balls { gap: 6px; }
 #resultsCards .result-card:not(.result-featured) .ball { width: 34px; height: 34px; min-width: 34px; font-size: 0.8rem; }
+
+/* =========================================================
+   Bolão, favoritos e como jogar (rodada 3)
+   ========================================================= */
+
+/* Passos numerados do bolão */
+.pool-section .pool-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 32px 0 14px;
+  font-size: 1.05rem;
+}
+.pool-section .pool-templates .pool-step { margin-top: 8px; }
+.pool-step small { flex-basis: 100%; padding-left: 38px; color: var(--muted); font-size: 0.85rem; font-weight: 400; }
+.pool-step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  flex: none;
+}
+.pool-participants-block .pool-step { margin-top: 0; }
+
+/* Modelos com a cor da modalidade */
+.pool-section .template-icon { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--text); }
+.pool-section .pool-template-card:hover { border-color: var(--accent); }
+
+/* Apostas em duas colunas */
+.pool-bets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 10px; }
+.pool-bets-grid .pool-bet-item { margin: 0; }
+.pool-section .pool-bet-balls .ball,
+.pool-section .confer-drawn .ball {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: none;
+}
+.pool-section .ball.ball-trevo { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+.pool-section .confer-balls .ball.ball-hit { background: var(--accent); border-color: transparent; color: #fff; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent); }
+.pool-section .pool-gen-row button { background: var(--accent); color: #fff; }
+.pool-bets-count { font-weight: 600; }
+
+/* Estado vazio */
+.empty-state {
+  display: grid;
+  gap: 4px;
+  padding: 22px;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+.empty-state strong { color: var(--text); font-size: 0.98rem; }
+
+/* Resultado da conferência */
+.confer-best-win { padding: 12px 16px; border-radius: 12px; background: color-mix(in srgb, var(--success) 15%, transparent); }
+.pool-section .confer-hits-label { color: var(--muted); }
+.pool-section .confer-winner .confer-hits-label { color: var(--success); font-weight: 700; }
+
+/* Botões finais do bolão */
+.pool-footer-actions { align-items: center; }
+.pool-footer-actions .pool-btn-primary { background: var(--accent); color: #fff; border: 0; }
+.pool-footer-actions .pool-btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1fa855;
+  color: #fff;
+  border: 0;
+}
+.pool-footer-actions .pool-btn-tool { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.pool-footer-actions button:hover { filter: brightness(1.08); }
+
+/* Favoritos */
+.favorites-section .favorite-form { align-items: flex-end; }
+.favorite-field { display: grid; gap: 6px; flex: 1; min-width: min(100%, 240px); }
+.favorite-field label { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+.favorite-field input { width: 100%; }
+#favoritesList { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 12px; }
+#favoritesList .empty-state { grid-column: 1 / -1; }
+#favoritesList .favorite-item {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  border-left: 3px solid var(--accent, var(--border));
+}
+.favorite-main { display: grid; gap: 10px; }
+.favorite-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.favorite-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent, var(--primary)) 18%, transparent);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.favorite-balls { display: flex; flex-wrap: wrap; gap: 5px; }
+.fav-ball {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--accent, var(--primary));
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.fav-ball.fav-trevo { background: #fff; color: var(--accent); border: 2px solid var(--accent); }
+#favoritesList .favorite-actions { display: flex; gap: 8px; }
+#favoritesList .favorite-actions .fav-use { flex: 1; background: var(--accent, var(--primary)); color: #fff; border-color: transparent; }
+
+/* Como jogar */
+.rules-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.rule-tile {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.rule-tile p { margin: 0; line-height: 1.55; }
+.rule-kicker { color: var(--muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.rule-tile-accent { background: linear-gradient(150deg, var(--accent), color-mix(in srgb, var(--accent) 60%, #020617)); border-color: transparent; color: #fff; }
+.rule-tile-accent .rule-kicker, .rule-tile-accent .rule-foot { color: rgba(255, 255, 255, 0.85); }
+.rule-big { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
+.rule-foot { font-size: 0.82rem; }
+.rules-subtitle { margin: 24px 0 10px; font-size: 1rem; }
+.tier-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.tier-chips li {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  background: var(--surface);
+  font-size: 0.88rem;
+}
+.rules-note { margin-top: 14px; font-size: 0.85rem; }
+
+@media (max-width: 860px) {
+  .rules-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .pool-step small { padding-left: 0; }
+  .pool-footer-actions button { flex: 1 1 calc(50% - 8px); justify-content: center; }
+  .pool-footer-actions .pool-btn-primary, .pool-footer-actions .pool-btn-whatsapp { flex-basis: 100%; }
+  .favorites-section .favorite-form { flex-direction: column; align-items: stretch; }
+}
+@media print {
+  .pool-step { display: none !important; }
+}
+.pool-footer-actions button {
+  min-height: 44px;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pool-footer-actions .pool-btn-primary { color: #fff; }
+.pool-section .participant-form button { background: var(--accent); color: #fff; }
+.pool-section .participant-num { background: var(--accent); color: #fff; }
+.pool-section .pool-summary { background: color-mix(in srgb, var(--accent) 7%, transparent); }
+.pool-section .summary-highlight { background: color-mix(in srgb, var(--accent) 18%, transparent); border-color: var(--accent); }
+.pool-section .pool-footer-actions button.pool-btn-primary { background: var(--accent); color: #fff; }
+@media (max-width: 600px) {
+  .pool-section .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pool-section .pool-summary { padding: 16px; }
+  .pool-section .pool-bet-item .pool-bet-num { min-width: 60px; }
+  .pool-section .pool-bet-balls { gap: 4px; }
+  .pool-section .pool-bet-balls .ball,
+  .pool-section .confer-balls .ball { width: 28px; height: 28px; min-width: 28px; font-size: 0.72rem; }
+}
