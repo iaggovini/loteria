@@ -62,7 +62,15 @@ function initModalitySelector() {
   });
 }
 
+function applyAccent() {
+  ['simulador', 'resultados', 'estatisticas'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.dataset.accent = currentModality.id;
+  });
+}
+
 function onModalityChange() {
+  applyAccent();
   switchModality(currentModality);
   switchPoolModality(currentModality);
   clearCompare();
@@ -263,6 +271,7 @@ function init() {
   });
 
   initModalitySelector();
+  applyAccent();
   initModalityShortcuts();
   renderRules(currentModality);
   initSimulator(currentModality);

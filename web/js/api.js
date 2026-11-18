@@ -32,8 +32,104 @@ export function normalizeContest(data, modalityId) {
     nextDate: data.dataProximoConcurso || '',
     nextPrize: data.valorEstimadoProximoConcurso ?? null,
     locality: data.nomeMunicipioUFSorteio || data.localSorteio || '',
+    prizes: parsePrizes(data),
+    winnerPlaces: parseWinnerPlaces(data),
     modalityId
   };
+}
+
+function parsePrizes(data) {
+  const raw = Array.isArray(data.listaRateioPremio) ? data.listaRateioPremio : [];
+  return raw.map((r) => ({
+    label: String(r.descricaoFaixa || '').trim(),
+    winners: Number(r.numeroDeGanhadores) || 0,
+    value: Number(r.valorPremio) || 0
+  })).filter((r) => r.label);
+}
+
+function parseWinnerPlaces(data) {
+  const raw = Array.isArray(data.listaMunicipioUFGanhadores) ? data.listaMunicipioUFGanhadores : [];
+  return raw.map((r) => ({
+    city: String(r.municipio || '').trim(),
+    uf: String(r.uf || '').trim(),
+    winners: Number(r.ganhadores) || 1,
+    online: /canal eletr/i.test(String(r.municipio || ''))
+  })).filter((r) => r.city || r.uf);
+}
+
+// ---------------------------------------------------------------------------
+// Cache de concursos para as estatísticas. Resultado de concurso não muda,
+// então guardamos uma versão compacta no navegador para não buscar de novo.
+// ---------------------------------------------------------------------------
+const CACHE_PREFIX = 'bds-contests-v1-';
+const CACHE_LIMIT = 300;
+
+function readCache(modalityId) {
+  try {
+    const raw = localStorage.getItem(CACHE_PREFIX + modalityId);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeCache(modalityId, cache) {
+  try {
+    const keys = Object.keys(cache).map(Number).sort((a, b) => b - a);
+    keys.slice(CACHE_LIMIT).forEach((k) => delete cache[k]);
+    localStorage.setItem(CACHE_PREFIX + modalityId, JSON.stringify(cache));
+  } catch {
+    /* sem espaço ou bloqueado: segue sem cache */
+  }
+}
+
+const compact = (c) => ({ c: c.contest, d: c.date, b: c.balls, b2: c.balls2 || undefined, t: c.trevos || undefined });
+const expand = (x, modalityId) => ({ contest: x.c, date: x.d, balls: x.b, balls2: x.b2 || null, trevos: x.t || null, modalityId });
+
+/**
+ * Busca uma lista de concursos (em lotes, usando o cache). Concursos que
+ * falharem ficam de fora. `onProgress(feitos, total)` é chamado a cada lote.
+ */
+export async function fetchContestsCached(modalityId, numbers, onProgress) {
+  const cache = readCache(modalityId);
+  const found = [];
+  const missing = [];
+  numbers.forEach((n) => (cache[n] ? found.push(expand(cache[n], modalityId)) : missing.push(n)));
+
+  const BATCH = 5;
+  let done = numbers.length - missing.length;
+  onProgress?.(done, numbers.length);
+  const failed = [];
+  const runBatch = async (chunk, retry) => {
+    const settled = await Promise.all(chunk.map((n) => fetchContest(modalityId, n).catch(() => null)));
+    settled.forEach((c, i) => {
+      if (!c) { if (!retry) failed.push(chunk[i]); return; }
+      found.push(c);
+      cache[c.contest] = compact(c);
+    });
+  };
+  for (let i = 0; i < missing.length; i += BATCH) {
+    const chunk = missing.slice(i, i + BATCH);
+    await runBatch(chunk, false);
+    done += chunk.length;
+    onProgress?.(done, numbers.length);
+  }
+  // O serviço da Caixa às vezes recusa pedidos seguidos: tenta de novo, mais devagar.
+  for (let attempt = 0; attempt < 2 && failed.length; attempt += 1) {
+    await new Promise((r) => setTimeout(r, 1200));
+    const retry = failed.splice(0);
+    for (let i = 0; i < retry.length; i += 2) {
+      const chunk = retry.slice(i, i + 2);
+      const before = found.length;
+      await runBatch(chunk, true);
+      if (found.length - before < chunk.length && attempt === 0) {
+        chunk.filter((n) => !found.some((c) => c.contest === n)).forEach((n) => failed.push(n));
+      }
+    }
+  }
+  if (missing.length) writeCache(modalityId, cache);
+  return found.sort((a, b) => b.contest - a.contest);
 }
 
 export async function fetchContest(modalityId, contestNumber) {

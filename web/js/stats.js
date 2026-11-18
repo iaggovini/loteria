@@ -11,7 +11,7 @@ export function computeStats(contests, modality) {
   }
 
   contests.forEach((contest, index) => {
-    contest.balls.forEach((ball) => {
+    [...contest.balls, ...(contest.balls2 || [])].forEach((ball) => {
       frequency.set(ball, (frequency.get(ball) || 0) + 1);
       if (lastSeen.get(ball) === null) {
         lastSeen.set(ball, index);
@@ -47,7 +47,7 @@ export function renderStats(container, contests, modality) {
   container.innerHTML = `
     <div class="stats-grid">
       <article class="stat-block">
-        <h3>Mais sorteadas (${contests.length} concursos)</h3>
+        <h3>Mais sorteadas</h3>
         <ul class="stat-list">${hot
           .map(
             ([n, c]) =>
@@ -69,7 +69,7 @@ export function renderStats(container, contests, modality) {
         <ul class="stat-list stat-delay">${delay
           .map(
             (d) =>
-              `<li><span>${formatNumber(d.num, modality)}</span><em>${d.draws === contests.length ? 'não saiu no período' : `${d.draws} sorteio(s) atrás`}</em></li>`
+              `<li><span>${formatNumber(d.num, modality)}</span><em>${d.draws === contests.length ? `não saiu nos ${contests.length} concursos` : d.draws === 0 ? 'saiu no último concurso' : `há ${d.draws} concurso${d.draws === 1 ? '' : 's'}`}</em></li>`
           )
           .join('')}</ul>
       </article>

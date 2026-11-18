@@ -2303,3 +2303,164 @@ section { margin-bottom: 72px; scroll-margin-top: 96px; }
 @media print {
   .results-ticker, .hero-jackpot { display: none !important; }
 }
+
+/* =========================================================
+   Resultados, estatísticas e simulador (rodada 2)
+   ========================================================= */
+
+/* Bolinhas com a cor da modalidade */
+#resultados .result-card .ball {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 40%, transparent), inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+}
+#resultados .result-card .ball.ball-trevo {
+  background: #fff;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+}
+.result-card { border-top-width: 3px; }
+
+/* Concurso mais recente em destaque */
+.result-featured {
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  grid-template-areas: "head prizes" "body prizes";
+  column-gap: 32px;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%),
+    var(--surface);
+}
+.result-featured > :not(.result-prizes) { grid-column: 1; }
+.result-featured .result-prizes { grid-column: 2; grid-row: 1 / span 20; align-self: start; }
+.result-featured .result-header strong { font-size: 1.25rem; }
+.result-featured .ball { width: 48px; height: 48px; min-width: 48px; font-size: 1rem; }
+.result-featured .balls { gap: 10px; }
+.prize-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.prize-table caption {
+  text-align: left;
+  padding-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.prize-table th, .prize-table td { padding: 9px 8px; border-bottom: 1px solid var(--border); text-align: left; }
+.prize-table thead th { color: var(--muted); font-size: 0.78rem; font-weight: 600; }
+.prize-table td { text-align: right; white-space: nowrap; }
+.prize-table thead th:not(:first-child) { text-align: right; }
+.prize-table tbody tr:first-child th, .prize-table tbody tr:first-child td { font-weight: 700; }
+.prize-table tbody th { font-weight: 500; }
+.result-places-title { margin: 14px 0 6px; color: var(--muted); font-size: 0.8rem; font-weight: 600; }
+.result-places { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.result-places li { padding: 3px 10px; border-radius: 999px; background: var(--surface-2); font-size: 0.82rem; }
+.result-prizes .result-local { font-size: 0.82rem; }
+
+/* Estatísticas: escolha da quantidade de concursos */
+.stats-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.stats-range-label { padding: 0 8px 0 10px; color: var(--muted); font-size: 0.82rem; font-weight: 600; }
+.stats-range button {
+  min-width: 48px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.stats-range button:hover:not(:disabled) { background: var(--surface-2); }
+.stats-range button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.stats-range button:disabled { cursor: progress; }
+.stats-range button:disabled:not([aria-pressed="true"]) { opacity: 0.55; }
+.stats-status { margin: 0 0 14px; min-height: 1.4em; color: var(--muted); font-size: 0.88rem; }
+#statsPanel { transition: opacity 0.2s ease; }
+#statsPanel.is-loading { opacity: 0.5; }
+#estatisticas .bar { background: var(--accent); }
+#estatisticas .bar-muted { background: var(--muted); }
+.stat-list li > span:first-child {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-weight: 700;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+.stat-list li { grid-template-columns: 34px 1fr auto; }
+.stat-delay li { grid-template-columns: 34px 1fr; }
+.stats-note { margin: 14px 0 0; color: var(--muted); font-size: 0.82rem; }
+
+/* Simulador: cor da modalidade e botões por importância */
+.simulador .number-btn:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.simulador .number-btn.selected {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.simulador .progress-fill { background: var(--accent); }
+.sim-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+.sim-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.sim-group-tools { margin-left: auto; }
+.actions .sim-primary { background: var(--accent); color: #fff; padding: 12px 24px; }
+.actions .sim-primary:hover { filter: brightness(1.1); }
+.actions .sim-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--accent);
+}
+.actions .sim-outline:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.actions .sim-tool {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  font-size: 0.88rem;
+}
+.actions .sim-tool:hover { color: var(--text); border-color: var(--muted); }
+
+@media (max-width: 860px) {
+  .result-featured { grid-template-columns: minmax(0, 1fr); }
+  .result-featured .result-prizes { grid-column: 1; grid-row: auto; margin-top: 18px; }
+  .sim-group-tools { margin-left: 0; }
+}
+@media (max-width: 600px) {
+  .simulador { padding: 20px 14px; }
+  .numbers { gap: 5px; }
+  .number-btn { border-radius: 10px; }
+  .result-featured { padding: 18px; }
+  .result-featured .ball { width: 42px; height: 42px; min-width: 42px; }
+  .prize-table th, .prize-table td { padding: 8px 4px; }
+  .sim-group { width: 100%; }
+  .sim-group > button { flex: 1 1 0; }
+  .stats-range { width: 100%; justify-content: space-between; }
+  .stats-range button { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #statsPanel { transition: none; }
+}
+#resultsCards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+#resultsCards .result-card { min-width: 0; }
+#resultsCards .result-featured { grid-column: 1 / -1; }
+.result-featured .badge { justify-self: start; }
+#resultsCards .result-card:not(.result-featured) .balls { gap: 6px; }
+#resultsCards .result-card:not(.result-featured) .ball { width: 34px; height: 34px; min-width: 34px; font-size: 0.8rem; }

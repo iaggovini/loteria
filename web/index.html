@@ -225,9 +225,22 @@
     </section>
 
     <section id="estatisticas">
-      <h2>Estatísticas</h2>
-      <p class="section-lead">Frequência e atraso das dezenas com base nos concursos carregados acima.</p>
+      <div class="section-head">
+        <div>
+          <h2>Estatísticas</h2>
+          <p class="section-lead">Quais dezenas mais saíram e quais estão há mais tempo sem sair.</p>
+        </div>
+        <div class="stats-range" role="group" aria-label="Quantidade de concursos analisados">
+          <span class="stats-range-label">Analisar</span>
+          <button type="button" data-stats-size="10" aria-pressed="false">10</button>
+          <button type="button" data-stats-size="20" aria-pressed="false">20</button>
+          <button type="button" data-stats-size="50" aria-pressed="false">50</button>
+          <button type="button" data-stats-size="100" aria-pressed="false">100</button>
+        </div>
+      </div>
+      <p class="stats-status" id="statsStatus" role="status"></p>
       <div id="statsPanel"></div>
+      <p class="stats-note">Sorteios são independentes: dezenas que saíram mais no passado não têm mais chance de sair no próximo.</p>
     </section>
 
     <section class="compare-section">
@@ -262,14 +275,20 @@
 
       <div class="extra-grid-wrap" id="extraGrid" hidden></div>
 
-      <div class="actions">
-        <button type="button" id="btnQuickPick">Gerar aposta</button>
-        <button type="button" class="clear" id="btnClear">Limpar</button>
-        <button type="button" class="btn-secondary" id="btnConference">Conferir aposta</button>
-        <button type="button" class="btn-secondary" id="btnCopy">Copiar</button>
-        <button type="button" class="btn-secondary" id="btnShare">Compartilhar link</button>
-        <button type="button" class="btn-secondary" id="btnPrint">Imprimir / PDF</button>
-        <button type="button" class="btn-secondary" id="btnAddToPool">Incluir no bolão</button>
+      <div class="actions sim-actions">
+        <div class="sim-group">
+          <button type="button" class="sim-primary" id="btnQuickPick">Gerar aposta</button>
+          <button type="button" class="clear sim-ghost" id="btnClear">Limpar</button>
+        </div>
+        <div class="sim-group">
+          <button type="button" class="sim-outline" id="btnConference">Conferir aposta</button>
+          <button type="button" class="sim-outline" id="btnAddToPool">Incluir no bolão</button>
+        </div>
+        <div class="sim-group sim-group-tools" aria-label="Salvar e compartilhar">
+          <button type="button" class="sim-tool" id="btnCopy">Copiar</button>
+          <button type="button" class="sim-tool" id="btnShare">Compartilhar</button>
+          <button type="button" class="sim-tool" id="btnPrint" title="Imprimir ou salvar em PDF">Imprimir / PDF</button>
+        </div>
       </div>
 
       <div class="selected">

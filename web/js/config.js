@@ -117,7 +117,7 @@ export const MODALITIES = {
 };
 
 export const DEFAULT_MODALITY = 'megasena';
-export const HISTORY_PAGE_SIZE = 6;
+export const HISTORY_PAGE_SIZE = 9;
 export const STATS_CONTESTS = 30;
 
 export const MODALITY_COLORS = {
