@@ -77,27 +77,66 @@ export function initThemeToggle(onChange) {
   });
 }
 
-export function initScrollSpy() {
-  const sections = [...document.querySelectorAll('main section[id]')];
+// ---------------------------------------------------------------------------
+// Telas do site (Início, Resultados, Simulador, Bolão, Ajuda). O endereço
+// continua usando âncoras (#simulador, #faq...), então links antigos funcionam.
+// ---------------------------------------------------------------------------
+const TITLES = {
+  inicio: 'Bom de Sorte — Resultados, estatísticas e simulador de loterias',
+  resultados: 'Resultados e estatísticas — Bom de Sorte',
+  simulador: 'Simulador de apostas — Bom de Sorte',
+  bolao: 'Gerenciador de bolão — Bom de Sorte',
+  ajuda: 'Como jogar e dúvidas — Bom de Sorte'
+};
+
+function route() {
+  const views = [...document.querySelectorAll('.view[data-view]')];
+  if (!views.length) return;
+  let id = '';
+  try { id = decodeURIComponent(location.hash.slice(1)); } catch { id = ''; }
+  if (id === 'main-content') return; // link "Ir para o conteúdo"
+
+  let target = id && /^[\w-]+$/.test(id) ? document.getElementById(id) : null;
+  let view = target?.closest('.view[data-view]');
+  if (!view) {
+    view = views.find((v) => v.dataset.view === id) || views[0];
+    target = null;
+  }
+
+  const changed = view.hidden;
+  views.forEach((v) => { v.hidden = v !== view; });
+  const name = view.dataset.view;
+  document.body.dataset.view = name;
+  if (TITLES[name]) document.title = TITLES[name];
+
   const links = [...document.querySelectorAll('#mainNav a')];
+  const exact = links.find((a) => a.getAttribute('href') === `#${id}`);
+  links.forEach((a) => {
+    const el = document.getElementById(a.getAttribute('href').slice(1));
+    const inView = el?.closest('.view') === view;
+    const active = exact ? a === exact : inView && a === links.find((l) => document.getElementById(l.getAttribute('href').slice(1))?.closest('.view') === view);
+    a.classList.toggle('active', Boolean(active));
+    if (active) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+  });
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const id = entry.target.id;
-        links.forEach((link) => {
-          link.classList.toggle(
-            'active',
-            link.getAttribute('href') === `#${id}`
-          );
-        });
-      });
-    },
-    { rootMargin: '-40% 0px -50% 0px', threshold: 0 }
-  );
+  const first = view.querySelector('section');
+  if (!target || target === first) {
+    if (changed || !target) window.scrollTo({ top: 0, behavior: 'auto' });
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    target.scrollIntoView({ behavior: changed ? 'auto' : 'smooth' });
+  }
+}
 
-  sections.forEach((section) => observer.observe(section));
+export function initRouter() {
+  window.addEventListener('hashchange', route);
+  route();
+}
+
+/** Vai para uma seção (trocando de tela se preciso). */
+export function goTo(id) {
+  if (location.hash === `#${id}`) route();
+  else location.hash = id;
 }
 
 export function setLoading(container, message = 'Carregando…') {

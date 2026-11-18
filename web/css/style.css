@@ -2654,3 +2654,77 @@ section { margin-bottom: 72px; scroll-margin-top: 96px; }
   .pool-section .pool-bet-balls .ball,
   .pool-section .confer-balls .ball { width: 28px; height: 28px; min-width: 28px; font-size: 0.72rem; }
 }
+
+/* =========================================================
+   Acabamento profissional (rodada 5): fonte, telas e botões
+   ========================================================= */
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter-latin-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-feature-settings: "cv11", "ss01";
+  font-size: 15.5px;
+}
+button, input, select, textarea { font-family: inherit; }
+h1, h2, h3 { font-weight: 750; }
+h2 { letter-spacing: -0.03em; }
+
+/* Telas */
+.view[hidden] { display: none !important; }
+.view { animation: view-in 0.25s ease; }
+.view:not([data-view="inicio"]) { padding-top: 40px; }
+@keyframes view-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .view { animation: none; } }
+.site-header nav a.active { background: rgba(255, 255, 255, 0.16); color: #fff; }
+
+/* Hero mais sóbrio */
+.hero h1 { max-width: 760px; font-size: clamp(2.1rem, 4.6vw, 3.4rem); line-height: 1.08; }
+.hero-accent { color: var(--primary); }
+.hero .hero-lead { max-width: 600px; }
+.hero .disclaimer-inline { font-size: 0.85rem; }
+
+/* Botões globais: uma cor só (a da marca) */
+.hero-actions a.primary { color: #04121f; box-shadow: none; }
+.hero-actions a.secondary { background: transparent; }
+
+/* Dentro das ferramentas, a ação principal usa a cor da loteria escolhida */
+[data-accent] #loadMoreResults,
+[data-accent] #btnCompare,
+[data-accent] .favorite-form button {
+  background: var(--accent);
+  color: #fff;
+}
+[data-accent] #loadMoreResults:hover,
+[data-accent] #btnCompare:hover,
+[data-accent] .favorite-form button:hover { filter: brightness(1.08); }
+#resultados .section-actions .btn-secondary,
+#modalitySelect { min-height: 44px; }
+
+/* Selo "Acumulou" consistente em todo o site */
+#resultados .badge-accumulated {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+  color: var(--warning);
+  font-weight: 800;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Barra de "próximo sorteio" da tela de resultados com a cor da loteria */
+#resultados .next-draw { border-left: 3px solid var(--accent); }
+#resultados .next-draw a { color: var(--text); }
+
+/* Cartões genéricos um pouco mais refinados */
+.feature-card, .stat-block, .card { border-radius: 16px; }
+.feature-card h3 { font-size: 1rem; }
+.feature-card p { font-size: 0.92rem; }
+
+@media (max-width: 600px) {
+  body { font-size: 15px; }
+  .view:not([data-view="inicio"]) { padding-top: 24px; }
+}

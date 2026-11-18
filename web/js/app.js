@@ -9,7 +9,8 @@ import {
   showToast,
   initMobileMenu,
   initThemeToggle,
-  initScrollSpy,
+  initRouter,
+  goTo,
   showConfirm
 } from './ui.js';
 import {
@@ -63,7 +64,7 @@ function initModalitySelector() {
 }
 
 function applyAccent() {
-  ['simulador', 'resultados', 'estatisticas', 'bolao', 'como-jogar'].forEach((id) => {
+  ['simulador', 'resultados', 'estatisticas', 'comparar', 'bolao', 'favoritos', 'como-jogar'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.dataset.accent = currentModality.id;
   });
@@ -165,7 +166,7 @@ function handleFavoriteAction(action, idOrName) {
     changeModality(fav.modalityId);
     applyNumbers(fav.numbers, fav.extra);
     showToast(`Aposta "${fav.name}" carregada.`, 'success');
-    document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
+    goTo('simulador');
     return;
   }
 
@@ -177,7 +178,7 @@ function handleFavoriteAction(action, idOrName) {
 
 function selectModality(id) {
   changeModality(id);
-  document.getElementById('simulador')?.scrollIntoView({ behavior: 'smooth' });
+  goTo('simulador');
 }
 
 async function openPoolFor(id) {
@@ -188,17 +189,17 @@ async function openPoolFor(id) {
       { title: 'Trocar o jogo do bolão?', confirmText: 'Trocar e apagar', danger: true }
     );
     if (!ok) {
-      document.getElementById('bolao')?.scrollIntoView({ behavior: 'smooth' });
+      goTo('bolao');
       return;
     }
   }
   changeModality(id);
-  document.getElementById('bolao')?.scrollIntoView({ behavior: 'smooth' });
+  goTo('bolao');
 }
 
 function showResultsFor(id) {
   changeModality(id);
-  document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth' });
+  goTo('resultados');
 }
 
 function initModalityShortcuts() {
@@ -276,7 +277,6 @@ function init() {
   const yearEl = document.getElementById('footerYear');
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
   initThemeToggle(setTheme);
-  initScrollSpy();
   initCloud({
     onFavoritesLoaded: () => renderFavoritesList(handleFavoriteAction),
     onPoolLoaded: handleCloudPool
@@ -309,7 +309,7 @@ function init() {
       return;
     }
     addBetToPool(nums, currentModality.extra ? getSelectedExtra() : undefined);
-    document.getElementById('bolao')?.scrollIntoView({ behavior: 'smooth' });
+    goTo('bolao');
   });
 
   document.getElementById('loadMoreResults')?.addEventListener('click', async () => {
@@ -323,6 +323,7 @@ function init() {
   initCompare();
   applyUrlParams();
   initDraws({ onSelect: selectModality, onPool: openPoolFor, onResults: showResultsFor });
+  initRouter();
 }
 
 init();
