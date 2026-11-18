@@ -387,20 +387,22 @@ async function conferPool() {
   let winners = 0;
 
   const rows = state.bets.map((bet, i) => {
-    const hitsPerDraw = drawnSets.map((s) => bet.numbers.filter((n) => s.has(n)));
-    const bestIdx = hitsPerDraw[0].length >= (hitsPerDraw[1]?.length ?? -1) ? 0 : 1;
-    const hits = hitsPerDraw[bestIdx];
-    const drawnSet = drawnSets[bestIdx];
-    if (hits.length > bestHits) bestHits = hits.length;
+    const hitsPerDraw = drawnSets.map((s) => bet.numbers.filter((n) => s.has(n)).length);
+    hitsPerDraw.forEach((h) => { if (h > bestHits) bestHits = h; });
+    // Na Dupla Sena cada sorteio paga separado: destaca dezenas acertadas em qualquer um.
+    const drawnSet = new Set(draws.flat());
 
     const extraHits = modality.extra && bet.extra && extraDrawnSet
       ? bet.extra.filter((n) => extraDrawnSet.has(n))
       : [];
 
-    const label = modality.extra
-      ? getExtraPrizeLabel(modality, hits.length, extraHits.length)
-      : getPrizeLabel(modality, hits.length);
-    const isWinner = Boolean(findPrizeTier(modality, hits.length, extraHits.length));
+    const labelFor = (h) => (modality.extra
+      ? getExtraPrizeLabel(modality, h, extraHits.length)
+      : getPrizeLabel(modality, h));
+    const label = hitsPerDraw.length > 1
+      ? hitsPerDraw.map((h, d) => `${d + 1}º sorteio: ${labelFor(h)}`).join(' · ')
+      : labelFor(hitsPerDraw[0]);
+    const isWinner = hitsPerDraw.some((h) => Boolean(findPrizeTier(modality, h, extraHits.length)));
     if (isWinner) winners += 1;
 
     return `
