@@ -87,6 +87,17 @@ async function loadCloudSummary(supabase) {
   }
 }
 
+function setRevealed(button, revealed) {
+  const input = $(button.dataset.revealFor);
+  input.type = revealed ? 'text' : 'password';
+  button.setAttribute('aria-pressed', String(revealed));
+  button.setAttribute('aria-label', revealed ? 'Ocultar senha' : 'Mostrar senha');
+}
+
+function hidePasswords() {
+  for (const button of document.querySelectorAll('#accountDialog [data-reveal-for]')) setRevealed(button, false);
+}
+
 export async function openAccount(tab = 'perfil') {
   const dialog = $('accountDialog');
   if (!dialog) return;
@@ -94,6 +105,7 @@ export async function openAccount(tab = 'perfil') {
   selectTab(tab);
   $('accountCurrentPassword').value = '';
   $('accountNewPassword').value = '';
+  hidePasswords();
   $('accountNewEmail').value = '';
   $('accountDeleteConfirm').value = '';
   $('accountDelete').disabled = true;
@@ -263,6 +275,9 @@ function bindOnce() {
   });
 
   $('accountNewPassword').addEventListener('input', updateRules);
+  for (const button of document.querySelectorAll('#accountDialog [data-reveal-for]')) {
+    button.addEventListener('click', () => setRevealed(button, $(button.dataset.revealFor).type === 'password'));
+  }
   $('accountPasswordForm').addEventListener('submit', changePassword);
   $('accountEmailForm').addEventListener('submit', changeEmail);
   $('accountSignOut').addEventListener('click', () => signOut('local'));
