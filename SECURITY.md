@@ -1,0 +1,25 @@
+# Login seguro
+
+O login usa Supabase Auth. O navegador recebe somente a chave **anon/publishable**, que é pública por projeto. Nunca coloque uma `service_role`, senha de banco, chave privada ou token administrativo em `web/js/auth-config.js`.
+
+## Ativação
+
+1. Crie um projeto no Supabase e, em **Authentication > Providers**, mantenha Email ativado.
+2. Em **Authentication > URL Configuration**, cadastre a URL final do site em `Site URL` e em `Redirect URLs`.
+3. Em **Authentication > Email**, habilite `Confirm email`; configure SMTP próprio em produção para entrega confiável.
+4. Em **Authentication > Security**, ative proteção contra senha vazada e CAPTCHA (Turnstile/hCaptcha), além de ajustar limite de tentativas. Isso reduz força bruta e criação automatizada de contas.
+5. Copie a Project URL e a chave anon/publishable para `web/js/auth-config.js`. Não use a `service_role`.
+6. Execute `supabase/schema.sql` no SQL Editor. A tabela exemplo já usa Row Level Security (RLS); novas tabelas de dados de usuário precisam seguir esse padrão.
+7. Os cabeçalhos de segurança (CSP, HSTS etc.) ficam em `web/vercel.json`. Se trocar de hospedagem, replique-os no novo provedor.
+
+## Limites importantes
+
+Nenhum login do lado do navegador, sozinho, torna dados invioláveis. A proteção depende de HTTPS, confirmação de e-mail, RLS em todo dado privado, chaves administrativas somente no servidor e atualização regular de dependências. Sem login, favoritos e bolão ficam apenas no `localStorage`. Com login, `web/js/cloud.js` os sincroniza com as tabelas `favorites` e `pools` (protegidas por RLS: cada conta só lê e altera os próprios dados). Ao entrar, dados criados sem login são enviados para a conta; ao sair, os dados da conta são apagados do navegador. A função `delete_my_account()` (botão "Excluir minha conta" na seção Privacidade) apaga o usuário e, em cascata, todos os seus dados.
+
+O Service Worker nunca guarda respostas do Supabase nem do Turnstile; só arquivos do próprio site e resultados da Caixa, para uso offline.
+
+## Biblioteca do Supabase
+
+O cliente `@supabase/supabase-js` é servido localmente em `web/js/vendor/supabase.js` (build UMD convertido em ES module), sem depender de CDN em tempo de execução. Para atualizar: instale a nova versão via npm, copie `dist/umd/supabase.js`, mantenha as linhas `export` no final do arquivo e troque a versão do cache em `web/sw.js`.
+
+O CSP não permite scripts nem atributos `style` inline: coloque scripts em arquivos `.js` e aplique estilos por classe, atributo `data-*` ou via `element.style` no JavaScript.
