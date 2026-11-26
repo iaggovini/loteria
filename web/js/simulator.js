@@ -81,7 +81,7 @@ function buildGrid() {
   if (!els.grid) return;
 
   els.grid.innerHTML = '';
-  els.grid.style.gridTemplateColumns = `repeat(${modality.gridCols}, minmax(0, 1fr))`;
+  els.grid.style.setProperty('--cols', modality.gridCols);
 
   for (let i = modality.min; i <= modality.max; i += 1) {
     const button = document.createElement('button');
@@ -139,7 +139,7 @@ function buildExtraSection() {
 
   els.extraGrid = document.getElementById('extraNumberGrid');
   els.extraCounter = document.getElementById('extraCounter');
-  els.extraGrid.style.gridTemplateColumns = `repeat(${max - min + 1}, minmax(0, 1fr))`;
+  els.extraGrid.style.setProperty('--cols', max - min + 1);
 
   for (let i = min; i <= max; i += 1) {
     const button = document.createElement('button');
@@ -192,7 +192,18 @@ function updateUI() {
   const formatted = numbers.map((n) => formatNumber(n, modality));
 
   if (els.selected) {
-    els.selected.textContent = formatted.length ? formatted.join(' - ') : 'Nenhum';
+    if (formatted.length) {
+      els.selected.replaceChildren(...formatted.map((n) => {
+        const span = document.createElement('span');
+        span.className = 'mini-ball';
+        span.textContent = n;
+        return span;
+      }));
+      els.selected.setAttribute('aria-label', `Números selecionados: ${formatted.join(', ')}`);
+    } else {
+      els.selected.textContent = 'Toque nos números ou gere uma surpresinha.';
+      els.selected.removeAttribute('aria-label');
+    }
   }
 
   if (els.counter) {

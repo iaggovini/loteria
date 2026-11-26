@@ -60,163 +60,172 @@
     </div>
   </header>
 
-  <div class="results-ticker" id="resultsTicker" hidden>
-    <div class="container ticker-inner">
-      <span class="ticker-title">Últimos resultados</span>
-      <div class="ticker-track" id="tickerTrack" aria-label="Últimos resultados de cada modalidade"></div>
-    </div>
-  </div>
-
   <main class="container" id="main-content">
     <div class="view" data-view="inicio">
       <section class="hero" id="inicio">
         <div class="hero-main">
-        <p class="eyebrow">Loterias da Caixa · atualizado a cada sorteio</p>
-        <h1>Resultados, prêmios e bolões das loterias, <span class="hero-accent">num só lugar.</span></h1>
-        <p class="hero-lead">Veja os números sorteados, quanto cada loteria está pagando, monte sua aposta e organize o bolão com a turma — de graça e sem cadastro.</p>
-        <div class="hero-actions">
-          <a class="primary" href="#resultados">Ver resultados</a>
-          <a class="secondary" href="#simulador">Montar uma aposta</a>
-        </div>
-        <p class="disclaimer-inline">Site informativo, sem vínculo com a Caixa. Não vendemos apostas — para jogar, use as <a href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">Loterias Caixa</a>.</p>
+          <h1>Resultados e prêmios das loterias da Caixa</h1>
+          <p class="hero-lead">Números sorteados, prêmios estimados, simulador de apostas e bolão com a turma. Grátis e sem cadastro.</p>
+          <div class="hero-actions">
+            <a class="primary" href="#resultados">Ver resultados</a>
+            <a class="secondary" href="#simulador">Montar uma aposta</a>
+          </div>
         </div>
         <aside class="hero-jackpot" id="heroJackpot" aria-label="Maior prêmio da semana" hidden></aside>
       </section>
+
       <section id="modalidades">
         <div class="section-head">
-          <div>
-            <p class="eyebrow">Escolha seu jogo</p>
-            <h2>Próximos sorteios</h2>
-          </div>
+          <h2>Próximos sorteios</h2>
           <a class="section-link" href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">Apostar no site oficial ↗</a>
         </div>
-        <div class="grid grid-3 modality-cards" id="drawCards">
-          <article class="modality-card draw-card" data-accent="megasena" data-draw-card="megasena">
-            <div class="modality-card-head"><span>Mega-Sena</span><span class="draw-badge draw-badge-head" data-draw-badge hidden>Acumulou</span></div>
-            <div class="modality-card-body">
-              <div class="draw-info" data-draw-info="megasena" aria-live="polite">
-                <p class="draw-label">Prêmio estimado</p>
-                <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
-                <p class="draw-meta"><span>Carregando…</span></p>
-              </div>
-              <p class="draw-rule">Escolha 6 números de 01 a 60.<br><span class="muted">Sorteios: terças e quintas às 21h, domingos às 11h.</span></p>
-              <div class="draw-actions">
-                <button type="button" class="btn-draw-primary" data-select-modality="megasena">Simular</button>
-                <button type="button" class="btn-draw-secondary" data-pool-modality="megasena">Montar bolão</button>
-              </div>
+        <div class="draw-grid" id="drawCards">
+          <article class="draw-card" data-accent="megasena" data-draw-card="megasena">
+            <header class="draw-card-head">
+              <span class="draw-name"><span class="pill-dot"></span>Mega-Sena</span>
+              <span class="draw-badge" data-draw-badge hidden>Acumulou</span>
+            </header>
+            <div class="draw-info" data-draw-info="megasena" aria-live="polite">
+              <p class="draw-label">Prêmio estimado</p>
+              <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
+              <p class="draw-meta"><span>Carregando…</span></p>
+            </div>
+            <div class="draw-last" data-draw-last="megasena"></div>
+            <p class="draw-rule">6 números de 01 a 60 <span>Ter e qui 21h · dom 11h</span></p>
+            <div class="draw-actions">
+              <button type="button" class="btn-draw-primary" data-select-modality="megasena">Simular</button>
+              <button type="button" class="btn-draw-secondary" data-pool-modality="megasena">Montar bolão</button>
             </div>
           </article>
-          <article class="modality-card draw-card" data-accent="lotofacil" data-draw-card="lotofacil">
-            <div class="modality-card-head"><span>Lotofácil</span><span class="draw-badge draw-badge-head" data-draw-badge hidden>Acumulou</span></div>
-            <div class="modality-card-body">
-              <div class="draw-info" data-draw-info="lotofacil" aria-live="polite">
-                <p class="draw-label">Prêmio estimado</p>
-                <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
-                <p class="draw-meta"><span>Carregando…</span></p>
-              </div>
-              <p class="draw-rule">Escolha 15 números de 01 a 25.<br><span class="muted">Sorteios: segunda a sexta às 21h, domingos às 11h.</span></p>
-              <div class="draw-actions">
-                <button type="button" class="btn-draw-primary" data-select-modality="lotofacil">Simular</button>
-                <button type="button" class="btn-draw-secondary" data-pool-modality="lotofacil">Montar bolão</button>
-              </div>
+          <article class="draw-card" data-accent="lotofacil" data-draw-card="lotofacil">
+            <header class="draw-card-head">
+              <span class="draw-name"><span class="pill-dot"></span>Lotofácil</span>
+              <span class="draw-badge" data-draw-badge hidden>Acumulou</span>
+            </header>
+            <div class="draw-info" data-draw-info="lotofacil" aria-live="polite">
+              <p class="draw-label">Prêmio estimado</p>
+              <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
+              <p class="draw-meta"><span>Carregando…</span></p>
+            </div>
+            <div class="draw-last" data-draw-last="lotofacil"></div>
+            <p class="draw-rule">15 números de 01 a 25 <span>Seg a sex 21h · dom 11h</span></p>
+            <div class="draw-actions">
+              <button type="button" class="btn-draw-primary" data-select-modality="lotofacil">Simular</button>
+              <button type="button" class="btn-draw-secondary" data-pool-modality="lotofacil">Montar bolão</button>
             </div>
           </article>
-          <article class="modality-card draw-card" data-accent="quina" data-draw-card="quina">
-            <div class="modality-card-head"><span>Quina</span><span class="draw-badge draw-badge-head" data-draw-badge hidden>Acumulou</span></div>
-            <div class="modality-card-body">
-              <div class="draw-info" data-draw-info="quina" aria-live="polite">
-                <p class="draw-label">Prêmio estimado</p>
-                <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
-                <p class="draw-meta"><span>Carregando…</span></p>
-              </div>
-              <p class="draw-rule">Escolha 5 números de 01 a 80.<br><span class="muted">Sorteios: segunda a sexta às 21h, domingos às 11h.</span></p>
-              <div class="draw-actions">
-                <button type="button" class="btn-draw-primary" data-select-modality="quina">Simular</button>
-                <button type="button" class="btn-draw-secondary" data-pool-modality="quina">Montar bolão</button>
-              </div>
+          <article class="draw-card" data-accent="quina" data-draw-card="quina">
+            <header class="draw-card-head">
+              <span class="draw-name"><span class="pill-dot"></span>Quina</span>
+              <span class="draw-badge" data-draw-badge hidden>Acumulou</span>
+            </header>
+            <div class="draw-info" data-draw-info="quina" aria-live="polite">
+              <p class="draw-label">Prêmio estimado</p>
+              <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
+              <p class="draw-meta"><span>Carregando…</span></p>
+            </div>
+            <div class="draw-last" data-draw-last="quina"></div>
+            <p class="draw-rule">5 números de 01 a 80 <span>Seg a sex 21h · dom 11h</span></p>
+            <div class="draw-actions">
+              <button type="button" class="btn-draw-primary" data-select-modality="quina">Simular</button>
+              <button type="button" class="btn-draw-secondary" data-pool-modality="quina">Montar bolão</button>
             </div>
           </article>
-          <article class="modality-card draw-card" data-accent="lotomania" data-draw-card="lotomania">
-            <div class="modality-card-head"><span>Lotomania</span><span class="draw-badge draw-badge-head" data-draw-badge hidden>Acumulou</span></div>
-            <div class="modality-card-body">
-              <div class="draw-info" data-draw-info="lotomania" aria-live="polite">
-                <p class="draw-label">Prêmio estimado</p>
-                <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
-                <p class="draw-meta"><span>Carregando…</span></p>
-              </div>
-              <p class="draw-rule">Escolha 50 números de 00 a 99. São sorteados 20.<br><span class="muted">Sorteios: segundas, quartas e sextas às 21h.</span></p>
-              <div class="draw-actions">
-                <button type="button" class="btn-draw-primary" data-select-modality="lotomania">Simular</button>
-                <button type="button" class="btn-draw-secondary" data-pool-modality="lotomania">Montar bolão</button>
-              </div>
+          <article class="draw-card" data-accent="lotomania" data-draw-card="lotomania">
+            <header class="draw-card-head">
+              <span class="draw-name"><span class="pill-dot"></span>Lotomania</span>
+              <span class="draw-badge" data-draw-badge hidden>Acumulou</span>
+            </header>
+            <div class="draw-info" data-draw-info="lotomania" aria-live="polite">
+              <p class="draw-label">Prêmio estimado</p>
+              <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
+              <p class="draw-meta"><span>Carregando…</span></p>
+            </div>
+            <div class="draw-last" data-draw-last="lotomania"></div>
+            <p class="draw-rule">50 números de 00 a 99, saem 20 <span>Seg, qua e sex 21h</span></p>
+            <div class="draw-actions">
+              <button type="button" class="btn-draw-primary" data-select-modality="lotomania">Simular</button>
+              <button type="button" class="btn-draw-secondary" data-pool-modality="lotomania">Montar bolão</button>
             </div>
           </article>
-          <article class="modality-card draw-card" data-accent="duplasena" data-draw-card="duplasena">
-            <div class="modality-card-head"><span>Dupla Sena</span><span class="draw-badge draw-badge-head" data-draw-badge hidden>Acumulou</span></div>
-            <div class="modality-card-body">
-              <div class="draw-info" data-draw-info="duplasena" aria-live="polite">
-                <p class="draw-label">Prêmio estimado</p>
-                <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
-                <p class="draw-meta"><span>Carregando…</span></p>
-              </div>
-              <p class="draw-rule">6 números de 01 a 50, com dois sorteios por concurso.<br><span class="muted">Sorteios: segundas, quartas e sextas às 21h.</span></p>
-              <div class="draw-actions">
-                <button type="button" class="btn-draw-primary" data-select-modality="duplasena">Simular</button>
-                <button type="button" class="btn-draw-secondary" data-pool-modality="duplasena">Montar bolão</button>
-              </div>
+          <article class="draw-card" data-accent="duplasena" data-draw-card="duplasena">
+            <header class="draw-card-head">
+              <span class="draw-name"><span class="pill-dot"></span>Dupla Sena</span>
+              <span class="draw-badge" data-draw-badge hidden>Acumulou</span>
+            </header>
+            <div class="draw-info" data-draw-info="duplasena" aria-live="polite">
+              <p class="draw-label">Prêmio estimado</p>
+              <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
+              <p class="draw-meta"><span>Carregando…</span></p>
+            </div>
+            <div class="draw-last" data-draw-last="duplasena"></div>
+            <p class="draw-rule">6 números de 01 a 50, dois sorteios <span>Seg, qua e sex 21h</span></p>
+            <div class="draw-actions">
+              <button type="button" class="btn-draw-primary" data-select-modality="duplasena">Simular</button>
+              <button type="button" class="btn-draw-secondary" data-pool-modality="duplasena">Montar bolão</button>
             </div>
           </article>
-          <article class="modality-card draw-card" data-accent="maismilionaria" data-draw-card="maismilionaria">
-            <div class="modality-card-head"><span>+Milionária</span><span class="draw-badge draw-badge-head" data-draw-badge hidden>Acumulou</span></div>
-            <div class="modality-card-body">
-              <div class="draw-info" data-draw-info="maismilionaria" aria-live="polite">
-                <p class="draw-label">Prêmio estimado</p>
-                <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
-                <p class="draw-meta"><span>Carregando…</span></p>
-              </div>
-              <p class="draw-rule">6 números de 01 a 50 e 2 trevos de 1 a 6.<br><span class="muted">Sorteios: quartas e sextas às 21h.</span></p>
-              <div class="draw-actions">
-                <button type="button" class="btn-draw-primary" data-select-modality="maismilionaria">Simular</button>
-                <button type="button" class="btn-draw-secondary" data-pool-modality="maismilionaria">Montar bolão</button>
-              </div>
+          <article class="draw-card" data-accent="maismilionaria" data-draw-card="maismilionaria">
+            <header class="draw-card-head">
+              <span class="draw-name"><span class="pill-dot"></span>+Milionária</span>
+              <span class="draw-badge" data-draw-badge hidden>Acumulou</span>
+            </header>
+            <div class="draw-info" data-draw-info="maismilionaria" aria-live="polite">
+              <p class="draw-label">Prêmio estimado</p>
+              <p class="draw-prize draw-skeleton" aria-hidden="true">&nbsp;</p>
+              <p class="draw-meta"><span>Carregando…</span></p>
+            </div>
+            <div class="draw-last" data-draw-last="maismilionaria"></div>
+            <p class="draw-rule">6 números de 01 a 50 e 2 trevos <span>Qua e sex 21h</span></p>
+            <div class="draw-actions">
+              <button type="button" class="btn-draw-primary" data-select-modality="maismilionaria">Simular</button>
+              <button type="button" class="btn-draw-secondary" data-pool-modality="maismilionaria">Montar bolão</button>
             </div>
           </article>
         </div>
       </section>
-      <section id="como">
-        <p class="eyebrow">Passo a passo</p>
-        <h2>Como funciona</h2>
-        <div class="grid grid-3 steps">
-          <article class="feature-card">
-            <h3>Acompanhe os resultados</h3>
-            <p>Veja os últimos concursos com dados oficiais da Caixa, as dezenas mais sorteadas e as que estão há mais tempo sem sair.</p>
-          </article>
-          <article class="feature-card">
-            <h3>Monte sua aposta</h3>
-            <p>Escolha seus números ou gere uma surpresinha com filtros. Depois é só copiar, compartilhar ou imprimir.</p>
-          </article>
-          <article class="feature-card">
-            <h3>Confira e organize</h3>
-            <p>Compare sua aposta com o sorteio mais recente, salve combinações favoritas e gerencie bolões com amigos.</p>
-          </article>
+
+      <section id="ferramentas">
+        <div class="section-head">
+          <h2>Tudo para o seu jogo</h2>
+        </div>
+        <div class="tool-grid">
+          <a class="tool-card" href="#resultados">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+            <h3>Resultados e estatísticas</h3>
+            <p>Concursos anteriores, premiação por faixa, dezenas que mais saíram e as que estão atrasadas.</p>
+            <span class="tool-link">Ver resultados <span aria-hidden="true">→</span></span>
+          </a>
+          <a class="tool-card" href="#simulador">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.6" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.6" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.6" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg></span>
+            <h3>Simulador de apostas</h3>
+            <p>Marque seus números ou gere uma surpresinha, confira com o último sorteio e salve nos favoritos.</p>
+            <span class="tool-link">Montar aposta <span aria-hidden="true">→</span></span>
+          </a>
+          <a class="tool-card" href="#bolao">
+            <span class="tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+            <h3>Bolão da turma</h3>
+            <p>Monte as apostas, divida as cotas entre os participantes e mande a lista pronta no WhatsApp.</p>
+            <span class="tool-link">Organizar bolão <span aria-hidden="true">→</span></span>
+          </a>
         </div>
       </section>
-      <section id="confianca" class="trust-section">
-        <h2>Por que usar a Turma do Bolão</h2>
-        <div class="grid grid-3">
-          <article class="feature-card">
-            <h3>Dados oficiais</h3>
-            <p>Resultados obtidos diretamente da Caixa. Se o serviço oficial estiver fora do ar, avisamos claramente quando exibimos dados salvos.</p>
-          </article>
-          <article class="feature-card">
-            <h3>Privacidade por padrão</h3>
-            <p>Sem cadastro, tudo fica no seu navegador. Com conta, só você acessa seus dados. Nunca vendemos nem compartilhamos suas informações.</p>
-          </article>
-          <article class="feature-card">
-            <h3>Sem venda de bilhetes</h3>
-            <p>Somos uma ferramenta informativa. Apostas reais são feitas apenas nas lotéricas ou nos canais oficiais da Caixa.</p>
-          </article>
-        </div>
+
+      <section id="confianca" class="trust-strip" aria-label="Sobre o site">
+        <ul>
+          <li>
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8.5 12l2.5 2.5 4.5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div><strong>Dados oficiais</strong><span>Resultados direto da Caixa. Se o serviço cair, avisamos quando mostramos dados salvos.</span></div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <div><strong>Sem cadastro</strong><span>Tudo fica no seu navegador. A conta é opcional e só você vê seus dados.</span></div>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7.5v5M12 16v.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <div><strong>Não vendemos apostas</strong><span>Site informativo, sem vínculo com a Caixa. Para jogar, use as <a href="https://loterias.caixa.gov.br/Paginas/default.aspx" target="_blank" rel="noopener noreferrer">Loterias Caixa</a>.</span></div>
+          </li>
+        </ul>
       </section>
     </div>
 
@@ -269,45 +278,52 @@
 
     <div class="view" data-view="simulador" hidden>
       <section id="simulador" class="simulador">
-        <h2>Simulador de aposta</h2>
-        <p id="simulatorDesc"></p>
-
-        <div class="selection-status">
-          <span id="selectionCounter">0 / 6</span>
-          <div class="progress-track" role="progressbar" aria-label="Progresso da seleção">
-            <div class="progress-fill" id="selectionProgress"></div>
+        <div class="section-head">
+          <div>
+            <h2>Simulador de aposta</h2>
+            <p class="section-lead" id="simulatorDesc"></p>
           </div>
         </div>
 
-        <div class="filters" aria-label="Filtros da surpresinha">
-          <label><input type="checkbox" id="filterEven"> Apenas pares</label>
-          <label><input type="checkbox" id="filterOdd"> Apenas ímpares</label>
-          <label><input type="checkbox" id="filterLow"> Apenas 1ª metade</label>
-        </div>
-
-        <div class="numbers" id="numberGrid"></div>
-
-        <div class="extra-grid-wrap" id="extraGrid" hidden></div>
-
-        <div class="actions sim-actions">
-          <div class="sim-group">
-            <button type="button" class="sim-primary" id="btnQuickPick">Gerar aposta</button>
-            <button type="button" class="clear sim-ghost" id="btnClear">Limpar</button>
+        <div class="sim-layout">
+          <div class="sim-slip">
+            <div class="numbers" id="numberGrid"></div>
+            <div class="extra-grid-wrap" id="extraGrid" hidden></div>
           </div>
-          <div class="sim-group">
-            <button type="button" class="sim-outline" id="btnConference">Conferir aposta</button>
-            <button type="button" class="sim-outline" id="btnAddToPool">Incluir no bolão</button>
-          </div>
-          <div class="sim-group sim-group-tools" aria-label="Salvar e compartilhar">
-            <button type="button" class="sim-tool" id="btnCopy">Copiar</button>
-            <button type="button" class="sim-tool" id="btnShare">Compartilhar</button>
-            <button type="button" class="sim-tool" id="btnPrint" title="Imprimir ou salvar em PDF">Imprimir / PDF</button>
-          </div>
-        </div>
 
-        <div class="selected">
-          <strong>Números selecionados:</strong>
-          <span id="selectedNumbers" aria-live="polite">Nenhum</span>
+          <aside class="sim-panel actions" aria-label="Sua aposta">
+            <div class="selection-status">
+              <span class="sim-panel-label">Sua aposta</span>
+              <span id="selectionCounter">0 / 6</span>
+            </div>
+            <div class="progress-track" role="progressbar" aria-label="Progresso da seleção">
+              <div class="progress-fill" id="selectionProgress"></div>
+            </div>
+            <div class="selected" id="selectedNumbers" aria-live="polite">Toque nos números ou gere uma surpresinha.</div>
+
+            <div class="sim-group sim-group-main">
+              <button type="button" class="sim-primary" id="btnQuickPick">Gerar surpresinha</button>
+              <button type="button" class="clear sim-ghost" id="btnClear">Limpar</button>
+            </div>
+
+            <fieldset class="filters">
+              <legend>Filtros da surpresinha</legend>
+              <label><input type="checkbox" id="filterEven"> Só pares</label>
+              <label><input type="checkbox" id="filterOdd"> Só ímpares</label>
+              <label><input type="checkbox" id="filterLow"> Só 1ª metade</label>
+            </fieldset>
+
+            <div class="sim-group sim-group-next">
+              <button type="button" class="sim-outline" id="btnConference">Conferir com o último sorteio</button>
+              <button type="button" class="sim-outline" id="btnAddToPool">Incluir no bolão</button>
+            </div>
+
+            <div class="sim-group sim-group-tools" aria-label="Salvar e compartilhar">
+              <button type="button" class="sim-tool" id="btnCopy">Copiar</button>
+              <button type="button" class="sim-tool" id="btnShare">Compartilhar</button>
+              <button type="button" class="sim-tool" id="btnPrint" title="Imprimir ou salvar em PDF">Imprimir</button>
+            </div>
+          </aside>
         </div>
 
         <div class="conference-box" id="conferenceResult" hidden aria-live="polite"></div>

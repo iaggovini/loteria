@@ -1,6 +1,6 @@
 /**
- * Próximos sorteios: faixa de últimos resultados, destaque do maior prêmio
- * e cards com prêmio estimado, data e contagem regressiva de cada modalidade.
+ * Próximos sorteios: destaque do maior prêmio e cards com prêmio estimado,
+ * data, contagem regressiva e último resultado de cada modalidade.
  */
 import { MODALITIES } from './config.js';
 import { fetchLatest } from './api.js';
@@ -64,26 +64,12 @@ function countdownText(instant, now = new Date()) {
   return h > 0 ? `Faltam ${h}h ${pad(min)}min` : `Faltam ${min}min`;
 }
 
-function ballsHtml(numbers) {
-  return numbers.map((n) => `<span class="ticker-ball">${pad(n)}</span>`).join('');
-}
-
-function renderTicker() {
-  const track = $('tickerTrack');
-  if (!track) return;
-  const items = Object.values(MODALITIES)
-    .map((mod) => [mod, latestByModality[mod.id]])
-    .filter(([, data]) => data);
-  if (!items.length) return;
-  track.innerHTML = items.map(([mod, data]) => `
-    <button type="button" class="ticker-item" data-accent="${mod.id}" data-show-results="${mod.id}"
-      aria-label="${escapeHtml(`${mod.name}, concurso ${data.contest}: ${data.balls.join(', ')}${data.accumulated ? '. Acumulou' : ''}`)}">
-      <span class="ticker-name"><span class="pill-dot"></span>${escapeHtml(mod.name)}</span>
-      <span class="ticker-contest">${data.contest}</span>
-      <span class="ticker-balls" aria-hidden="true">${ballsHtml(data.balls.slice(0, 15))}${data.balls.length > 15 ? '<span class="ticker-more">…</span>' : ''}</span>
-      ${data.accumulated ? '<span class="draw-badge">Acumulou</span>' : ''}
-    </button>`).join('');
-  $('resultsTicker').hidden = false;
+function lastResultHtml(data) {
+  const ball = (n) => `<span class="mini-ball">${pad(n)}</span>`;
+  const trevos = (data.trevos || []).map((t) => `<span class="mini-ball mini-trevo">${t}</span>`).join('');
+  return `
+    <p class="draw-last-label">Último resultado · concurso ${escapeHtml(data.contest)}</p>
+    <div class="mini-balls" aria-label="${escapeHtml(`Dezenas do concurso ${data.contest}: ${data.balls.join(', ')}`)}">${data.balls.map(ball).join('')}${trevos}</div>`;
 }
 
 function renderHeroJackpot() {
@@ -97,10 +83,10 @@ function renderHeroJackpot() {
   const instant = drawInstant(best.nextDate);
   box.dataset.accent = mod.id;
   box.innerHTML = `
-    <p class="jackpot-kicker"><span class="pill-dot"></span>${escapeHtml(mod.name)} · Concurso ${best.nextContest || ''}</p>
-    <p class="jackpot-label">Maior prêmio estimado</p>
+    <p class="jackpot-kicker"><span class="pill-dot"></span>${escapeHtml(mod.name)}<span class="jackpot-contest">Concurso ${best.nextContest || ''}</span></p>
+    <p class="jackpot-label">Maior prêmio da semana</p>
     <p class="jackpot-value">${formatPrize(best.nextPrize)}</p>
-    <p class="jackpot-date">${instant ? `${dayLabel(instant)}, às ${drawHourLabel(instant)}` : ''}${best.accumulated ? ' · <span class="draw-badge">Acumulou</span>' : ''}</p>
+    <p class="jackpot-date">${instant ? `Sorteio ${dayLabel(instant).toLowerCase()}, às ${drawHourLabel(instant)}` : ''}${best.accumulated ? ' <span class="draw-badge">Acumulou</span>' : ''}</p>
     <p class="jackpot-countdown" data-countdown="${escapeHtml(best.nextDate)}"></p>
     <div class="jackpot-actions">
       <button type="button" class="jackpot-primary" data-select-modality="${mod.id}">Simular aposta</button>
@@ -119,7 +105,9 @@ function renderCards() {
     const data = latestByModality[id];
     const info = card.querySelector('[data-draw-info]');
     const badge = card.querySelector('[data-draw-badge]');
+    const last = card.querySelector('[data-draw-last]');
     if (!info) return;
+    if (last) last.innerHTML = data ? lastResultHtml(data) : '';
     if (!data) {
       info.innerHTML = '<p class="draw-unavailable">Prêmio indisponível no momento.</p>';
       return;
@@ -174,7 +162,6 @@ export async function initDraws({ onSelect, onPool, onResults } = {}) {
   latestByModality = {};
   settled.forEach((r, i) => { if (r.status === 'fulfilled') latestByModality[ids[i]] = r.value; });
 
-  renderTicker();
   renderHeroJackpot();
   renderCards();
   updateCountdowns();

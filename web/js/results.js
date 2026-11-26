@@ -48,10 +48,11 @@ export async function refreshResults() {
     history = contests;
 
     if (sourceEl) {
-      sourceEl.textContent =
-        source === 'api'
-          ? 'Fonte: API Caixa (tempo real)'
-          : 'Fonte: dados locais (API indisponível)';
+      // Só avisa quando os dados não vêm da Caixa em tempo real.
+      sourceEl.textContent = source === 'api'
+        ? ''
+        : 'O site da Caixa não respondeu agora. Mostrando os últimos resultados salvos.';
+      sourceEl.hidden = source === 'api';
     }
 
     renderCards(cards);

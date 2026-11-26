@@ -345,18 +345,6 @@ nav a.active {
   position: relative;
 }
 
-.hero::before {
-  content: "";
-  position: absolute;
-  top: -40px;
-  right: 0;
-  width: 60%;
-  height: 340px;
-  background: radial-gradient(circle, var(--hero-grad), transparent 70%);
-  z-index: -1;
-  pointer-events: none;
-}
-
 .modality-pills {
   display: flex;
   flex-wrap: wrap;
@@ -2107,65 +2095,6 @@ section { margin-bottom: 72px; scroll-margin-top: 96px; }
    Próximos sorteios, faixa de resultados e destaque do prêmio
    ========================================================= */
 
-/* Faixa de últimos resultados */
-.results-ticker { margin-top: 12px; }
-.ticker-inner { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.ticker-title {
-  flex: none;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.ticker-track {
-  display: flex;
-  gap: 10px;
-  min-width: 0;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  scrollbar-width: none;
-  padding: 4px 2px;
-  -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent);
-  mask-image: linear-gradient(90deg, #000 92%, transparent);
-}
-.ticker-track::-webkit-scrollbar { display: none; }
-.ticker-item {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  padding: 6px 14px 6px 12px;
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  font-size: 0.82rem;
-  cursor: pointer;
-  scroll-snap-align: start;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-.ticker-item:hover { border-color: var(--accent); transform: translateY(-1px); }
-.ticker-name { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; white-space: nowrap; }
-.ticker-contest { color: var(--muted); font-variant-numeric: tabular-nums; }
-.ticker-balls { display: inline-flex; gap: 4px; }
-.ticker-ball {
-  display: inline-grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.68rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.ticker-more { color: var(--muted); }
-
 /* Selo "Acumulou" */
 .draw-badge {
   display: inline-block;
@@ -2302,7 +2231,6 @@ section { margin-bottom: 72px; scroll-margin-top: 96px; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 600px) {
-  .ticker-title { display: none; }
   .section-head .section-link { white-space: normal; }
 }
 @media (max-width: 480px) {
@@ -2311,10 +2239,10 @@ section { margin-bottom: 72px; scroll-margin-top: 96px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .draw-skeleton { animation: none; }
-  .ticker-item:hover, .jackpot-actions button:hover { transform: none; }
+  .jackpot-actions button:hover { transform: none; }
 }
 @media print {
-  .results-ticker, .hero-jackpot { display: none !important; }
+  .hero-jackpot { display: none !important; }
 }
 
 /* =========================================================
@@ -2747,15 +2675,497 @@ h2 { letter-spacing: -0.03em; }
 [data-theme="light"] .badge-accumulated { background: #fef3c7 !important; color: #92400e !important; }
 [data-theme="light"] .eyebrow, [data-theme="light"] .hero .eyebrow { color: #075985; }
 [data-theme="light"] .site-footer { background: #ffffff; }
-[data-theme="light"] .ticker-item { background: #fff; }
-/* Contornos coloridos mais visíveis no modo escuro */
-[data-theme="dark"] .btn-draw-secondary,
-[data-theme="dark"] .actions .sim-outline { border-color: color-mix(in srgb, var(--accent) 65%, #fff); }
 /* Textos pequenos um pouco maiores */
 .draw-label, .rule-kicker, .stats-range-label { font-size: 0.78rem; }
-.ticker-ball { font-size: 0.72rem; }
 .stat-list em { font-size: 0.85rem; }
 .pool-footer-actions .pool-btn-whatsapp { background: #15803d; }
 [data-theme="light"] .hero-actions a.primary,
 [data-theme="light"] .primary { color: #fff; }
 [data-theme="light"] .skip-link { color: #fff; }
+
+/* =========================================================
+   Rodada 4 — visual profissional
+   Uma cor de marca (azul) para ações; a cor de cada loteria só
+   aparece em detalhes (bolinhas, pontinho do nome, barras).
+   ========================================================= */
+:root,
+[data-theme="dark"] {
+  --bg: #0b1120;
+  --surface: #111a2c;
+  --surface-2: #18233a;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --border: rgba(148, 163, 184, 0.14);
+  --border-strong: rgba(148, 163, 184, 0.3);
+  --primary: #60a5fa;
+  --brand: #2563eb;
+  --brand-hover: #1d4ed8;
+  --on-brand: #ffffff;
+  --warning: #fbbf24;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  --brand-grad: linear-gradient(135deg, #1e40af, #2563eb);
+}
+
+[data-theme="light"] {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface-2: #eef2f7;
+  --text: #0f172a;
+  --muted: #526075;
+  --border: rgba(15, 23, 42, 0.1);
+  --border-strong: rgba(15, 23, 42, 0.2);
+  --primary: #1d4ed8;
+  --brand: #1d4ed8;
+  --brand-hover: #1e40af;
+  --warning: #b45309;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --brand-grad: linear-gradient(135deg, #1e40af, #1d4ed8);
+}
+
+/* ---------- Cabeçalho: barra cheia, sem degradê ---------- */
+header.site-header {
+  padding: 0;
+  background: color-mix(in srgb, var(--bg) 86%, transparent);
+  -webkit-backdrop-filter: saturate(160%) blur(12px);
+  backdrop-filter: saturate(160%) blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header .topbar {
+  min-height: 64px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--text);
+}
+.topbar .brand { color: var(--text); }
+.topbar nav a,
+.site-header nav a { color: var(--muted); font-weight: 500; }
+.site-header nav a:hover { color: var(--text); background: var(--surface-2); }
+.site-header nav a.active { color: var(--text); background: var(--surface-2); }
+.topbar .btn-auth {
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+}
+.topbar .btn-auth:hover { background: var(--surface-2); color: var(--text); }
+.btn-cta { border-radius: 10px; background: var(--brand); color: var(--on-brand); box-shadow: none; }
+.btn-cta:hover { background: var(--brand-hover); transform: none; box-shadow: none; }
+.site-header .menu-toggle { color: var(--text); background: transparent; border: 1px solid var(--border-strong); border-radius: 10px; }
+.auth-user:hover, .auth-user:focus-visible { background: var(--surface-2); border-color: var(--border); }
+.auth-avatar { background: var(--brand); color: #fff; }
+@media (max-width: 960px) {
+  .site-header nav { border-top-color: var(--border); }
+}
+@media (max-width: 480px) {
+  .site-header .brand span { display: inline; }
+  .site-header .brand { font-size: 1rem; }
+}
+
+/* ---------- Tipografia e seções ---------- */
+h2 { font-size: clamp(1.35rem, 2.2vw, 1.75rem); }
+section { margin-bottom: 64px; }
+.section-head { align-items: flex-end; gap: 12px 24px; margin-bottom: 20px; }
+.section-head h2 { margin: 0; }
+.section-head .section-lead { margin: 6px 0 0; }
+.view:not([data-view="inicio"]) { padding-top: 32px; }
+
+/* ---------- Botões ---------- */
+.primary,
+.hero-actions a.primary { background: var(--brand); color: var(--on-brand); box-shadow: none; }
+.primary:hover,
+.hero-actions a.primary:hover { background: var(--brand-hover); transform: none; }
+.secondary,
+.btn-secondary,
+.hero-actions a.secondary {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  color: var(--text);
+}
+.secondary:hover,
+.btn-secondary:hover,
+.hero-actions a.secondary:hover { background: var(--surface-2); }
+[data-accent] #loadMoreResults,
+[data-accent] #btnCompare,
+[data-accent] .favorite-form button,
+#loadMoreResults,
+#btnCompare,
+.favorite-form button {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-weight: 600;
+}
+[data-accent] #loadMoreResults {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+}
+[data-accent] #loadMoreResults:hover { background: var(--surface-2); filter: none; }
+[data-accent] #btnCompare:hover,
+[data-accent] .favorite-form button:hover { background: var(--brand-hover); filter: none; }
+select { border-radius: 10px; background: var(--surface); border-color: var(--border-strong); }
+
+/* ---------- Cartões genéricos ---------- */
+.card,
+.feature-card,
+.stat-block,
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+.feature-card:hover { transform: none; box-shadow: var(--shadow); }
+
+/* ---------- Início: topo com o maior prêmio ---------- */
+.hero {
+  padding: 48px 0 40px;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 400px);
+  gap: 40px;
+}
+.hero h1 {
+  max-width: 620px;
+  margin: 0 0 14px;
+  font-size: clamp(1.85rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+.hero .hero-lead { max-width: 520px; margin: 0; font-size: 1.05rem; line-height: 1.6; }
+.hero-actions { margin-top: 24px; gap: 10px; }
+.hero-actions a { min-height: 46px; padding: 0 20px; border-radius: 10px; }
+
+.hero-jackpot {
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+.hero-jackpot::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--accent);
+}
+.hero-jackpot .pill-dot { background: var(--accent); }
+.hero .hero-jackpot .jackpot-kicker { font-size: 0.95rem; }
+.jackpot-contest { margin-left: auto; color: var(--muted); font-size: 0.85rem; font-weight: 500; }
+.hero .hero-jackpot .jackpot-label {
+  margin-top: 20px;
+  opacity: 1;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.hero .hero-jackpot .jackpot-value { margin-top: 4px; font-size: clamp(2.2rem, 4vw, 2.9rem); }
+.hero .hero-jackpot .jackpot-date { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); }
+.hero .hero-jackpot .jackpot-countdown { color: var(--primary); font-size: 0.9rem; }
+.jackpot-actions button { border-radius: 10px; font-weight: 600; }
+.jackpot-primary { background: var(--brand); color: var(--on-brand); }
+.jackpot-primary:hover { background: var(--brand-hover); }
+.jackpot-secondary { border: 1px solid var(--border-strong); background: transparent; color: var(--text); }
+.jackpot-secondary:hover { background: var(--surface-2); }
+.jackpot-actions button:hover { transform: none; }
+
+/* Selo "Acumulou": discreto, igual em todo o site */
+.draw-badge,
+.jackpot-date .draw-badge,
+[data-theme="light"] .jackpot-date .draw-badge {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* ---------- Início: cartões dos próximos sorteios ---------- */
+.draw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+.draw-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s ease;
+}
+.draw-card:hover { border-color: color-mix(in srgb, var(--accent) 50%, var(--border)); }
+.draw-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.draw-name { display: inline-flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 700; }
+.draw-card .draw-info p { margin: 0; }
+.draw-card .draw-prize { font-size: 1.75rem; }
+.draw-card .draw-countdown {
+  margin-top: 6px;
+  padding: 0;
+  background: none;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.draw-last { padding-top: 16px; border-top: 1px solid var(--border); }
+.draw-last:empty { display: none; }
+.draw-last-label { margin: 0 0 8px; color: var(--muted); font-size: 0.78rem; }
+.draw-card .draw-rule {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.draw-rule span { color: var(--muted); }
+.draw-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+.btn-draw-primary,
+.btn-draw-secondary {
+  min-height: 42px;
+  border-radius: 10px;
+  font-weight: 600;
+  color: var(--text);
+}
+.btn-draw-primary { border: 1px solid var(--border); background: var(--surface-2); }
+.btn-draw-primary:hover { border-color: transparent; background: var(--brand); color: var(--on-brand); filter: none; }
+.btn-draw-secondary { border: 1px solid var(--border); background: transparent; }
+.btn-draw-secondary:hover { background: var(--surface-2); }
+
+/* Bolinhas pequenas (cartões, estatísticas e simulador) */
+.mini-balls { display: flex; flex-wrap: wrap; gap: 4px; }
+.mini-ball {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent, var(--brand));
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.mini-ball.mini-trevo { background: transparent; color: var(--text); box-shadow: inset 0 0 0 2px var(--accent); }
+
+/* ---------- Início: ferramentas e confiança ---------- */
+.tool-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: border-color 0.2s ease;
+}
+.tool-card:hover { border-color: color-mix(in srgb, var(--primary) 50%, var(--border)); }
+.tool-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+}
+.tool-card h3 { margin: 0; font-size: 1.05rem; }
+.tool-card p { flex: 1; margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.55; }
+.tool-link { margin-top: 8px; color: var(--primary); font-size: 0.9rem; font-weight: 600; }
+.tool-card:hover .tool-link { text-decoration: underline; }
+
+.trust-strip ul {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0;
+  padding: 28px 0 0;
+  border-top: 1px solid var(--border);
+  list-style: none;
+}
+.trust-strip li { display: flex; align-items: flex-start; gap: 12px; }
+.trust-strip svg { flex: none; margin-top: 2px; color: var(--muted); }
+.trust-strip strong { display: block; margin-bottom: 2px; font-size: 0.95rem; }
+.trust-strip span { color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
+.trust-strip a { color: var(--primary); text-decoration: underline; }
+
+/* ---------- Resultados ---------- */
+#dataSourceBadge {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--warning) 40%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+  color: var(--text);
+}
+#dataSourceBadge[hidden],
+#dataSourceBadge:empty { display: none; }
+#resultados .next-draw { border-radius: 12px; background: var(--surface); box-shadow: var(--shadow); }
+#resultados .next-draw a { color: var(--primary); text-decoration: none; }
+#resultados .next-draw a:hover { text-decoration: underline; }
+.result-card,
+#resultsCards .result-card { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+#resultsCards .result-featured { box-shadow: var(--shadow); }
+[data-theme] #resultsCards .result-card:not(.result-featured) .badge-accumulated {
+  margin: 0 0 8px;
+  padding: 0;
+  background: none !important;
+  color: var(--muted) !important;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---------- Estatísticas ---------- */
+.stats-range { background: var(--surface); border-color: var(--border); }
+.stats-range button[aria-pressed="true"] { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border-strong); }
+.stat-groups { display: grid; gap: 10px; }
+.stat-group { display: grid; grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr); gap: 10px; align-items: start; }
+.stat-group-label { margin: 0; padding-top: 6px; color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
+.stat-block .mini-ball { background: var(--surface-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border-strong); }
+
+/* ---------- Simulador: volante + painel ---------- */
+.simulador { padding: 0; border: 0; border-radius: 0; background: none; }
+.sim-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
+.sim-slip { padding: 24px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
+.simulador .numbers {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 10), minmax(0, 52px));
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+}
+.simulador .number-btn {
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.simulador .number-btn:hover:not(:disabled) { transform: none; border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--surface-2)); }
+.simulador .number-btn.selected,
+.simulador .extra-btn.selected {
+  border-color: transparent;
+  background: var(--accent);
+  color: #fff;
+  transform: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.simulador .extra-grid-wrap { margin: 20px 0 0; padding: 20px 0 0; border: 0; border-top: 1px solid var(--border); border-radius: 0; background: none; }
+.simulador .extra-head { justify-content: center; gap: 12px; }
+
+.sim-panel {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+.sim-panel .selection-status { display: flex; align-items: baseline; justify-content: space-between; margin: 0; }
+.sim-panel-label { font-weight: 700; }
+.sim-panel #selectionCounter { min-width: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sim-panel .progress-track { flex: none; height: 6px; margin-top: -8px; background: var(--surface-2); }
+.sim-panel .selected { display: flex; flex-wrap: wrap; gap: 6px; min-height: 32px; color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
+.sim-panel .selected .mini-ball { width: 32px; height: 32px; font-size: 0.82rem; }
+.sim-panel .sim-group { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 0; }
+.sim-panel .sim-group-next { grid-template-columns: 1fr; }
+.sim-panel .sim-group-tools { display: flex; gap: 4px; margin: 0; padding-top: 12px; border-top: 1px solid var(--border); }
+.sim-panel button {
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sim-panel .sim-primary { border: 0; background: var(--brand); color: var(--on-brand); }
+.sim-panel .sim-primary:hover { background: var(--brand-hover); filter: none; }
+[data-theme] .sim-panel .sim-ghost,
+[data-theme] .sim-panel .sim-outline { border: 1px solid var(--border-strong); background: transparent; color: var(--text); }
+.sim-panel .sim-ghost:hover,
+.sim-panel .sim-outline:hover { background: var(--surface-2); }
+.sim-panel .sim-tool { flex: 1; min-height: 40px; padding: 0 8px; border: 0; background: transparent; color: var(--muted); }
+.sim-panel .sim-tool:hover { background: var(--surface-2); color: var(--text); }
+.sim-panel .filters { display: flex; flex-wrap: wrap; gap: 0 14px; margin: 0; padding: 0; border: 0; }
+.sim-panel .filters legend { margin-bottom: 2px; padding: 0; color: var(--muted); font-size: 0.78rem; font-weight: 600; }
+.sim-panel .filters label { min-height: 36px; color: var(--text); font-size: 0.88rem; }
+.sim-panel .filters input { accent-color: var(--brand); }
+.simulador .conference-box { margin-top: 24px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
+
+/* ---------- Bolão, favoritos e regras: ação principal na cor da marca ---------- */
+.pool-section .pool-step-num { background: var(--brand); color: #fff; }
+.pool-section .pool-gen-row button,
+.pool-section .participant-form button,
+.pool-section .pool-footer-actions button.pool-btn-primary,
+#favoritesList .favorite-actions .fav-use { border: 0; background: var(--brand); color: var(--on-brand); }
+.pool-section .pool-gen-row button:hover,
+.pool-section .participant-form button:hover,
+.pool-section .pool-footer-actions button.pool-btn-primary:hover,
+#favoritesList .favorite-actions .fav-use:hover { background: var(--brand-hover); filter: none; }
+.pool-section .pool-footer-actions button { border-radius: 10px; }
+.pool-section .pool-template-card,
+.pool-section .pool-config,
+.pool-section .pool-participants-block,
+#favoritesList .favorite-item,
+.rule-tile { background: var(--surface); border-color: var(--border); box-shadow: var(--shadow); }
+.rule-tile-accent { background: var(--surface); color: var(--text); border-color: var(--border); box-shadow: inset 0 3px 0 var(--accent), var(--shadow); }
+.rule-tile-accent .rule-kicker,
+.rule-tile-accent .rule-foot { color: var(--muted); }
+
+/* ---------- Rodapé ---------- */
+.site-footer { margin-top: 32px; background: var(--surface); }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 960px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .hero-jackpot { max-width: none; }
+}
+@media (max-width: 900px) {
+  .sim-layout { grid-template-columns: minmax(0, 1fr); }
+  .sim-panel { position: static; }
+}
+@media (max-width: 860px) {
+  .tool-grid,
+  .trust-strip ul { grid-template-columns: minmax(0, 1fr); }
+  .trust-strip ul { gap: 18px; }
+}
+@media (max-width: 600px) {
+  .hero { padding: 28px 0 32px; }
+  .hero .hero-lead { font-size: 1rem; }
+  .hero-actions { display: none; }
+  section { margin-bottom: 48px; }
+  .sim-slip { padding: 12px; }
+  .simulador .numbers { gap: 5px; }
+  .simulador .number-btn { aspect-ratio: auto; min-height: 40px; border-radius: 10px; font-size: 0.85rem; }
+}
+
