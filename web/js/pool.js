@@ -28,6 +28,7 @@ const state = {
 export function initPool(mod) {
   modality = mod;
   state.modalityId = mod.id;
+  state.betPrice = mod.price;
   loadFromStorage();
   bindInputs();
   bindActions();
@@ -39,6 +40,8 @@ export function switchPoolModality(mod) {
   modality = mod;
   state.modalityId = mod.id;
   state.bets = [];
+  state.betPrice = mod.price;
+  restoreInputValues();
   saveToStorage();
   render();
 }
@@ -614,7 +617,7 @@ export function reloadPool() {
   if (!modality) return;
   Object.assign(state, {
     modalityId: modality.id, name: '', organizer: '', contestNumber: '',
-    betPrice: 5, bets: [], participants: []
+    betPrice: modality.price, bets: [], participants: []
   });
   loadFromStorage();
   restoreInputValues();
@@ -628,10 +631,11 @@ function loadFromStorage() {
     state.name = data.name || '';
     state.organizer = data.organizer || '';
     state.contestNumber = data.contestNumber || '';
-    state.betPrice = Number(data.betPrice) || 5;
     state.participants = Array.isArray(data.participants) ? data.participants : [];
-    if (data.modalityId === modality.id && Array.isArray(data.bets)) {
-      state.bets = data.bets;
+    // O preço salvo só vale para o mesmo jogo; em outro jogo, usa o preço oficial dele.
+    if (data.modalityId === modality.id) {
+      state.betPrice = Number(data.betPrice) || modality.price;
+      if (Array.isArray(data.bets)) state.bets = data.bets;
     }
   } catch {
     /* ignore */

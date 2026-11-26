@@ -9,6 +9,7 @@ export const MODALITIES = {
     max: 60,
     gridCols: 10,
     apiPath: 'megasena',
+    price: 6, // aposta simples, em R$ (site da Caixa, nov/2026)
     drawDays: 'terças e quintas às 21h, domingos às 11h',
     description: 'Escolha 6 números de 01 a 60.',
     prizeTiers: [
@@ -25,6 +26,7 @@ export const MODALITIES = {
     max: 25,
     gridCols: 5,
     apiPath: 'lotofacil',
+    price: 3.5, // aposta simples, em R$ (site da Caixa, nov/2026)
     drawDays: 'segunda a sexta às 21h, domingos às 11h',
     description: 'Escolha 15 números de 01 a 25.',
     prizeTiers: [
@@ -43,6 +45,7 @@ export const MODALITIES = {
     max: 80,
     gridCols: 10,
     apiPath: 'quina',
+    price: 3, // aposta simples, em R$ (site da Caixa, nov/2026)
     drawDays: 'segunda a sexta às 21h, domingos às 11h',
     description: 'Escolha 5 números de 01 a 80.',
     prizeTiers: [
@@ -60,6 +63,7 @@ export const MODALITIES = {
     max: 99,
     gridCols: 10,
     apiPath: 'lotomania',
+    price: 3, // aposta simples, em R$ (site da Caixa, nov/2026)
     drawDays: 'segundas, quartas e sextas às 21h',
     description: 'Escolha 50 números de 00 a 99. São sorteados 20.',
     prizeTiers: [
@@ -80,6 +84,7 @@ export const MODALITIES = {
     max: 50,
     gridCols: 10,
     apiPath: 'duplasena',
+    price: 3, // aposta simples, em R$ (site da Caixa, nov/2026)
     drawDays: 'segundas, quartas e sextas às 21h',
     description: 'Escolha 6 números de 01 a 50. Dois sorteios por concurso.',
     multiDraw: true,
@@ -98,6 +103,7 @@ export const MODALITIES = {
     max: 50,
     gridCols: 10,
     apiPath: 'maismilionaria',
+    price: 6, // aposta simples, em R$ (site da Caixa, nov/2026)
     drawDays: 'quartas e sextas às 21h',
     description: 'Escolha 6 números de 01 a 50 e 2 trevos de 1 a 6.',
     extra: { key: 'trevo', label: 'Trevo', min: 1, max: 6, pick: 2 },
