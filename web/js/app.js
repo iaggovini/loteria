@@ -104,7 +104,7 @@ function renderRules(mod) {
       </div>
       <div class="rule-tile">
         <span class="rule-kicker">Quando tem sorteio</span>
-        <p>${mod.drawDays.charAt(0).toUpperCase()}${mod.drawDays.slice(1)}, às 20h (horário de Brasília).</p>
+        <p>${mod.drawDays.charAt(0).toUpperCase()}${mod.drawDays.slice(1)} (horário de Brasília).</p>
       </div>
       ${odds ? `
       <div class="rule-tile rule-tile-accent">

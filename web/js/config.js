@@ -9,7 +9,7 @@ export const MODALITIES = {
     max: 60,
     gridCols: 10,
     apiPath: 'megasena',
-    drawDays: 'quartas e sábados',
+    drawDays: 'terças e quintas às 21h, domingos às 11h',
     description: 'Escolha 6 números de 01 a 60.',
     prizeTiers: [
       { hits: 6, label: 'Sena (6 acertos)' },
@@ -25,7 +25,7 @@ export const MODALITIES = {
     max: 25,
     gridCols: 5,
     apiPath: 'lotofacil',
-    drawDays: 'segunda a sábado',
+    drawDays: 'segunda a sexta às 21h, domingos às 11h',
     description: 'Escolha 15 números de 01 a 25.',
     prizeTiers: [
       { hits: 15, label: '15 acertos' },
@@ -43,7 +43,7 @@ export const MODALITIES = {
     max: 80,
     gridCols: 10,
     apiPath: 'quina',
-    drawDays: 'segunda a sábado',
+    drawDays: 'segunda a sexta às 21h, domingos às 11h',
     description: 'Escolha 5 números de 01 a 80.',
     prizeTiers: [
       { hits: 5, label: 'Quina (5 acertos)' },
@@ -60,7 +60,7 @@ export const MODALITIES = {
     max: 99,
     gridCols: 10,
     apiPath: 'lotomania',
-    drawDays: 'segundas, quartas e sextas',
+    drawDays: 'segundas, quartas e sextas às 21h',
     description: 'Escolha 50 números de 00 a 99. São sorteados 20.',
     prizeTiers: [
       { hits: 20, label: '20 acertos' },
@@ -80,7 +80,7 @@ export const MODALITIES = {
     max: 50,
     gridCols: 10,
     apiPath: 'duplasena',
-    drawDays: 'segundas, quartas e sábados',
+    drawDays: 'segundas, quartas e sextas às 21h',
     description: 'Escolha 6 números de 01 a 50. Dois sorteios por concurso.',
     multiDraw: true,
     prizeTiers: [
@@ -98,7 +98,7 @@ export const MODALITIES = {
     max: 50,
     gridCols: 10,
     apiPath: 'maismilionaria',
-    drawDays: 'sábados',
+    drawDays: 'quartas e sextas às 21h',
     description: 'Escolha 6 números de 01 a 50 e 2 trevos de 1 a 6.',
     extra: { key: 'trevo', label: 'Trevo', min: 1, max: 6, pick: 2 },
     prizeTiers: [

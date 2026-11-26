@@ -6,7 +6,9 @@ import { MODALITIES } from './config.js';
 import { fetchLatest } from './api.js';
 
 const TZ = 'America/Sao_Paulo';
-const DRAW_HOUR = 20; // os sorteios da Caixa acontecem às 20h (Brasília)
+// Os sorteios da Caixa são às 21h; aos domingos, às 11h (horário de Brasília).
+const DRAW_HOUR = 21;
+const SUNDAY_DRAW_HOUR = 11;
 
 let latestByModality = {};
 let timer = null;
@@ -27,12 +29,16 @@ export function formatPrize(value) {
   return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
 }
 
-// "dd/mm/aaaa" → instante do sorteio (20h de Brasília, UTC-3).
+// "dd/mm/aaaa" → instante do sorteio (horário de Brasília, UTC-3).
 function drawInstant(dateStr) {
   const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(dateStr || '');
   if (!m) return null;
-  return new Date(`${m[3]}-${m[2]}-${m[1]}T${pad(DRAW_HOUR)}:00:00-03:00`);
+  const isSunday = new Date(Date.UTC(m[3], m[2] - 1, m[1])).getUTCDay() === 0;
+  const hour = isSunday ? SUNDAY_DRAW_HOUR : DRAW_HOUR;
+  return new Date(`${m[3]}-${m[2]}-${m[1]}T${pad(hour)}:00:00-03:00`);
 }
+
+const drawHourLabel = (instant) => `${new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, hour: 'numeric' }).format(instant)}h`;
 
 function brasiliaDay(date) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
@@ -94,7 +100,7 @@ function renderHeroJackpot() {
     <p class="jackpot-kicker"><span class="pill-dot"></span>${escapeHtml(mod.name)} · Concurso ${best.nextContest || ''}</p>
     <p class="jackpot-label">Maior prêmio estimado</p>
     <p class="jackpot-value">${formatPrize(best.nextPrize)}</p>
-    <p class="jackpot-date">${instant ? `${dayLabel(instant)}, às ${DRAW_HOUR}h` : ''}${best.accumulated ? ' · <span class="draw-badge">Acumulou</span>' : ''}</p>
+    <p class="jackpot-date">${instant ? `${dayLabel(instant)}, às ${drawHourLabel(instant)}` : ''}${best.accumulated ? ' · <span class="draw-badge">Acumulou</span>' : ''}</p>
     <p class="jackpot-countdown" data-countdown="${escapeHtml(best.nextDate)}"></p>
     <div class="jackpot-actions">
       <button type="button" class="jackpot-primary" data-select-modality="${mod.id}">Simular aposta</button>
@@ -125,7 +131,7 @@ function renderCards() {
       <p class="draw-label">Prêmio estimado</p>
       <p class="draw-prize">${prize || 'A divulgar'}</p>
       <p class="draw-meta">
-        <span>${instant ? `${dayLabel(instant)} · ${DRAW_HOUR}h` : 'Data a confirmar'}</span>
+        <span>${instant ? `${dayLabel(instant)} · ${drawHourLabel(instant)}` : 'Data a confirmar'}</span>
         ${data.nextContest ? `<span>Concurso ${data.nextContest}</span>` : ''}
       </p>
       <p class="draw-countdown" data-countdown="${escapeHtml(data.nextDate)}"></p>`;
