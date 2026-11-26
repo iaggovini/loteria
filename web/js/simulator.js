@@ -405,8 +405,6 @@ function runConference() {
     return { ...d, drawnSet, hits: nums.filter((n) => drawnSet.has(n)) };
   });
 
-  const best = drawResults.reduce((a, b) => (b.hits.length > a.hits.length ? b : a));
-
   let extraHitsCount = 0;
   let extraDrawnSet = new Set();
   if (modality.extra && latest.trevos) {
@@ -414,9 +412,18 @@ function runConference() {
     extraHitsCount = getSelectedExtra().filter((n) => extraDrawnSet.has(n)).length;
   }
 
-  const label = modality.extra
-    ? getExtraPrizeLabel(modality, best.hits.length, extraHitsCount)
-    : getPrizeLabel(modality, best.hits.length);
+  // Na Dupla Sena cada sorteio paga separado: confere e rotula os dois.
+  const labelFor = (h) => (modality.extra
+    ? getExtraPrizeLabel(modality, h, extraHitsCount)
+    : getPrizeLabel(modality, h));
+  drawResults.forEach((d) => {
+    d.won = Boolean(findPrizeTier(modality, d.hits.length, extraHitsCount));
+  });
+  const won = drawResults.some((d) => d.won);
+  const label = drawResults
+    .map((d) => `${d.label ? `${d.label}: ` : ''}${labelFor(d.hits.length)}`)
+    .join(' · ');
+  const bestHits = Math.max(...drawResults.map((d) => d.hits.length));
 
   if (box) {
     box.hidden = false;
@@ -452,15 +459,14 @@ function runConference() {
         </div>`
           : ''
       }
-      <p class="conference-tier">${label}</p>
+      ${won
+        ? `<p class="conference-tier conference-win">🏆 <strong>Aposta premiada!</strong> ${label}. Confira sempre no site oficial da Caixa.</p>`
+        : `<p class="conference-tier">${label}</p>`}
     `;
   }
 
-  const won = modality.extra
-    ? findPrizeTier(modality, best.hits.length, extraHitsCount)
-    : findPrizeTier(modality, best.hits.length);
   showToast(
-    won ? `Parabéns! ${label}.` : `Conferência: ${best.hits.length} acerto(s), sem prêmio.`,
+    won ? `Parabéns! ${label}.` : `Conferência: ${bestHits} acerto(s), sem prêmio.`,
     won ? 'success' : 'info'
   );
 }
