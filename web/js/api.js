@@ -151,21 +151,25 @@ export async function fetchLatest(modalityId) {
 }
 
 export async function fetchHistoryFromApi(modalityId, startContest, count) {
-  const results = [];
-  const tasks = [];
+  const numbers = [];
+  for (let i = 0; i < count && startContest - i >= 1; i += 1) numbers.push(startContest - i);
 
-  for (let i = 0; i < count; i += 1) {
-    const num = startContest - i;
-    if (num < 1) break;
-    tasks.push(
-      fetchContest(modalityId, num).catch(() => null)
-    );
+  const settled = await Promise.all(numbers.map((n) => fetchContest(modalityId, n).catch(() => null)));
+  const results = settled.filter(Boolean);
+
+  // O serviço da Caixa às vezes recusa pedidos seguidos: os que falharam são
+  // pedidos de novo, um de cada vez, para não deixar buracos na lista.
+  let failed = numbers.filter((_, i) => !settled[i]);
+  for (let attempt = 0; attempt < 2 && failed.length; attempt += 1) {
+    await new Promise((r) => setTimeout(r, 1200));
+    const retry = failed;
+    failed = [];
+    for (const n of retry) {
+      const item = await fetchContest(modalityId, n).catch(() => null);
+      if (item) results.push(item);
+      else failed.push(n);
+    }
   }
-
-  const settled = await Promise.all(tasks);
-  settled.forEach((item) => {
-    if (item) results.push(item);
-  });
   return results.sort((a, b) => b.contest - a.contest);
 }
 
