@@ -1,6 +1,6 @@
 {
-  "name": "Bom de Sorte",
-  "short_name": "Bom de Sorte",
+  "name": "Turma do Bolão",
+  "short_name": "Turma do Bolão",
   "description": "Resultados, estatísticas e simulador de loterias da Caixa",
   "start_url": "./index.html",
   "display": "standalone",

@@ -82,11 +82,11 @@ export function initThemeToggle(onChange) {
 // continua usando âncoras (#simulador, #faq...), então links antigos funcionam.
 // ---------------------------------------------------------------------------
 const TITLES = {
-  inicio: 'Bom de Sorte — Resultados, estatísticas e simulador de loterias',
-  resultados: 'Resultados e estatísticas — Bom de Sorte',
-  simulador: 'Simulador de apostas — Bom de Sorte',
-  bolao: 'Gerenciador de bolão — Bom de Sorte',
-  ajuda: 'Como jogar e dúvidas — Bom de Sorte'
+  inicio: 'Turma do Bolão — Resultados, estatísticas e simulador de loterias',
+  resultados: 'Resultados e estatísticas — Turma do Bolão',
+  simulador: 'Simulador de apostas — Turma do Bolão',
+  bolao: 'Gerenciador de bolão — Turma do Bolão',
+  ajuda: 'Como jogar e dúvidas — Turma do Bolão'
 };
 
 function route() {

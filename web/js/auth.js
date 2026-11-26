@@ -9,7 +9,7 @@ let mode = 'signin';
 const MODES = {
   signin: {
     title: 'Bem-vindo de volta',
-    description: 'Acesse sua conta Bom de Sorte.',
+    description: 'Acesse sua conta na Turma do Bolão.',
     submit: 'Entrar', busy: 'Entrando…'
   },
   signup: {
@@ -309,7 +309,7 @@ async function submit(els) {
       ]);
     }
     els.dialog.close();
-    return showToast('Conta criada. Boas-vindas ao Bom de Sorte!', 'success');
+    return showToast('Conta criada. Boas-vindas à Turma do Bolão!', 'success');
   }
 
   const { error } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } });

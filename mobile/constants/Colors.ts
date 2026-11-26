@@ -1,5 +1,5 @@
 // Paleta portada de web/css/style.css (:root e [data-theme="light"]) para manter
-// a mesma identidade visual do site "Bom de Sorte".
+// a mesma identidade visual do site "Turma do Bolão".
 export default {
   dark: {
     text: '#f8fafc',
