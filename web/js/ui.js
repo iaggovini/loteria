@@ -141,12 +141,20 @@ export function goTo(id) {
 
 export function setLoading(container, message = 'Carregando…') {
   if (!container) return;
-  container.innerHTML = `<p class="state-message" role="status">${message}</p>`;
+  const p = document.createElement('p');
+  p.className = 'state-message';
+  p.setAttribute('role', 'status');
+  p.textContent = message;
+  container.replaceChildren(p);
 }
 
 export function setError(container, message) {
   if (!container) return;
-  container.innerHTML = `<p class="state-message state-error" role="alert">${message}</p>`;
+  const p = document.createElement('p');
+  p.className = 'state-message state-error';
+  p.setAttribute('role', 'alert');
+  p.textContent = message;
+  container.replaceChildren(p);
 }
 
 export function showConfirm(message, {
@@ -160,15 +168,19 @@ export function showConfirm(message, {
     overlay.className = 'modal-overlay';
     overlay.innerHTML = `
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <h3 class="modal-title" id="modal-title">${title}</h3>
+        <h3 class="modal-title" id="modal-title"></h3>
         <p class="modal-message">${message}</p>
         <div class="modal-actions">
-          <button type="button" class="modal-btn modal-cancel">${cancelText}</button>
-          <button type="button" class="modal-btn modal-confirm${danger ? ' modal-confirm-danger' : ''}">${confirmText}</button>
+          <button type="button" class="modal-btn modal-cancel"></button>
+          <button type="button" class="modal-btn modal-confirm${danger ? ' modal-confirm-danger' : ''}"></button>
         </div>
       </div>
     `;
 
+    // Só a mensagem aceita HTML (os chamadores usam <strong> com texto do próprio site).
+    overlay.querySelector('.modal-title').textContent = title;
+    overlay.querySelector('.modal-cancel').textContent = cancelText;
+    overlay.querySelector('.modal-confirm').textContent = confirmText;
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('modal-visible'));
 

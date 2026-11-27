@@ -56,11 +56,24 @@ export function loadSelection(modalityId, min, max, pick) {
   }
 }
 
-export function saveSelection(modalityId, numbers) {
-  localStorage.setItem(
-    KEYS.selection,
-    JSON.stringify({ modality: modalityId, numbers: [...numbers] })
-  );
+/* Trevos (+Milionária) salvos junto com a seleção principal. */
+export function loadSelectionExtra(modalityId, min, max, pick) {
+  try {
+    const data = JSON.parse(localStorage.getItem(KEYS.selection) || 'null');
+    if (!data || data.modality !== modalityId) return new Set();
+    const valid = (data.extra || []).map(Number).filter((n) => Number.isInteger(n) && n >= min && n <= max);
+    return new Set([...new Set(valid)].slice(0, pick));
+  } catch {
+    return new Set();
+  }
+}
+
+export function saveSelection(modalityId, numbers, extra) {
+  const data = { modality: modalityId, numbers: [...numbers] };
+  if (extra?.size) data.extra = [...extra];
+  try {
+    localStorage.setItem(KEYS.selection, JSON.stringify(data));
+  } catch { /* sem espaço ou bloqueado */ }
 }
 
 export function loadFavorites() {

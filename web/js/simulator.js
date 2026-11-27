@@ -1,5 +1,5 @@
 import { formatNumber, getPrizeLabel, getExtraPrizeLabel, findPrizeTier } from './config.js';
-import { loadSelection, saveSelection } from './storage.js';
+import { loadSelection, loadSelectionExtra, saveSelection } from './storage.js';
 import { showToast } from './ui.js';
 import { getLatestResult } from './results.js';
 
@@ -75,6 +75,15 @@ function restoreSelection() {
     modality.pick
   );
   saved.forEach((n) => selected.add(n));
+  selectedExtra.clear();
+  if (modality.extra) {
+    const { min, max, pick } = modality.extra;
+    loadSelectionExtra(modality.id, min, max, pick).forEach((n) => selectedExtra.add(n));
+  }
+}
+
+function persistSelection() {
+  saveSelection(modality.id, selected, modality.extra ? selectedExtra : null);
 }
 
 function buildGrid() {
@@ -166,6 +175,7 @@ function toggleExtra(value) {
     return;
   }
   syncExtraGridClasses();
+  persistSelection();
   clearConference();
 }
 
@@ -219,7 +229,7 @@ function updateUI() {
 
   gridLocked = selected.size >= modality.pick;
   syncGridClasses();
-  saveSelection(modality.id, selected);
+  persistSelection();
 }
 
 function toggleNumber(value, button) {
@@ -374,6 +384,7 @@ async function quickPick() {
       selectedExtra.add(extraPool.splice(idx, 1)[0]);
     }
     syncExtraGridClasses();
+    persistSelection();
   }
 
   showToast('Aposta gerada automaticamente.', 'success');

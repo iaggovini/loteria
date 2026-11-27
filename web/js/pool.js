@@ -494,7 +494,7 @@ function sharePool() {
     return;
   }
   const text = buildPoolText();
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
 }
 
 async function copyPool() {

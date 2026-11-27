@@ -3,7 +3,7 @@
  * data, contagem regressiva e último resultado de cada modalidade.
  */
 import { MODALITIES } from './config.js';
-import { fetchLatest } from './api.js';
+import { fetchLatest, loadFallbackHistory } from './api.js';
 
 const TZ = 'America/Sao_Paulo';
 // Os sorteios da Caixa são às 21h; aos domingos, às 11h (horário de Brasília).
@@ -158,7 +158,13 @@ export async function initDraws({ onSelect, onPool, onResults } = {}) {
   });
 
   const ids = Object.keys(MODALITIES);
-  const settled = await Promise.allSettled(ids.map((id) => fetchLatest(id)));
+  // Se a Caixa estiver fora do ar, usa o último concurso dos dados de reserva do site.
+  const latestOrFallback = (id) => fetchLatest(id).catch(async () => {
+    const [last] = await loadFallbackHistory(id);
+    if (!last) throw new Error('Sem dados');
+    return { ...last, modalityId: id };
+  });
+  const settled = await Promise.allSettled(ids.map(latestOrFallback));
   latestByModality = {};
   settled.forEach((r, i) => { if (r.status === 'fulfilled') latestByModality[ids[i]] = r.value; });
 

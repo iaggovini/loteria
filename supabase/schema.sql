@@ -75,7 +75,7 @@ create policy "Usuários removem apenas seus favoritos"
   on public.favorites for delete to authenticated
   using ((select auth.uid()) = user_id);
 
--- Limite de segurança contra abuso (o site usa no máximo 20).
+-- Limite de segurança contra abuso (o site também limita a 50, ver web/js/favorites.js).
 create or replace function public.limit_favorites()
 returns trigger
 language plpgsql

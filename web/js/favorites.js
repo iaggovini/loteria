@@ -55,8 +55,14 @@ export function renderFavoritesList(onApply) {
   });
 }
 
+export const FAVORITES_LIMIT = 50; // o mesmo limite do banco (supabase/schema.sql)
+
 export function addFavorite(modality, numbers, name, extra) {
   const favorites = loadFavorites();
+  if (favorites.length >= FAVORITES_LIMIT) {
+    showToast(`Você já tem ${FAVORITES_LIMIT} favoritos. Exclua algum para salvar um novo.`, 'warning');
+    return null;
+  }
   const entry = {
     id: crypto.randomUUID(),
     name,
@@ -67,7 +73,7 @@ export function addFavorite(modality, numbers, name, extra) {
   };
   if (extra?.length) entry.extra = [...extra].sort((a, b) => a - b);
   favorites.unshift(entry);
-  saveFavorites(favorites.slice(0, 20));
+  saveFavorites(favorites);
   showToast('Aposta salva nos favoritos.', 'success');
   return entry;
 }

@@ -17,9 +17,9 @@ import {
   getDataOwner,
   setDataOwner
 } from './storage.js';
-import { showToast } from './ui.js';
+import { showToast, showConfirm } from './ui.js';
+import { FAVORITES_LIMIT } from './favorites.js';
 
-const FAVORITES_LIMIT = 20;
 const POOL_DELAY = 1000;
 
 let userId = null;
@@ -41,6 +41,7 @@ async function handleUser(user) {
   if (nextId === userId) return;
   userId = nextId;
   ready = false;
+  warned = false; // cada conta/sessão pode receber o aviso de falha de novo
   clearTimeout(poolTimer);
 
   if (!nextId) {
@@ -113,20 +114,19 @@ async function syncFavorites(supabase, uid) {
     // Favoritos criados sem login: junta com os da conta.
     const known = new Set(remote.map((f) => f.id));
     const local = loadFavorites().filter((f) => f.id && Array.isArray(f.numbers) && !known.has(f.id));
-    merged = [...remote, ...local].sort((a, b) => String(b.savedAt).localeCompare(String(a.savedAt)));
-    const kept = merged.slice(0, FAVORITES_LIMIT);
-    const keptIds = new Set(kept.map((f) => f.id));
-    const upload = local.filter((f) => keptIds.has(f.id)).map((f) => toRow(f, uid));
-    const extra = remote.filter((f) => !keptIds.has(f.id)).map((f) => f.id);
-    if (upload.length) {
-      const res = await supabase.from('favorites').upsert(upload);
+    // Nunca apaga favoritos da conta: só envia os deste aparelho que couberem no limite.
+    const newestFirst = (a, b) => String(b.savedAt).localeCompare(String(a.savedAt));
+    const room = Math.max(0, FAVORITES_LIMIT - remote.length);
+    const sent = [...local].sort(newestFirst).slice(0, room);
+    if (sent.length) {
+      const res = await supabase.from('favorites').upsert(sent.map((f) => toRow(f, uid)));
       if (res.error) throw res.error;
     }
-    if (extra.length) {
-      const res = await supabase.from('favorites').delete().in('id', extra);
-      if (res.error) throw res.error;
+    const left = local.length - sent.length;
+    if (left > 0) {
+      showToast(`${left} favorito(s) deste aparelho não couberam na sua conta (limite de ${FAVORITES_LIMIT}).`, 'warning');
     }
-    merged = kept;
+    merged = [...remote, ...sent].sort(newestFirst);
   }
 
   replaceFavorites(merged);
@@ -169,9 +169,23 @@ async function syncPool(supabase, uid) {
   if (error) throw error;
 
   const local = loadPoolRaw();
-  if (data && hasContent(data.data)) {
-    savePoolRaw(data.data);
-    hooks.onPoolLoaded?.(data.data);
+  const remote = data && hasContent(data.data) ? data.data : null;
+  // Bolão montado sem login neste aparelho e outro diferente já salvo na conta: pergunta qual manter.
+  const localIsNew = !getDataOwner() && hasContent(local);
+  if (remote && localIsNew && JSON.stringify(local) !== JSON.stringify(remote)) {
+    const keepLocal = await showConfirm(
+      'Você montou um bolão neste aparelho antes de entrar, mas sua conta já tem outro bolão salvo. Qual deseja manter? O outro será substituído.',
+      { title: 'Dois bolões encontrados', confirmText: 'Manter o deste aparelho', cancelText: 'Usar o da conta' }
+    );
+    if (userId !== uid) return;
+    if (keepLocal) {
+      await upsertPool(supabase, uid, local);
+      return;
+    }
+  }
+  if (remote) {
+    savePoolRaw(remote);
+    hooks.onPoolLoaded?.(remote);
   } else if (hasContent(local)) {
     await upsertPool(supabase, uid, local);
   }

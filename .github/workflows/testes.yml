@@ -1,0 +1,19 @@
+name: Testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Confere a sintaxe dos scripts
+        run: for f in web/js/*.js web/sw.js scripts/*.mjs; do node --check "$f" || exit 1; done
+      - name: Roda os testes
+        run: node --test "tests/*.test.mjs"
